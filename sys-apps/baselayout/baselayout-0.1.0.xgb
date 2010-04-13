@@ -1,0 +1,4 @@
+#/bin/bash
+
+#base layout for xiange Linux. 
+#this package should be the first one to install to system.
