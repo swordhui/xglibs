@@ -1,4 +1,12 @@
-#/bin/bash
+#!/bin/bash
 
 #base layout for xiange Linux. 
 #this package should be the first one to install to system.
+
+#interface for package download
+gpkg_getsrc()
+{
+	echo "Downloding Linux header..."
+	sleep 2
+	return 0
+}
