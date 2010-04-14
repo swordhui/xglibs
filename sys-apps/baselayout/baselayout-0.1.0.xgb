@@ -1,12 +1,69 @@
-#!/bin/bash
+# Xiange Linux build scripts
 
-#base layout for xiange Linux. 
-#this package should be the first one to install to system.
+# Short one-line description of this package.
+DESCRIPTION="This is a sample skeleton xiange build script file"
 
-#interface for package download
-gpkg_getsrc()
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://foo.bar.com/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+SRC_URI=""
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
 {
-	echo "Downloding baselayout for xglinux..."
-	sleep 2
+	echo "[xgb_init] N=$N, V=$V"
+	return 0
+}
+
+#unpack
+xgb_unpack()
+{
+	return 0
+}
+
+#config
+xgb_config()
+{
+	return 0
+}
+
+#build
+xgb_build()
+{
+	return 0
+}
+
+#install
+xgb_install()
+{
+	return 0
+}
+
+#post install
+xgb_postinst()
+{
+	return 0
+}
+
+#post remove
+xgb_postrm()
+{
 	return 0
 }
