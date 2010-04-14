@@ -1,16 +1,17 @@
+#!/bin/bash
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="Base layout for Xiange Linux"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://code.google.com/p/xiangelinux"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
-SRC_URI=""
+SRC_URI="http://xiangelinux.googlecode.com/files/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -25,45 +26,39 @@ DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	echo "[xgb_init] N=$N, V=$V"
-	return 0
-}
-
 #unpack
 xgb_unpack()
 {
-	return 0
+	echo "[Unpack] dir=`pwd`"
+	#current directory is in $XGPATH_UNPACK
+	tar xf $XGPATH_SOURCE/$N-$V.tar.bz2
+
+	#no patch
 }
 
-#config
-xgb_config()
-{
-	return 0
-}
 
-#build
-xgb_build()
-{
-	return 0
-}
 
 #install
 xgb_install()
 {
-	return 0
+	cd $N-$V
+	make prefix=$XGPATH_DEST install
 }
 
 #post install
 xgb_postinst()
 {
+	echo "[xgb_postinst] N=$N, V=$V"
+	echo `pwd`
+	echo ""
 	return 0
 }
 
 #post remove
 xgb_postrm()
 {
+	echo "[xgb_postrm] N=$N, V=$V"
+	echo `pwd`
+	echo ""
 	return 0
 }
