@@ -45,6 +45,7 @@ xgb_unpack()
 #config
 xgb_config()
 {
+	XGB_CONFIG=""
 	return 0
 }
 
@@ -62,6 +63,12 @@ xgb_install()
 
 #post install
 xgb_postinst()
+{
+	return 0
+}
+
+#pre remove
+xgb_prerm()
 {
 	return 0
 }
