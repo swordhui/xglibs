@@ -43,7 +43,7 @@ xgb_config()
 	cd $N-$V$R
 
 	#run configure
-	XGB_CONFIG="--prefix=/usr --enable-cxx --enable-mpbsd"
+	XGB_CONFIG+=" --enable-cxx --enable-mpbsd "
 
 	./configure $XGB_CONFIG
 }

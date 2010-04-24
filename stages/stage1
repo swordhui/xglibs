@@ -1,0 +1,7 @@
+baselayout
+linux-headers
+man-pages
+glibc
+gmp
+mpfr
+gcc

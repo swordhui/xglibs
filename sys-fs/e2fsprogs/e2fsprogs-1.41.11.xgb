@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Tools necessary to build programs"
+DESCRIPTION="Standard EXT2/EXT3/EXT4 filesystem utilities"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://sources.redhat.com/binutils"
+HOMEPAGE="http://e2fsprogs.sourceforge.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="http://sources.redhat.com/binutils"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://ftp.gnu.org/gnu/binutils/$N-$V$R.tar.bz2"
+SRC_URI="http://prdownloads.sourceforge.net/e2fsprogs/$N-$V$R.tar.gz"
 
 
 # Binary package URI.
@@ -22,10 +22,11 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="util-linux-ng"
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} pkg-config"
+
 
 
 #unpack
@@ -33,41 +34,42 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
 xgb_config()
 {
-	#cd build directory.
-	#cd $N-$V$R
+	#fist, cd build directory
+	cd $N-$V$R
+
+	#create build direcory
 	mkdir build
 	cd build
-	err_check "enter directory build failed"
+	err_check "create build directory failed"
 
-	#run configure
-	XGB_CONFIG+=" --enable-shared "
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --enable-elf-shlibs --disable-libblkid\
+		--disable-libuuid --disable-uuidd --disable-fsck"
 
-	../$N-$V$R/configure $XGB_CONFIG
+	#Third, call configure with $XGB_CONFIG
+	../configure $XGB_CONFIG
 }
 
 #build
 xgb_build()
 {
 	#run make in current directory
-	make tooldir=/usr
+	make
 }
 
 #install
 xgb_install()
 {
 	#install everything to $XGPATH_DEST
-	make DESTDIR="$XGPATH_DEST" tooldir=/usr install
-	err_check "install binutils failed"
+	make DESTDIR=$XGPATH_DEST install
+	err_check "Install $N-$V$R failed."
 
-	#header file
-	cp -v ../$N-$V$R/include/libiberty.h "$XGPATH_DEST/usr/include"
-	err_check "[Error] binutils: libiberty.h copy failed."
+	make DESTDIR=$XGPATH_DEST install-libs
 }
-
 

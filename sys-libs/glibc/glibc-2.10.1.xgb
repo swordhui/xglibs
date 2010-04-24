@@ -53,10 +53,7 @@ xgb_config()
 	cd ../build
 	err_check "[Error] glibc: create build directory failed."
 
-	echo "CFLAGS += -march=i686 -mtune=native" > configparms
-
-	XGB_CONFIG="--prefix=/usr \
-		--disable-profile --enable-add-ons \
+	XGB_CONFIG+=" --disable-profile --enable-add-ons \
 		--enable-kernel=2.6.0 --libexecdir=/usr/lib/glibc"
 
 	../$N-$V$R/configure $XGB_CONFIG
@@ -123,22 +120,44 @@ xgb_install()
 
 glib_adjust_toolchain()
 {
+	local file
+
 	echo "Begin adjust tool chain..."
 
 	#adjust tool chain.
-	mv -v /tools/bin/{ld,ld-old}
-	mv -v /tools/$(gcc -dumpmachine)/bin/{ld,ld-old}
-	mv -v /tools/bin/{ld-new,ld}
-	ln -sv /tools/bin/ld /tools/$(gcc -dumpmachine)/bin/ld
+	[ -f /tools/bin/ld-new ] && cp  /tools/bin/{ld-new,ld}
+	rm -f /tools/$(gcc -dumpmachine)/bin/ld
+	[ -f /tools/bin/ld ] && ln -sv /tools/bin/ld \
+		/tools/$(gcc -dumpmachine)/bin/ld
+
+	#gcc libs.
+	for i in $(ls /tools/lib/libgcc_s.so* 2>/dev/null)
+	do
+		file=${i##*/}
+		[ -f $file ] || ln -sv $i /usr/lib 
+	done
+
+	for i in $(ls /tools/lib/libstdc++.* 2>/dev/null)
+	do
+		file=${i##*/}
+		[ -f $file ] || ln -sv $i /usr/lib 
+	done
 
 	#adjust gcc.
-	gcc -dumpspecs | sed \
-		-e 's@/tools/lib/ld-linux.so.2@/lib/ld-linux.so.2@g' \
-		-e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}' \
-		-e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' > \
-		`dirname $(gcc --print-libgcc-file-name)`/specs
+	echo 'main(){}' > dummy.c
+	cc dummy.c -v -Wl,--verbose &> dummy.log
+	err_check "[Error] compile dummy.c failed."
+	readelf -l a.out | grep ': /lib'
+	if [ "$?" != "0" ]; then
+		echo "change specs.."
+		gcc -dumpspecs | sed \
+			-e 's@/tools/lib/ld-linux.so.2@/lib/ld-linux.so.2@g' \
+			-e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}' \
+			-e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' > \
+			`dirname $(gcc --print-libgcc-file-name)`/specs
+	fi
 
-	#check.
+	#check agian
 	echo 'main(){}' > dummy.c
 	cc dummy.c -v -Wl,--verbose &> dummy.log
 	err_check "[Error] compile dummy.c failed."
@@ -169,6 +188,20 @@ xgb_postinst()
 #pre remove
 xgb_prerm()
 {
+	echo "Remove links..."
+
+	#remove links
+	for i in $(ls /usr/lib/libgcc_s.so* 2>/dev/null)
+	do
+		[ -L $i ] && unlink $i
+	done
+
+	for i in $(ls /usr/lib/libstdc++.* 2>/dev/null)
+	do
+		[ -L $i ] && unlink $i
+	done
+
+
 	#remove locale
 	rm -rf /usr/lib/locale
 	return 0

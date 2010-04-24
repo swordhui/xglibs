@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="library for multiple-precision floating-point computations with exact rounding"
+DESCRIPTION="Berkeley Data base library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.mpfr.org"
+HOMEPAGE="http://download-east.oracle.com/berkeley-db/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,9 @@ HOMEPAGE="http://www.mpfr.org"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.mpfr.org/$N-$V$R/$N-$V$R.tar.bz2"
+SRC_URI="http://download-east.oracle.com/berkeley-db/db-$V$R.tar.gz \
+http://www.linuxfromscratch.org/patches/lfs/6.4/db-$V$R-upstream_fixes-1.patch"
+
 
 
 # Binary package URI.
@@ -29,50 +31,44 @@ DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	#echo "[xgb_init] N=$N, V=$V"
-	return 0
-}
+
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/db-$V$R.tar.gz
+	err_check "unpack failed."
+
+	cd db-$V$R
+	err_check "enter source directory failed."
+
+	#patch
+	patch -Np1 -i $XGPATH_SOURCE/db-4.7.25-upstream_fixes-1.patch
 }
 
 #config
 xgb_config()
 {
-	#cd build directory.
-	cd $N-$V$R
+	#fist, cd build directory
+	cd build_unix
 
-	#run configure
-	XGB_CONFIG+=" --enable-thread-safe "
-
-	./configure $XGB_CONFIG
+	XGB_CONFIG+=" --enable-compat185 --enable-cxx "
+        ../dist/configure $XGB_CONFIG
 }
 
 #build
 xgb_build()
 {
-	#run make in current directory
 	make
-	err_check "build mpfr failed."
-
-	make check
-	#ignore check result.
-	return 0
 }
 
 #install
 xgb_install()
 {
 	#install everything to $XGPATH_DEST
-	make DESTDIR="$XGPATH_DEST" install
+	make docdir=/usr/share/doc/db-$V$R DESTDIR=$XGPATH_DEST install
 }
 
 

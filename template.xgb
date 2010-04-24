@@ -51,7 +51,7 @@ xgb_config()
 	#cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+="--foo --bar"
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	#./configure $XGB_CONFIG
@@ -63,6 +63,7 @@ xgb_config()
 xgb_build()
 {
 	#run make in current directory
+	#make
 	return 0
 }
 
@@ -70,6 +71,7 @@ xgb_build()
 xgb_install()
 {
 	#install everything to $XGPATH_DEST
+	#make DESTDIR=$XGPATH_DEST install
 	return 0
 }
 

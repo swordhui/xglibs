@@ -58,8 +58,7 @@ xgb_config()
 
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="--prefix=/usr \
-		--libexecdir=/usr/lib --enable-shared \
+	XGB_CONFIG+="--libexecdir=/usr/lib --enable-shared \
 		--enable-threads=posix --enable-__cxa_atexit \
 		--enable-clocale=gnu --enable-languages=c,c++ \
 		--disable-bootstrap"
@@ -85,6 +84,7 @@ xgb_install()
 
 	#create links.
 	ln -sv gcc "$XGPATH_DEST/usr/bin/cc"
+	mkdir -p "$XGPATH_DEST/lib"
 	ln -sv ../usr/bin/cpp "$XGPATH_DEST/lib"
 }
 
