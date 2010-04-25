@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="Standard GNU database libraries"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://www.gnu.org/software/gdbm/gdbm.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI=""
+SRC_URI="ftp://ftp.gnu.org/gnu/gdbm/$N-$V$R.tar.gz"
 
 
 # Binary package URI.
@@ -28,75 +27,46 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
-
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
-	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	echo "Unpacking ..."
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
 xgb_config()
 {
-	echo "config $N-$V$R..."
-
 	#fist, cd build directory
-	#cd $N-$V$R
+	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
 xgb_build()
 {
-	echo "make $N-$V$R..."
-
 	#run make in current directory
-	#make
-}
-
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
+	make
 }
 
 #install
 xgb_install()
 {
-	echo "install to $XGPATH_DEST"
-
 	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
+	make INSTALL_ROOT=$XGPATH_DEST BINOWN=root BINGRP=root install
+	err_check "install $N failed."
+
+	#install the DBM and NDBM compatibility headers, as some 
+	#packages outside of LFS may look for these older dbm routines
+	make INSTALL_ROOT=$XGPATH_DEST BINOWN=root BINGRP=root install-compat
+	err_check "install $N failed."
+
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-}
 
-#pre remove
-xgb_prerm()
-{
-	echo "running before package delete..."
-}
-
-#post remove
-xgb_postrm()
-{
-	echo "running after package delete..."
-}
