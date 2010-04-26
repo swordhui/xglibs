@@ -41,17 +41,18 @@ xgb_unpack()
 #config
 xgb_config()
 {
-	#cd unpacked directory
-	cd $N-$V$R
-
 	#run configure
 	XGB_CONFIG=""
+
+	echo "config $N-$V$R.."
+	#cd unpacked directory
+	cd $N-$V$R
 }
 
 #install
 xgb_install()
 {
-	echo "Install $N-$V$R..."
+	echo "Install $N-$V$R to $XGPATH_DEST..."
 	make DESTDIR=$XGPATH_DEST install
 }
 

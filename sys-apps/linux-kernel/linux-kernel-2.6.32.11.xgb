@@ -34,17 +34,6 @@ DEPEND="${RDEPEND}"
 #unpack
 xgb_unpack()
 {
-	#to /usr/src
-	mkdir -p /usr/src
-	cd /usr/src
-	err_check "change to /usr/src failed"
-
-	#rm old files
-	[ -d linux-$V$R ] && rm -rf linux-$V$R
-
-	#remove link.
-	rm -f linux
-
 	echo "Unpacking ..."
 	tar xf $XGPATH_SOURCE/linux-$V$R.tar.bz2
 }
@@ -71,7 +60,7 @@ xgb_install()
 {
 	#copy image
 	mkdir -p $XGPATH_DEST/boot
-	cp arch/i386/boot/bzImage $XGPATH_DEST/boot/vmlinz-$V$R
+	cp arch/i386/boot/bzImage $XGPATH_DEST/boot/vmlinuz-$V$R
 	err_check "[Error] install kernel image failed"
 
 	cp .config $XGPATH_DEST/boot/config-$V$R
