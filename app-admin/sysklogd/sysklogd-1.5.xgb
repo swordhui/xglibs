@@ -1,0 +1,85 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Kernel and system logging daemons"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.infodrom.org/projects/sysklogd/index.php"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://www.infodrom.org/projects/$N/download/$N-$V$R.tar.gz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	mkdir -p $XGPATH_DEST/usr/share/man/man8
+	mkdir -p $XGPATH_DEST/usr/share/man/man5
+	mkdir -p $XGPATH_DEST/sbin
+	mkdir -p $XGPATH_DEST/etc
+
+	make prefix=$XGPATH_DEST BINDIR=$XGPATH_DEST/sbin install
+	err_check "install $N failed."
+
+	#create syslog.conf
+	cat > $XGPATH_DEST/etc/syslog.conf << "EOF"
+# Begin /etc/syslog.conf
+
+auth,authpriv.* -/var/log/auth.log
+*.*;auth,authpriv.none -/var/log/sys.log
+daemon.* -/var/log/daemon.log
+kern.* -/var/log/kern.log
+mail.* -/var/log/mail.log
+user.* -/var/log/user.log
+*.emerg *
+
+# End /etc/syslog.conf
+EOF
+}
+
