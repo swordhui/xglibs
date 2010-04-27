@@ -60,15 +60,15 @@ xgb_postinst()
 	        test -f $file || ln -sv /tools/bin/`basename $file` /bin
 	done
 
-	test -f /usr/bin/perl || ln -sv /tools/bin/perl /usr/bin
-	test -f /usr/lib/libgcc_s.so ||  ln -sv /tools/lib/libgcc_s.so /usr/lib
-	test -f /usr/lib/libgcc_s.so.1 ||  ln -sv /tools/lib/libgcc_s.so.1 /usr/lib
-	test -f /usr/lib/libstdc++.so ||  ln -sv /tools/lib/libstdc++.so /usr/lib
-	test -f /usr/lib/libstdc++.so.6 ||  ln -sv /tools/lib/libstdc++.so.6 /usr/lib
+	[ -f /usr/bin/perl ] || ln -sv /tools/bin/perl /usr/bin
+	[ -f /usr/lib/libgcc_s.so ] ||  ln -sv /tools/lib/libgcc_s.so /usr/lib
+	[ -f /usr/lib/libgcc_s.so.1 ] ||  ln -sv /tools/lib/libgcc_s.so.1 /usr/lib
+	[ -f /usr/lib/libstdc++.so ] ||  ln -sv /tools/lib/libstdc++.so /usr/lib
+	[ -f /usr/lib/libstdc++.so.6 ] ||  ln -sv /tools/lib/libstdc++.so.6 /usr/lib
 
-	test -L /bin/sh && rm /bin/sh
-	test -f /bin/sh || ln -sv bash /bin/sh
-	test -f /etc/mtab || touch /etc/mtab
+	[ -L /bin/sh ] && rm /bin/sh
+	[ -f /bin/sh ] || ln -sv bash /bin/sh
+	[ -f /etc/mtab ] || touch /etc/mtab
 
 }
 
@@ -83,11 +83,5 @@ xgb_prerm()
 	        test -L $file && rm $file
 	done
 
-	test -L /usr/bin/perl && rm /usr/bin/perl
-	test -L /usr/lib/libgcc_s.so &&  rm /usr/lib/libgcc_s.so
-	test -L /usr/lib/libgcc_s.so.1 &&  rm /usr/lib/libgcc_s.so.1
-	test -L /usr/lib/libstdc++.so &&  rm /usr/lib/libstdc++.so
-	test -L /usr/lib/libstdc++.so.6 &&  rm /usr/lib/libstdc++.so.6
-	test -L /bin/sh && rm /bin/sh
 	test -f /etc/mtab && rm /etc/mtab
 }

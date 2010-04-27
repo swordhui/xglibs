@@ -1,4 +1,4 @@
-baselayout-0.1.0
+baselayout-0.2.0
 man-pages-3.24
 linux-headers-2.6.32.11
 glibc-2.10.1
@@ -50,5 +50,8 @@ sysvinit-2.86
 tar-1.23
 texinfo-4.13
 udev-153
+python-2.6.2
+git-1.7.0.6
+gpkg-0.10.4
 vim-7.2.411
 linux-kernel-2.6.32.11
