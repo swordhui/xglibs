@@ -67,9 +67,14 @@ xgb_install()
 	err_check "[Error] install kernel config failed"
 
 	#install modules
+	echo ">>> install modules "
 	mkdir -p $XGPATH_DEST/lib/modules
 	make INSTALL_MOD_PATH=$XGPATH_DEST modules_install
 	err_check "[Error] install modules falied."
+
+	#install firmware
+	echo ">>> install firmwares "
+	make INSTALL_MOD_PATH=$XGPATH_DEST firmware_install
 }
 
 
