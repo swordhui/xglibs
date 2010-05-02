@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="X C-language Bindings library"
+DESCRIPTION="VTE based terminator"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://xcb.freedesktop.org/"
+HOMEPAGE="http://lilyterm.luna.com.tw/index_cht.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://xcb.freedesktop.org/dist/$N-$V.tar.bz2"
+SRC_URI="http://lilyterm.luna.com.tw/file/lilyterm-$V.tar.gz"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libxslt"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -32,7 +32,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
@@ -43,8 +43,12 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
+	#autogen
+	./autogen.sh
+	err_check "Generate $N failed."
+
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --docdir=/usr/share/$N-$V "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -57,13 +61,6 @@ xgb_build()
 
 	#run make in current directory
 	make
-}
-
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	make check
 }
 
 #install

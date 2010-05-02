@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="X C-language Bindings library"
+DESCRIPTION="The GLib library of C routines"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://xcb.freedesktop.org/"
+HOMEPAGE="http://www.gtk.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://xcb.freedesktop.org/dist/$N-$V.tar.bz2"
+SRC_URI="http://ftp.gnome.org/pub/gnome/sources/glib/2.22/glib-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,10 +21,11 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libxslt"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
 
 
 #unpack
@@ -32,19 +33,19 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/glib-$V.tar.bz2
 }
 
 #config
 xgb_config()
 {
-	echo "config $N-$V$R..."
+	echo "config glib-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd glib-$V
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --docdir=/usr/share/$N-$V "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

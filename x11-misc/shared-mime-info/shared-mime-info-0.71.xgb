@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="X C-language Bindings library"
+DESCRIPTION="The Shared MIME-info Database specification"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://xcb.freedesktop.org/"
+HOMEPAGE="http://freedesktop.org/wiki/Software/shared-mime-info"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://xcb.freedesktop.org/dist/$N-$V.tar.bz2"
+SRC_URI="http://freedesktop.org/~hadess/shared-mime-info-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,10 +21,11 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libxslt"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
 
 
 #unpack
@@ -44,7 +45,7 @@ xgb_config()
 	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --docdir=/usr/share/$N-$V "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
