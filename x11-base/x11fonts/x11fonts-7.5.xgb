@@ -48,7 +48,6 @@ font-schumacher-misc-1.1.0.tar.bz2
 font-screen-cyrillic-1.0.2.tar.bz2
 font-sony-misc-1.0.1.tar.bz2
 font-sun-misc-1.0.1.tar.bz2
-font-util-1.1.1.tar.bz2
 font-winitzki-cyrillic-1.0.1.tar.bz2
 font-xfree86-type1-1.0.2.tar.bz2"
 
@@ -101,7 +100,8 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var "
+	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var \
+		--with-fontrootdir=/usr/share/fonts "
 
 	for i in $Xproto
 	do
@@ -152,6 +152,10 @@ xgb_install()
 		err_check "install $name failed."
 		popd
 	done
+	
+	#create symbol
+	mkdir -p $XGPATH_DEST/usr/lib/X11
+	ln -s /usr/share/fonts $XGPATH_DEST/usr/lib/X11
 
 }
 

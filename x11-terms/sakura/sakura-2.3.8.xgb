@@ -24,7 +24,7 @@ BIN_URI=""
 RDEPEND="gtk2 vte"
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} cmake"
 
 
 
@@ -44,11 +44,9 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
-	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cmake -DCMAKE_INSTALL_PREFIX=/usr . 
 }
 
 #build

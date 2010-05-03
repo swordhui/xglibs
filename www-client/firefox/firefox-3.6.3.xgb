@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="X.Org font utilities"
+DESCRIPTION="Firefox Web Browser"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://xorg.freedesktop.org/"
+HOMEPAGE="http://www.mozilla.com/firefox"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://www.x.org/releases/individual/font/$N-$V.tar.bz2"
+SRC_URI="http://releases.mozilla.org/pub/mozilla.org/$N/releases/$V/source/$N-$V.source.tar.bz2"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="zip unzip libIDL sqlite"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -32,7 +32,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V.source.tar.bz2
 }
 
 #config
@@ -41,10 +41,21 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd mozilla-1.9.2
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-fontrootdir=/usr/share/fonts "
+	XGB_CONFIG+=" --enable-application=browser \
+			--libexecdir=/usr/lib/firefox \
+			--sysconfdir=/etc \
+			--localstatedir=/var \
+			--enable-optimize \
+			--enable-system-sqlite \
+			--enable-system-cairo \
+			--with-system-jpeg \
+			--with-system-png \
+			--with-system-zlib \
+			--disable-gnomevfs"
+
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Wenquanyi Chinese bitmap font"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://wenq.org/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://downloads.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-pcf-1.0.0-RC1.tar.gz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/wqy-bitmapsong-pcf-1.0.0-RC1.tar.gz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd wqy-bitmapsong
+
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	mkdir -p "$XGPATH_DEST/usr/share/fonts/wenquanyi/wqy-bitmap"
+	cp *.pcf $XGPATH_DEST/usr/share/fonts/wenquanyi/wqy-bitmap
+	err_check "copy font failed."
+
+	mkdir -p $XGPATH_DEST/etc/fonts/conf.avail
+	mkdir -p $XGPATH_DEST/etc/fonts/conf.d
+	cp *.conf $XGPATH_DEST/etc/fonts/conf.avail
+	err_check "copy config failed."
+
+	#create symbal link.
+	ln -s /etc/fonts/conf.avail/85-wqy-bitmapsong.conf \
+		$XGPATH_DEST/etc/fonts/conf.d
+	err_check "copy config failed."
+
+	mkdir -p "$XGPATH_DEST/usr/share/doc/wqy-bitmap"
+	cp INSTALL* "$XGPATH_DEST/usr/share/doc/wqy-bitmap" &&
+	cp README "$XGPATH_DEST/usr/share/doc/wqy-bitmap" &&
+	cp LOGO.png "$XGPATH_DEST/usr/share/doc/wqy-bitmap" 
+	err_check "copy font failed."
+
+	#generate font info.
+	cd $XGPATH_DEST/usr/share/fonts/wenquanyi/wqy-bitmap &&
+	mkfontdir &&
+	mkfontscale
+
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	grep "wqy-bitmap" /etc/X11/xorg.conf \
+		|| sed -i "s#FontPath.*/fonts/misc/\"#&\n\tFontPath     \"/usr/share/fonts/wenquanyi/wqy-bitmap\"#" /etc/X11/xorg.conf
+	err_check "generate font info faile.d"
+	echo ">>> Generate font cache file.."
+	fc-cache
+}
+
+#pre remove
+xgb_postrm()
+{
+	echo "running before package delete..."
+	sed -i "/FontPath.*wqy-bitmap/d" /etc/X11/xorg.conf
+	echo ">>> Generate font cache file.."
+	fc-cache
+}
+
