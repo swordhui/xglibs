@@ -1,4 +1,4 @@
-baselayout-0.2.0
+baselayout-0.2.1
 man-pages-3.24
 linux-headers-2.6.32.11
 glibc-2.10.1
@@ -6,7 +6,7 @@ binutils-2.20
 gmp-4.3.2
 mpfr-2.4.2
 gcc-4.4.3
-gpkg-0.10.4
+gpkg-0.10.6
 berkeley-db-4.7.25
 sed-4.2.1
 pkg-config-0.23
