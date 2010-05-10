@@ -6,7 +6,7 @@ binutils-2.20
 gmp-4.3.2
 mpfr-2.4.2
 gcc-4.4.3
-gpkg-0.10.6
+gpkg-0.10.7
 berkeley-db-4.7.25
 sed-4.2.1
 pkg-config-0.23
