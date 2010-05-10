@@ -68,4 +68,10 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "Install $N-$V failed."
+
+	#copy bitmap 
+	mkdir -p $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps
+	cp links_32x32.xpm $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps/links.xpm
+	err_check "Install $N-$V failed."
 }

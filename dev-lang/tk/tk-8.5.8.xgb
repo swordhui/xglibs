@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Tk Widget Set"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.tcl.tk/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://downloads.sourceforge.net/tcl/tk$V-src.tar.gz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N$V/unix
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" -enable-threads --mandir=/usr/share/man "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	sed -i \
+		-e "s@^\(TK_SRC_DIR='\).*@\1/usr/include'@" \
+		-e "/TK_B/s@='\(-L\)\?.*unix@='\1/usr/lib@" \
+		tkConfig.sh
+	err_check "install $N-$V failed"
+
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install &&
+	make DESTDIR=$XGPATH_DEST install-private-headers
+	err_check "install $N-$V failed"
+
+	#symbol link
+	ln -v -sf wish8.5 $XGPATH_DEST/usr/bin/wish &&
+	chmod -v 755 $XGPATH_DEST/usr/lib/libtk8.5.so
+}
+

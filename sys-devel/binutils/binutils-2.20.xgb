@@ -6,14 +6,13 @@
 DESCRIPTION="Tools necessary to build programs"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://sources.redhat.com/binutils"
+HOMEPAGE="http://www.gnu.org/software/binutils/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
 SRC_URI="http://ftp.gnu.org/gnu/binutils/$N-$V$R.tar.bz2"
 
 

@@ -69,5 +69,19 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	mkdir -p $XGPATH_DEST/usr
 	make prefix=$XGPATH_DEST/usr install
+	err_check "install $N-$V failed."
+
+	#copy resource
+	mkdir -p $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps/
+	cp pixmaps/s-lock.xpm $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps/xlock.xpm
+	err_check "install $N-$V failed."
+
+	mkdir -p $XGPATH_DEST/usr/share/icons/hicolor/48x48/apps/
+	cp pixmaps/m-lock.xpm $XGPATH_DEST/usr/share/icons/hicolor/48x48/apps/xlock.xpm
+	err_check "install $N-$V failed."
+
+	mkdir -p $XGPATH_DEST/etc/xg_launch/sys/
+	echo "+ Lock%/usr/share/icons/hicolor/32x32/apps/xlock.xpm%  Exec xlock -mode matrix" > $XGPATH_DEST/etc/xg_launch/sys/C05xlock
+
 }
 

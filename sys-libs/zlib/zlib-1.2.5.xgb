@@ -68,7 +68,7 @@ xgb_install()
 	mv -v $XGPATH_DEST/usr/lib/libz.so.* $XGPATH_DEST/lib
 	err_check "install $N failed."
 
-	ln -sfv ../../lib/libz.so.1.2.4 $XGPATH_DEST/usr/lib/libz.so
+	ln -sfv ../../lib/libz.so.$V $XGPATH_DEST/usr/lib/libz.so
 	err_check "install $N failed."
 }
 

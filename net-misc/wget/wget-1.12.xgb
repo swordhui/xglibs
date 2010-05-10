@@ -68,5 +68,14 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install $N-$V failed"
+
+	#fix Chinese translation error
+	msgunfmt $XGPATH_DEST/usr/share/locale/zh_CN/LC_MESSAGES/wget.mo | \
+		sed "s/eta(.*)/ETA/" | \
+		msgfmt - -o /tmp/wget.mo
+	err_check "install $N-$V failed"
+
+	mv /tmp/wget.mo $XGPATH_DEST/usr/share/locale/zh_CN/LC_MESSAGES/
 }
 

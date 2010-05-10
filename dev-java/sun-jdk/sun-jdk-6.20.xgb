@@ -1,0 +1,128 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Sun's Java SE Development Kit"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://java.sun.com/javase/6/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://download.java.net/dlj/binaries/jdk-6u20-dlj-linux-i586.bin"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+
+	sh $XGPATH_SOURCE/`basename $SRC_URI`  --accept-license
+}
+
+xgb_java_path()
+{
+cat > $XGPATH_DEST/opt/jdk/jdkpath.sh << "EOF"
+# Begin /etc/profile.d/jdk.sh
+
+# Set JAVA_HOME directory
+JAVA_HOME=/opt/jdk
+
+# Adjust PATH
+export PATH=$PATH:$JAVA_HOME/bin
+
+# Auto Java CLASSPATH
+# Copy jar files to, or create symlinks in this directory
+AUTO_CLASSPATH_DIR=/usr/lib/classpath
+
+#pathprepend . CLASSPATH
+CLASSPATH=$CLASSPATH:./
+
+for dir in `find ${AUTO_CLASSPATH_DIR} -type d 2>/dev/null`; do
+	CLASSPATH=$CLASSPATH:$dir
+done
+
+export JAVA_HOME CLASSPATH
+unset AUTO_CLASSPATH_DIR
+unset dir
+
+# End /etc/profile.d/jdk.sh
+EOF
+
+}
+
+#install
+xgb_install()
+{
+	local packfiles
+	local i
+	local name
+
+	echo "install to $XGPATH_DEST"
+
+	mkdir -p $XGPATH_DEST/opt
+
+	#copy all files
+	cd jdk1.6.0_20 &&
+	install -v -m755 -d $XGPATH_DEST/opt/jdk-6u20 &&
+	mv -v * $XGPATH_DEST/opt/jdk-6u20 &&
+	chown -v -R root:root $XGPATH_DEST/opt/jdk-6u20 &&
+	ln -v -sf xawt/libmawt.so \
+	    $XGPATH_DEST/opt/jdk-6u20/jre/lib/i386/ 
+	err_check "install $N failed."
+
+	#symbol link
+	ln -v -nsf jdk-6u20 $XGPATH_DEST/opt/jdk
+	err_check "install $N failed."
+
+	#unpack all pack files
+	packfiles=$(find $XGPATH_DEST/opt/jdk/ -iname "*.pack")
+
+	for i in $packfiles
+	do
+		echo ">>> unpack $i"
+		name=${i%.pack}
+		name+=".jar"
+		$XGPATH_DEST/opt/jdk/bin/unpack200 $i $name
+		err_check "unpack $N failed."
+	done
+
+	#environment
+	xgb_java_path
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

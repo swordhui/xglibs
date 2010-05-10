@@ -2,9 +2,11 @@ baselayout-0.2.0
 man-pages-3.24
 linux-headers-2.6.32.11
 glibc-2.10.1
+binutils-2.20
 gmp-4.3.2
 mpfr-2.4.2
 gcc-4.4.3
+gpkg-0.10.4
 berkeley-db-4.7.25
 sed-4.2.1
 pkg-config-0.23
@@ -51,7 +53,6 @@ tar-1.23
 texinfo-4.13
 udev-153
 python-2.6.2
-git-1.7.0.6
-gpkg-0.10.4
-vim-7.2.411
 linux-kernel-2.6.32.11
+git-1.7.0.6
+vim-7.2.411
