@@ -107,7 +107,9 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make test
+
+	#uncomment this may crash screen diaplay
+	#make test
 }
 
 #vimrc
