@@ -16,6 +16,7 @@ HOMEPAGE="http://www.x.org/wiki/"
 Xproto="libXau-1.0.5
 libXdmcp-1.0.3
 xcb-proto-1.5
+libxcb-1.4
 libpthread-stubs-0.1
 libxml2-2.7.6
 libxslt-1.1.26
