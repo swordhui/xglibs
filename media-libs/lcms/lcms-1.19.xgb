@@ -13,7 +13,7 @@ HOMEPAGE="http://www.littlecms.com/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://www.littlecms.com/lcms-$V.tar.gz"
+SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$V/$N-$V.tar.gz"
 
 
 # Binary package URI.
