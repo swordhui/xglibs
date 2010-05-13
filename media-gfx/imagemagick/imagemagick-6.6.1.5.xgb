@@ -13,7 +13,8 @@ HOMEPAGE="http://www.imagemagick.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/imagemagick/ImageMagick/00-6.6.1/ImageMagick-6.6.1-5.tar.xz"
+#SRC_URI="http://downloads.sourceforge.net/project/imagemagick/ImageMagick/6.6.1/ImageMagick-6.6.1-5.tar.xz"
+SRC_URI="ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-6.6.1-5.tar.xz"
 
 
 # Binary package URI.
