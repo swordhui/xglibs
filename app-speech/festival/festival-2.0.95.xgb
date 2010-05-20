@@ -1,0 +1,159 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Festival Text to Speech engine"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.cstr.ed.ac.uk/projects/festival/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SITE_URI="http://www.cstr.ed.ac.uk/downloads/festival/$V"
+SRC_URI="$SITE_URI/festival-$V-beta.tar.gz 
+	$SITE_URI/festlex_CMU.tar.gz
+	$SITE_URI/festlex_OALD.tar.gz
+	$SITE_URI/festlex_POSLEX.tar.gz
+	$SITE_URI/festvox_cmu_us_awb_cg.tar.gz
+	$SITE_URI/festvox_cmu_us_rms_cg.tar.gz
+	$SITE_URI/festvox_cmu_us_slt_arctic_hts.tar.gz
+	$SITE_URI/festvox_kallpc16k.tar.gz
+	$SITE_URI/festvox_rablpc16k.tar.gz
+	$SITE_URI/speech_tools-$V-beta.tar.gz"
+	
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="speech-tools"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+#unpack
+xgb_unpack()
+{
+	local i
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	for i in $SRC_URI
+	do
+		echo ">>> unpacking `basename $i`"
+		tar xf $XGPATH_SOURCE/`basename $i`
+		err_check "unpack $i failed."
+	done
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd festival
+
+	# tell festival to use the speech-tools we have installed.
+        sed -i -e "s:\(EST=\).*:\1/usr/share/speech-tools:" config/config.in
+	err_check "patch $N-$V failed."
+
+	sed -i -e "s:\$(EST)/lib:/usr/lib:" config/project.mak
+	err_check "patch $N-$V failed."
+
+	# fix the reference  to /usr/lib/festival
+        sed -i -e "s:\(FTLIBDIR.*=.*\)\$.*:\1/usr/share/festival:" \
+		config/project.mak
+
+	# Fix path for examples in festival.scm
+        sed -i -e "s:\.\./examples/:/usr/share/doc/festival/examples/:" \
+		lib/festival.scm
+
+	# copy what we need for MultiSyn from speech_tools.
+        cp -pr ../speech_tools/base_class src/modules/MultiSyn
+	err_check "patch $N-$V failed."
+
+	echo "(Parameter.set 'Audio_Command \"aplay -q -c 1 -t raw -f s16 -r \$SR \$FILE\")" >> lib/siteinit.scm
+	err_check "patch $N-$V failed."
+
+	echo "(Parameter.set 'Audio_Method 'Audio_Command)" >> lib/siteinit.scm
+	err_check "patch $N-$V failed."
+
+
+
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make PROJECT_LIBDEPS="" REQUIRED_LIBDEPS="" LOCAL_LIBDEPS="" \
+		OPTIMISE_CXXFLAGS="${CXXFLAGS}" OPTIMISE_CCFLAGS="${CFLAGS}" \
+		CC=$CC CXX=$CXX
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	S=$(pwd)
+
+	#install everything to $XGPATH_DEST
+	mkdir -p $XGPATH_DEST/usr/bin
+	for file in `find src/main -perm +100 -type f`; do
+		cp -a $file $XGPATH_DEST/usr/bin
+		err_check "install $N-$V failed."
+	done
+
+
+	cp -a lib/etc/*Linux*/audsp $XGPATH_DEST/usr/bin
+	err_check "install $N-$V failed."
+
+	#library
+	mkdir -p $XGPATH_DEST/usr/lib
+	cp src/lib/libFestival.a $XGPATH_DEST/usr/lib
+	err_check "install $N-$V failed."
+
+	mkdir -p $XGPATH_DEST/usr/share/festival
+	cp -r lib/* $XGPATH_DEST/usr/share/festival
+	err_check "install $N-$V failed."
+
+	mkdir -p $XGPATH_DEST/usr/share/doc/festival
+	cp -r examples $XGPATH_DEST/usr/share/doc/festival
+	err_check "install $N-$V failed."
+
+	# Need to fix saytime, etc. to look for festival in the correct spot
+	for ex in $XGPATH_DEST/usr/share/doc/festival/examples/*.sh; do
+		exnoext=${ex%%.sh}
+	        chmod a+x "${exnoext}"
+	        sed -i "s:${S}/bin/festival:/usr/bin/festival:" ${exnoext}
+        done
+
+	mkdir -p $XGPATH_DEST/usr/include/festival
+	cp src/include/*.h $XGPATH_DEST/usr/include/festival
+
+
+
+	#etc
+	mkdir -p $XGPATH_DEST/etc/festival
+	cp lib/site* $XGPATH_DEST/etc/festival
+
+	#document
+	mkdir -p $XGPATH_DEST/usr/share/man/man1
+	cp doc/*.1 $XGPATH_DEST/usr/share/man/man1
+}
+
