@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Toolkit for SSL v2/v3 and TLS v1"
+DESCRIPTION="easily lookup countries by IP addresses, even when Reverse DNS entries don't exist"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.openssl.org/"
+HOMEPAGE="http://www.maxmind.com/geoip/api/c.shtml"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://www.openssl.org/source/$N-$V.tar.gz"
+SRC_URI="http://geolite.maxmind.com/download/geoip/api/c/GeoIP-$V.tar.gz"
 
 
 # Binary package URI.
@@ -27,12 +27,13 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
 }
 
 #config
@@ -41,15 +42,17 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd GeoIP-$V
+
+	#patch
+	sed -e "s:usr local share GeoIP:usr share GeoIP:" \
+	                -e "s:usr local etc:etc:" -i apps/geoipupdate-pureperl.pl
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --openssldir=/etc/ssl \
-			shared                \
-			zlib-dynamic "
+	XGB_CONFIG+=" --sysconfdir=/etc "
 
 	#Third, call configure with $XGB_CONFIG
-	./config $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -61,27 +64,12 @@ xgb_build()
 	make
 }
 
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	make test
-}
-
 #install
 xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make INSTALL_PREFIX=$XGPATH_DEST MANDIR=/usr/share/man install
-	err_check "Install $N-$V failed."
-
-	#copy certs.
-	cp -v -r certs /etc/ssl
-
-	install -v -d -m755 $XGPATH_DEST/usr/share/doc/$N-$V
-        cp -v -r doc/{HOWTO,README,*.{txt,html,gif}} \
-		$XGPATH_DEST/usr/share/doc/$N-$V
+	make DESTDIR=$XGPATH_DEST install
 }
 

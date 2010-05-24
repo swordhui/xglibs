@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GNU Image Manipulation Program"
+DESCRIPTION="Windows 32-bit binary codecs for video and audio playback support"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gimp.org/"
+HOMEPAGE="http://www.mplayerhq.hu/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.gimp.org/pub/gimp/v2.6/gimp-$V.tar.bz2"
+SRC_URI="http://www.mplayerhq.hu/MPlayer/releases/codecs/all-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,19 +21,17 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="poppler libjpeg libpng lcms libexif"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
-
-
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
 }
 
 #config
@@ -42,14 +40,9 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-
-	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-python --sysconfdir=/etc "
-
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cd all-20100303
 }
+
 
 #install
 xgb_install()
@@ -57,11 +50,8 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
-	err_check "Install $N-$V failed."
+	mkdir -p $XGPATH_DEST/usr/lib/win32
 
-	mkdir -p $XGPATH_DEST/etc/xg_launch/image
-	echo "+ Gimp%/usr/share/icons/hicolor/32x32/apps/gimp.png% Exec gimp" \
-		> $XGPATH_DEST/etc/xg_launch/image/C10gimp 
+	mv * $XGPATH_DEST/usr/lib/win32
 }
 
