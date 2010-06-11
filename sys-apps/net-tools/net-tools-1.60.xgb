@@ -1,0 +1,85 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+# By Huang ZhongXin <zhongxin.huang@gmail.com>
+
+# Short one-line description of this package.
+DESCRIPTION="a collection of programs for controlling the network subsystem of the Linux kernel."
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://sites.inka.de/lina/linux/NetTools/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg.
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://www.tazenda.demon.co.uk/phil/net-tools/$N-$V.tar.bz2 \
+http://www.linuxfromscratch.org/patches/blfs/svn/net-tools-1.60-gcc34-3.patch \
+http://www.linuxfromscratch.org/patches/blfs/svn/net-tools-1.60-kernel_headers-2.patch \
+http://www.linuxfromscratch.org/patches/blfs/svn/net-tools-1.60-mii_ioctl-1.patch"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+#unpack
+xgb_unpack()
+{
+        #unpard file from $XGPATH_SOURCE to current directory.
+        echo "Unpacking to `pwd`"
+        tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+        err_check "unpack $N-$V failed."
+ 
+	#fist, cd build directory
+	cd $N-$V$R
+        patch -Np1 -i $XGPATH_SOURCE/net-tools-1.60-gcc34-3.patch &&
+	patch -Np1 -i $XGPATH_SOURCE/net-tools-1.60-kernel_headers-2.patch &&
+	patch -Np1 -i $XGPATH_SOURCE/net-tools-1.60-mii_ioctl-1.patch
+}
+
+#config
+xgb_config()
+{
+        echo "config $N-$V$R..."
+
+
+        #second, add package specified config params to XGB_CONFIG
+        #XGB_CONFIG+=" --foo --bar "
+
+	#Third, call configure with $XGB_CONFIG
+	yes "" | make config 
+	sed -i -e 's|HAVE_IP_TOOLS 0|HAVE_IP_TOOLS 1|g' \
+	       -e 's|HAVE_MII 0|HAVE_MII 1|g' config.h &&
+	sed -i -e 's|# HAVE_IP_TOOLS=0|HAVE_IP_TOOLS=1|g' \
+	       -e 's|# HAVE_MII=0|HAVE_MII=1|g' config.make
+}
+
+#build
+xgb_build()
+{
+        echo "make $N-$V$R..."
+
+	#run make in current directory
+	make
+}
+
+#install
+xgb_install()
+{
+        echo "install to $XGPATH_DEST"
+ 
+ 	#install everything to $XGPATH_DEST
+	mkdir -p BASEDIR/sbin
+	mkdir -p BASEDIR/bin
+	make BASEDIR=$XGPATH_DEST install
+}
+
+
