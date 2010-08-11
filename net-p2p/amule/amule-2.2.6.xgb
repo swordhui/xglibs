@@ -46,9 +46,19 @@ xgb_config()
 	cd aMule-$V
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --enable-amulecmd \
-		--enable-cas --enable-wxcas --enable-alc --enable-geoip 
-		--enable-optimize " 
+	XGB_CONFIG+=" --sysconfdir=/etc \
+	--enable-ccache \
+	--with-denoise-level=3 \
+	--enable-debug \
+	--disable-optimize \
+	--enable-verbose \
+	--enable-geoip \
+	--enable-cas \
+	--enable-wxcas \
+	--enable-amule-gui \
+	--enable-webserver \
+	--enable-amulecmd \
+	--enable-amule-daemon "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

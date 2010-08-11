@@ -58,7 +58,7 @@ xgb_build()
 
 	#optimize..
 	#export CFLAGS="-march=native -mtune=native -O1"
-	export CFLAGS="-O1"
+	export CFLAGS=""
 	export CXXFLAGS="$CFLAGS"
 
 
