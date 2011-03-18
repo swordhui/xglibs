@@ -50,6 +50,7 @@ xgb_config()
 
 	#fist, cd build directory
 	#cd $N-$V$R
+	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
