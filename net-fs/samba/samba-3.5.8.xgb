@@ -27,19 +27,12 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
-
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
@@ -48,13 +41,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	#cd $N-$V$R
+	cd $N-$V/source3
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -63,7 +57,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	#make
+	make
 }
 
 #check
@@ -79,23 +73,6 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
+	make DESTDIR=$XGPATH_DEST install
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-}
-
-#pre remove
-xgb_prerm()
-{
-	echo "running before package delete..."
-}
-
-#post remove
-xgb_postrm()
-{
-	echo "running after package delete..."
-}
