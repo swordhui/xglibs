@@ -43,8 +43,8 @@ xgb_build()
 {
 	cd linux-$V$R
 
-	make mrproper
-	make headers_check
+	make HOSTCC="$CC $CFLAGS" mrproper
+	make HOSTCC="$CC $CFLAGS" headers_check
 	err_check "[Error] linux_header: check falied."
 
 }
@@ -54,7 +54,8 @@ xgb_install()
 {
 	mkdir -p $XGPATH_DEST/usr
 
-	make INSTALL_HDR_PATH=$XGPATH_DEST/usr headers_install
+	make HOSTCC="$CC $CFLAGS"  \
+		INSTALL_HDR_PATH=$XGPATH_DEST/usr headers_install
 	err_check "[Error] linux_header: install falied."
 }
 

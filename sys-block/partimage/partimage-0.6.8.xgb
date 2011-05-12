@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="aMule, the all-platform eMule p2p client"
+DESCRIPTION="Console-based application to efficiently save raw partition data to an image file."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.amule.org/"
+HOMEPAGE="http://sourceforge.net/projects/partimage/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/amule/aMule/$V/aMule-$V.tar.bz2"
+SRC_URI="http://downloads.sourceforge.net/project/$N/stable/0.6.8/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,11 +21,10 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="wxGTK crypto++ zlib gd geoip libupnp libpng"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
-
 
 
 
@@ -34,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/aMule-$V.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -43,22 +42,10 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd aMule-$V
+	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc \
-	--enable-ccache \
-	--with-denoise-level=3 \
-	--enable-debug \
-	--disable-optimize \
-	--enable-verbose \
-	--enable-geoip \
-	--enable-cas \
-	--enable-wxcas \
-	--enable-amule-gui \
-	--enable-webserver \
-	--enable-amulecmd \
-	--enable-amule-daemon "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
