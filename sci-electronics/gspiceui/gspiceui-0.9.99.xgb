@@ -14,7 +14,7 @@ HOMEPAGE="http://foo.bar.com/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI=""
+SRC_URI="http://downloads.sourceforge.net/project/gspiceui/gSpiceUI/gspiceui-v$V/gspiceui-v$V.tar.gz"
 
 
 # Binary package URI.
@@ -29,18 +29,12 @@ DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-v$V$R.tar.gz
 }
 
 #config
@@ -49,8 +43,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	#cd $N-$V$R
-	#err_check "enter directory failed."
+	cd $N-v$V$R
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
@@ -65,7 +58,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	#make
+	make
 }
 
 #check
@@ -80,24 +73,9 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
+	mkdir -p $XGPATH_DEST/usr/bin
+
 	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
+	make INSTALLDIR=$XGPATH_DEST/usr install
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-}
-
-#pre remove
-xgb_prerm()
-{
-	echo "running before package delete..."
-}
-
-#post remove
-xgb_postrm()
-{
-	echo "running after package delete..."
-}

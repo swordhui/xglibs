@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="Notifications daemons"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://www.galago-project.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI=""
+SRC_URI="http://www.galago-project.org/files/releases/source/$N/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -50,7 +49,6 @@ xgb_config()
 
 	#fist, cd build directory
 	#cd $N-$V$R
-	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
