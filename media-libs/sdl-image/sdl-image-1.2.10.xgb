@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="image file loading library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://www.libsdl.org/projects/SDL_image/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI=""
+SRC_URI="http://www.libsdl.org/projects/SDL_image/release/SDL_image-$V.tar.gz"
 
 
 # Binary package URI.
@@ -29,18 +28,13 @@ DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/SDL_image-$V$R.tar.gz
 }
 
 #config
@@ -49,14 +43,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	#cd $N-$V$R
+	cd SDL_image-$V$R
 	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -65,7 +59,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	#make
+	make
 }
 
 #check
@@ -81,23 +75,6 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
+	make DESTDIR=$XGPATH_DEST install
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-}
-
-#pre remove
-xgb_prerm()
-{
-	echo "running before package delete..."
-}
-
-#post remove
-xgb_postrm()
-{
-	echo "running after package delete..."
-}
