@@ -73,7 +73,7 @@ EOF
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --enable-layout=FHS --enable-mods-shared=all \
-		--enable-ssl -with-mpm=worker  "
+		--enable-ssl -with-mpm=worker --disable-v4-mapped "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -88,19 +88,12 @@ xgb_build()
 	make
 }
 
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
-}
-
 #install
 xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
-	#Ôö¼ÓApacheÓÃ»§
+	#å¢žåŠ Apacheç”¨æˆ·
 	groupadd -g 25 apache &&
 	useradd -c "Apache Server" -d /dev/null -g apache \
 	-s /bin/false -u 25 apache
@@ -108,17 +101,17 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 
-	#°²×°ApacheÆô¶¯½Å±¾¡£
+	#å®‰è£…Apacheå¯åŠ¨è„šæœ¬ã€‚
 	cd /var/xiange/xglibs/bootscripts/
 	make DESTDIR=$XGPATH_DEST install-apache
 
-	#µ÷Õû³ÌÐòÈ¨ÏÞ
+	#è°ƒæ•´ç¨‹åºæƒé™
 	chown -v root:root $XGPATH_DEST/usr/lib/apache/httpd.exp \
 	$XGPATH_DEST/usr/sbin/{apxs,apachectl,dbmmanage,envvars{,-std}} \
 	$XGPATH_DEST/usr/share/man/*
 	chown -Rv apache:apache $XGPATH_DEST/srv/www
 
-	#ÐÞ¸ÄÅäÖÃÎÄ¼þÓÃ»§×éÎªapache
+	#ä¿®æ”¹é…ç½®æ–‡ä»¶ç”¨æˆ·ç»„ä¸ºapache
 	sed -i -e "s/User daemon/User apache/" \
 	-e "s/Group daemon/Group apache/" \
 	$XGPATH_DEST/etc/apache/httpd.conf
@@ -141,8 +134,8 @@ xgb_prerm()
 xgb_postrm()
 {
 	echo "running after package delete..."
-	#É¾³ýApacheÓÃ»§
-	groupdel apache
-	userdel apache
-	
+	#åˆ é™¤Apacheç”¨æˆ·
+	groupdel apache 2>/dev/null
+	userdel apache 2>/dev/null
+	echo "Done"
 }
