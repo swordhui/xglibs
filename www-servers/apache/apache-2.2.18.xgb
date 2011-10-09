@@ -13,9 +13,8 @@ HOMEPAGE="http://httpd.apache.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SCRIPT_AUTHORS="çŽ‹æ±Ÿä¼Ÿ<jonsk.echo@gmail.com>"
+SCRIPT_AUTHORS="Íõ½­Î°<jonsk.echo@gmail.com>"
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
 SRC_URI="http://archive.apache.org/dist/httpd/httpd-$V.tar.bz2 "
 
 # Binary package URI.
