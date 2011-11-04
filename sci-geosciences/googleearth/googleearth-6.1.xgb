@@ -89,6 +89,11 @@ xgb_install()
 	cd ..
 	rm -rf google-earth-stable_current_i386
 
+	#create symbal link for ld-lsb.so.3
+	mkdir lib
+	cd lib
+	ln -sv ld-linux.so.2 ld-lsb.so.3
+
 	#install everything to $XGPATH_DEST
 	#make DESTDIR=$XGPATH_DEST install
 }
