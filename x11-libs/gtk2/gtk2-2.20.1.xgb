@@ -47,6 +47,11 @@ xgb_config()
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc "
 
+	#remove -fomit-frame-pointer to avoid drag-drop problem
+	CFLAGS=$(echo $CFLAGS |  sed "s/-fomit-frame-pointer//g")
+	CXXFLAGS=$CFLAGS
+	export CFLAGS CXXFLAGS
+
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
 }
