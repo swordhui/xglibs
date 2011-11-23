@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Console-based application to efficiently save raw partition data to an image file."
+DESCRIPTION="NFS client and server daemons"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://sourceforge.net/projects/partimage/"
+HOMEPAGE="http://linux-nfs.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/$N/stable/0.6.8/$N-$V.tar.bz2"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://downloads.sourceforge.net/project/nfs/nfs-utils/1.2.5/nfs-utils-1.2.5.tar.bz2"
 
 
 # Binary package URI.
@@ -21,10 +22,11 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="newt"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
 
 
 
@@ -43,6 +45,7 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
@@ -58,6 +61,13 @@ xgb_build()
 
 	#run make in current directory
 	make
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install

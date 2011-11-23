@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Console-based application to efficiently save raw partition data to an image file."
+DESCRIPTION="OpenGL-like graphic library for Linux"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://sourceforge.net/projects/partimage/"
+HOMEPAGE="http://mesa3d.sourceforge.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/$N/stable/0.6.8/$N-$V.tar.bz2"
+SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/$V/MesaLib-$V.tar.bz2 \
+ftp://ftp.freedesktop.org/pub/mesa/$V/MesaGLUT-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,10 +22,11 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="newt"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
 
 
 
@@ -33,7 +35,14 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/MesaLib-$V.tar.bz2
+	err_check "unpack MesaLib-$V failed."
+
+	#tar xf $XGPATH_SOURCE/MesaDemos-$V.tar.bz2
+	#err_check "unpack MesaDemos-$V failed."
+
+	tar xf $XGPATH_SOURCE/MesaGLUT-$V.tar.bz2
+	err_check "unpack MesaGLUT-$V failed."
 }
 
 #config
@@ -42,10 +51,10 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd Mesa-$V
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" -enable-xcb "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -67,5 +76,6 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install $N-$V failed."
 }
 
