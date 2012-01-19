@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A Simple and Fast Image Viewer for X"
+DESCRIPTION="GTK+ based fast and lightweight IDE"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://lxde.sourceforge.net/gpicview"
+HOMEPAGE="http://www.geany.org"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/lxde/GPicView%20%28image%20Viewer%29/GpicView%200.2.2/gpicview-0.2.2.tar.gz 
-	http://xiangelinux.googlecode.com/files/gpicview-0.2.2_canon_raw.patch.gz"
+SRC_URI="http://download.geany.org/geany-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -34,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -45,11 +44,6 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 	err_check "enter directory failed."
-
-	#patch
-	gzip -dc $XGPATH_SOURCE/gpicview-0.2.2_canon_raw.patch.gz | patch -p1
-	err_check "patch  failed."
-
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
