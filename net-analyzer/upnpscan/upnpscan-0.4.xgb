@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Scans the network for UPNP capable devices"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.cqure.net/wp/upnpscan/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://www.cqure.net/tools/upnpscan-v$V-src.tgz 
+http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/net-analyzer/upnpscan/files/upnpscan-0.4-cflags.patch"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-v$V-src.tgz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N
+	err_check "enter directory failed."
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	#patch
+	patch -p1 < $XGPATH_SOURCE/upnpscan-0.4-cflags.patch
+	err_check "patch  failed."
+
+
+	#reconfig
+	autoreconf
+
+	#add missing file
+	automake --add-missing
+	err_check "automake  failed."
+
+	#reconfig
+	autoreconf
+	err_check "reconf  failed."
+
+	#add comment
+	sed -i "244 aprintf(\"upnpscan -t 192.168.6-8.*\");" src/upnpscan.c
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	cd src
+	gcc -o upnpscan *.c -I../ -I../include
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	mkdir -p $XGPATH_DEST/usr/bin
+	cp upnpscan $XGPATH_DEST/usr/bin
+}
+
