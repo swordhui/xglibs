@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Binary release of Tencent QQ"
+DESCRIPTION="GTK Instant Messenger client"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://im.qq.com/qq/linux/download.shtml"
+HOMEPAGE="http://pidgin.im/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://dl_dir.qq.com/linuxqq/linuxqq-v1.0.2-beta1.i386.rpm"
+SRC_URI="http://downloads.sourceforge.net/project/$N/Pidgin/$V/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -27,13 +27,12 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	rpmunpack $XGPATH_SOURCE/linuxqq-v1.0.2-beta1.i386.rpm
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -42,14 +41,15 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd linuxqq-v1.0.2-beta1.i386
-	err_check "enter directory failed."
+	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
 
+	XGB_CONFIG+=" --disable-gtkspell --disable-idn  \
+		--disable-meanwhile  --disable-avahi --disable-nm"
+	
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -58,14 +58,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	#make
-}
-
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
+	make
 }
 
 #install
@@ -73,9 +66,7 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
-	mv usr $XGPATH_DEST/
-
 	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
+	make DESTDIR=$XGPATH_DEST install
 }
 
