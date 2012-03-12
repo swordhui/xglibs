@@ -13,7 +13,8 @@ HOMEPAGE="http://guichaz.free.fr/gliv/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://guichaz.free.fr/gliv/files/gliv-$V.tar.bz2"
+SRC_URI="http://guichaz.free.fr/gliv/files/gliv-$V.tar.bz2
+	http://xiangelinux.googlecode.com/files/gliv-1.9.6_cr2.patch"
 
 
 # Binary package URI.
@@ -45,6 +46,9 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
+
+	patch -p 1 < /$XGPATH_SOURCE/gliv-1.9.6_cr2.patch
+	err_check "patch failed."
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
