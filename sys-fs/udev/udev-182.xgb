@@ -13,7 +13,7 @@ HOMEPAGE="http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://mirror.linux.org.au/linux/utils/kernel/hotplug/udev-$V.tar.bz2"
+SRC_URI="http://www.kernel.org/pub/linux/utils/kernel/hotplug/$N-$V$R.tar.xz"
 
 
 # Binary package URI.
@@ -31,7 +31,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -42,10 +42,14 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
+	patch -p1 < $XGPATH_SOURCE/udev182-no-mq.patch
+	err_check "patch udev182-no-mq.patch failed."
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+="  --sysconfdir=/etc --sbindir=/sbin     \
-		--with-rootlibdir=/lib --libexecdir=/lib/udev \
-		--disable-extras --disable-introspection "
+		--with-rootlibdir=/lib --libexecdir=/lib \
+		--disable-extras --disable-introspection \
+		--with-pci-ids-path=/usr/share/pci.ids --disable-gudev"
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

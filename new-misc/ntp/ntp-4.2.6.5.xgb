@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Standard informational utilities and process-handling tools"
+DESCRIPTION="Network Time Protocol suite/programs"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://procps.sourceforge.net/"
+HOMEPAGE="http://www.ntp.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://procps.sourceforge.net/$N-$V$R.tar.gz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.6p5.tar.gz"
 
 
 # Binary package URI.
@@ -26,31 +27,53 @@ RDEPEND=""
 # Build time depend
 DEPEND="${RDEPEND}"
 
+
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
-	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/ntp-4.2.6p5.tar.gz
 }
 
 #config
 xgb_config()
 {
+	echo "config $N-$V$R..."
+
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N-4.2.6p5
+	err_check "enter directory failed."
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
 xgb_build()
 {
+	echo "make $N-$V$R..."
+
 	#run make in current directory
-	make CC=${XGB_PREFIX}gcc
+	make
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install
 xgb_install()
 {
+	echo "install to $XGPATH_DEST"
+
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 }

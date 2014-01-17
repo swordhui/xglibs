@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="a collection of common network programs"
+DESCRIPTION="Standard GNU utilities (chmod, cp, dd, dir, ls, who)"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gnu.org/software/inetutils/"
+HOMEPAGE="http://www.gnu.org/software/coreutils"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnu.org/gnu/inetutils/$N-$V$R.tar.gz"
+SRC_URI="http://ftp.gnu.org/gnu/coreutils/$N-$V$R.tar.xz"
 
 
 # Binary package URI.
@@ -33,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -42,14 +42,8 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
-	#for glibc 2.18
-	sed -i -e '/gets is a/d' lib/stdio.in.h
-
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --libexecdir=/usr/sbin \
-		--localstatedir=/var --disable-ifconfig \
-	        --disable-logger --disable-syslogd --disable-whois \
-		--disable-servers"
+	XGB_CONFIG+=" --enable-no-install-program=kill,uptime "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -67,15 +61,19 @@ xgb_install()
 {
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install $N failed."
+	err_check "insall failed."
 
+	#for FHS..
 	mkdir -p $XGPATH_DEST/bin
-	mkdir -p $XGPATH_DEST/sbin
-	mv -v $XGPATH_DEST/usr/bin/{hostname,ping,ping6} $XGPATH_DEST/bin
-	err_check "install $N failed."
-
-	mv -v $XGPATH_DEST/usr/bin/traceroute $XGPATH_DEST/sbin
-	err_check "install $N failed."
+	mkdir -p $XGPATH_DEST/usr/sbin
+	mv -v $XGPATH_DEST/usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo}\
+		$XGPATH_DEST/bin
+	mv -v $XGPATH_DEST/usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,rm}\
+		$XGPATH_DEST/bin
+	mv -v $XGPATH_DEST/usr/bin/{rmdir,stty,sync,true,uname}\
+		$XGPATH_DEST/bin
+	mv -v $XGPATH_DEST/usr/bin/chroot $XGPATH_DEST/usr/sbin
+	mv -v $XGPATH_DEST/usr/bin/{head,sleep,nice} $XGPATH_DEST/bin
 }
 
 

@@ -46,7 +46,7 @@ xgb_config()
 xgb_build()
 {
 	#run make in current directory
-	make
+	make CC=${XGB_PREFIX}gcc
 }
 
 #install

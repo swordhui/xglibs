@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Standard informational utilities and process-handling tools"
+DESCRIPTION="kernel routing and traffic control utilities"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://procps.sourceforge.net/"
+HOMEPAGE="http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://procps.sourceforge.net/$N-$V$R.tar.gz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://devresources.linuxfoundation.org/dev/$N/download/$N-$V$R.tar.bz2"
 
 
 # Binary package URI.
@@ -30,13 +31,15 @@ DEPEND="${RDEPEND}"
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
-	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
 xgb_config()
 {
+	echo "config $N-$V$R..."
+
 	#fist, cd build directory
 	cd $N-$V$R
 }
@@ -44,6 +47,8 @@ xgb_config()
 #build
 xgb_build()
 {
+	echo "make $N-$V$R..."
+
 	#run make in current directory
 	make CC=${XGB_PREFIX}gcc
 }
@@ -51,7 +56,10 @@ xgb_build()
 #install
 xgb_install()
 {
+	echo "install to $XGPATH_DEST"
+
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	make DESTDIR=$XGPATH_DEST SBINDIR=/sbin MANDIR=/usr/share/man \
+		DOCDIR=/usr/share/doc/$N-$V$R install
 }
 

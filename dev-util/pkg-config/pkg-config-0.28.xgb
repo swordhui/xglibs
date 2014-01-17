@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Standard informational utilities and process-handling tools"
+DESCRIPTION="Package config system that manages compile/link flags"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://procps.sourceforge.net/"
+HOMEPAGE="http://pkgconfig.freedesktop.org/wiki/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://procps.sourceforge.net/$N-$V$R.tar.gz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://pkgconfig.freedesktop.org/releases/$N-$V$R.tar.gz"
 
 
 # Binary package URI.
@@ -25,6 +26,7 @@ RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
 
 #unpack
 xgb_unpack()
@@ -39,13 +41,18 @@ xgb_config()
 {
 	#fist, cd build directory
 	cd $N-$V$R
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --with-internal-glib --disable-host-tool --docdir=/usr/share/doc/pkg-config-$V$R "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
 xgb_build()
 {
 	#run make in current directory
-	make CC=${XGB_PREFIX}gcc
+	make
 }
 
 #install
@@ -54,4 +61,5 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 }
+
 

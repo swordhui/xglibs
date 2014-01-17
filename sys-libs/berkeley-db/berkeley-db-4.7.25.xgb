@@ -14,8 +14,9 @@ HOMEPAGE="http://download-east.oracle.com/berkeley-db/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://download-east.oracle.com/berkeley-db/db-$V$R.tar.gz \
+SRC_URI="http://download.oracle.com/berkeley-db/db-$V$R.tar.gz \
 http://www.linuxfromscratch.org/patches/lfs/6.4/db-$V$R-upstream_fixes-1.patch"
+
 
 
 

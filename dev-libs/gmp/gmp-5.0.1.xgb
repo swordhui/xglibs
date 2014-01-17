@@ -57,7 +57,7 @@ xgb_build()
 	make 
 	err_check "make gmp failed."
 
-	make check
+	#make check
 }
 
 #install

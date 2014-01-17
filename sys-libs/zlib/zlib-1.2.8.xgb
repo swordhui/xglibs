@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Standard informational utilities and process-handling tools"
+DESCRIPTION="Standard (de)compression library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://procps.sourceforge.net/"
+HOMEPAGE="http://www.zlib.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://procps.sourceforge.net/$N-$V$R.tar.gz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://zlib.net/$N-$V$R.tar.xz"
 
 
 # Binary package URI.
@@ -26,12 +27,13 @@ RDEPEND=""
 # Build time depend
 DEPEND="${RDEPEND}"
 
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -39,13 +41,23 @@ xgb_config()
 {
 	#fist, cd build directory
 	cd $N-$V$R
+
+	#second, add package specified config params to XGB_CONFIG
+	if [ "$ARCH" == "x86_64" ]; then
+		XGB_CONFIG=" --prefix=/usr --64 "
+	else
+		XGB_CONFIG=" --prefix=/usr "
+	fi
+
+	#Third, call configure with $XGB_CONFIG
+	CROSS_PREFIX=$XGB_PREFIX ./configure $XGB_CONFIG
 }
 
 #build
 xgb_build()
 {
 	#run make in current directory
-	make CC=${XGB_PREFIX}gcc
+	make
 }
 
 #install
@@ -53,5 +65,15 @@ xgb_install()
 {
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install $N failed."
+
+	#for FHS compliant
+	mkdir -p $XGPATH_DEST/lib
+	mv -v $XGPATH_DEST/usr/lib/libz.so.* $XGPATH_DEST/lib
+	err_check "install $N failed."
+
+	ln -sfv ../../lib/libz.so.$V $XGPATH_DEST/usr/lib/libz.so
+	err_check "install $N failed."
 }
+
 
