@@ -103,15 +103,29 @@ xgb_install()
 	#man pages
 	for cat in 1 3 5 7 8
 	do
+		mkdir -p $XGPATH_DEST/usr/share/man/man${cat}
 		install -v -m644 man/*.${cat} $XGPATH_DEST/usr/share/man/man${cat}
   	done
 
+	mkdir -p $XGPATH_DEST/lib
+	mv -v $XGPATH_DEST/usr/lib/libnss_myhostname.so.2 $XGPATH_DEST/lib
+
+
+	mkdir -p $XGPATH_DEST/sbin
+	for tool in runlevel reboot shutdown poweroff halt telinit; do
+    	ln -sfv ../bin/systemctl $XGPATH_DEST/sbin/${tool}
+ 	done
+	ln -sfv ../lib/systemd/systemd $XGPATH_DEST/sbin/init
+
+
+	sed -i "s@0775 root lock@0755 root root@g" $XGPATH_DEST/usr/lib/tmpfiles.d/legacy.conf
 }
 
 #post install
 xgb_postinst()
 {
 	echo "running after package installed..."
+	systemd-machine-id-setup
 }
 
 #pre remove

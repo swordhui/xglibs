@@ -32,7 +32,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config

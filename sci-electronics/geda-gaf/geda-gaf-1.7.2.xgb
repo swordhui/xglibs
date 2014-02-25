@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="QEMU + Kernel-based Virtual Machine userland tools"
+DESCRIPTION="'gschem and Friends' Electronic Design Suite"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.linux-kvm.org"
+HOMEPAGE="http://geda.seul.org/wiki/start"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="http://www.linux-kvm.org"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://downloads.sourceforge.net/project/kvm/qemu-kvm/$V/qemu-kvm-$V.tar.gz"
+SRC_URI="http://geda.seul.org/devel/v1.7/1.7.2/geda-gaf-1.7.2.tar.gz"
 
 
 # Binary package URI.
@@ -22,18 +22,12 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="guile"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
-
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
 
 #unpack
 xgb_unpack()
@@ -50,10 +44,9 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --enable-kvm "
+	XGB_CONFIG+=" --disable-update-xdg-database "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

@@ -53,12 +53,15 @@ xgb_config()
 	cd ../build
 	err_check "config gcc: create build dir failed."
 
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		XGB_CONFIG+=" --with-multilib-list=m64 "
+	fi
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="--libexecdir=/usr/lib --enable-shared \
+	XGB_CONFIG+=" --libexecdir=/usr/lib --enable-shared \
 		--enable-threads=posix --enable-__cxa_atexit \
-		--enable-clocale=gnu --enable-languages=c,c++ \
-		--disable-bootstrap --with-multilib-list=m64"
+		--enable-clocale=gnu --enable-languages=c,c++,objc \
+		--disable-bootstrap"
 
 
 	#Third, call configure with $XGB_CONFIG

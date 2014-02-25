@@ -14,7 +14,7 @@ HOMEPAGE="http://www.kernel.org"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.kernel.org/pub/linux/kernel/v3.0/linux-$V.tar.bz2"
+SRC_URI="http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.10.21.tar.bz2"
 
 
 # Binary package URI.
@@ -37,22 +37,29 @@ XG_WGET_PARA="--no-check-certificate"
 xgb_unpack()
 {
 	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/linux-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/linux-3.10.21.tar.bz2
 }
 
 #build
 xgb_build()
 {
-	cd linux-$V$R
+	cd linux-3.10.21
+	err_check "change to linux-3.10.21 failed"
+
+	unxz -dc $XGPATH_SOURCE/patch-3.10.21.xz | patch -p1 -R
+	err_check "patch 3.10.21 failed."
+
+	unxz -dc $XGPATH_SOURCE/patch-$V.xz | patch -p1 
+	err_check "patch $V failed."
 
 	#copy configure file
 	cp /boot/config-xiange .config
-	err_check "change to /usr/src failed"
+	err_check "copy config failed."
 
-	make
+	make ARCH=$XGB_ARCH
 	err_check "[Error] linux_header: check falied."
 
-	make modules
+	make make ARCH=$XGB_ARCH modules
 	err_check "[Error] linux_header: check falied."
 
 }
@@ -62,7 +69,7 @@ xgb_install()
 {
 	#copy image
 	mkdir -p $XGPATH_DEST/boot
-	cp arch/i386/boot/bzImage $XGPATH_DEST/boot/vmlinuz-$V$R
+	cp arch/x86/boot/bzImage $XGPATH_DEST/boot/vmlinuz-$V$R
 	err_check "[Error] install kernel image failed"
 
 	cp .config $XGPATH_DEST/boot/config-$V$R

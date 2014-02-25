@@ -51,7 +51,7 @@ xgb_config()
 	cd ../build
 	err_check "[Error] glibc: create build directory failed."
 
-	XGB_CONFIG+=" --enable-kernel=2.6.32 --libexecdir=/usr/lib"
+	XGB_CONFIG+=" --enable-kernel=2.6.32 --libexecdir=/usr/lib --disable-multi-arch "
 
 	../$N-$V$R/configure $XGB_CONFIG
 
@@ -113,6 +113,7 @@ xgb_install()
 	cp -v --remove-destination $XGPATH_DEST/usr/share/zoneinfo/Asia/Shanghai \
 		$XGPATH_DEST/etc/localtime
 	err_check "glibc: config time zone failed."
+
 }
 
 glib_adjust_toolchain()

@@ -42,6 +42,9 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
+	#patch for gcc-4.8.2 and glibc-2.18
+	sed -i "s@PRIO_PROCESS@0@g" udev/udevd.c
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+="  --sysconfdir=/etc --sbindir=/sbin     \
 		--with-rootlibdir=/lib --libexecdir=/lib/udev \
