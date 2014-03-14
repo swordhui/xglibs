@@ -49,7 +49,7 @@ xgb_config()
 	err_check "create build directory failed"
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --enable-elf-shlibs --disable-libblkid\
+	XGB_CONFIG+=" --sysconfdir=/etc --enable-elf-shlibs --disable-libblkid \
 		--disable-libuuid --disable-uuidd --disable-fsck"
 
 	#Third, call configure with $XGB_CONFIG

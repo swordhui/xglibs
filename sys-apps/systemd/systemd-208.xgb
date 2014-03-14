@@ -56,7 +56,7 @@ xgb_config()
 	XGB_CONFIG+=" --sysconfdir=/etc  --localstatedir=/var --libexecdir=/usr/lib \
 		--docdir=/usr/share/doc/systemd-$V  \
 		--with-rootprefix= --with-rootlibdir=/lib \
-		--enable-split-usr --disable-gudev --without-python \
+		--enable-split-usr --disable-gudev  \
 		--disable-gcrypt "
 
 	#Third, call configure with $XGB_CONFIG
@@ -88,7 +88,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make check
 }
 
 #install

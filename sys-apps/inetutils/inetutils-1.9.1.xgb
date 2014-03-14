@@ -47,7 +47,7 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --libexecdir=/usr/sbin \
-		--localstatedir=/var --disable-ifconfig \
+		--localstatedir=/var \
 	        --disable-logger --disable-syslogd --disable-whois \
 		--disable-servers"
 

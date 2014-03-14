@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Small utilities that use the /proc filesystem"
+DESCRIPTION="Open source read-write NTFS driver that runs under FUSE"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://psmisc.sourceforge.net/"
+HOMEPAGE="http://www.tuxera.com/community/ntfs-3g-download/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$N-$V$R.tar.gz"
+SRC_URI="http://tuxera.com/opensource/ntfs-3g_ntfsprogs-$V.tgz"
 
 
 # Binary package URI.
@@ -28,12 +27,14 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
+
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/ntfs-3g_ntfsprogs-$V.tgz
 }
 
 #config
@@ -42,18 +43,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd ntfs-3g_ntfsprogs-$V
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
-	err_check "configure failed."
-
-	#patch config.h
-	#sed -i "s@#define realloc rpl_realloc@//&@g" config.h
-	#sed -i "s@#define malloc rpl_malloc@//&@g" config.h
 }
 
 #build
@@ -64,6 +61,14 @@ xgb_build()
 	#run make in current directory
 	make
 }
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -71,14 +76,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install $N failed."
-
-	#adjust.
-	mkdir -p $XGPATH_DEST/bin
-	mv $XGPATH_DEST/usr/bin/killall $XGPATH_DEST/bin
-	err_check "install $N failed."
-
-	mv $XGPATH_DEST/usr/bin/fuser $XGPATH_DEST/bin
-	err_check "install $N failed."
 }
 

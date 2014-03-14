@@ -67,7 +67,7 @@ xgb_unpack()
 xgb_config()
 {
 	XGB_CONFIG+=" --bindir=/bin \
-	    	--htmldir=/usr/share/doc/bash-4.1 --without-bash-malloc \
+	    	--htmldir=/usr/share/doc/bash-$V --without-bash-malloc \
 	        --with-installed-readline"
 
 	#Third, call configure with $XGB_CONFIG
@@ -86,6 +86,10 @@ xgb_install()
 {
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "patch $name failed"
+
+	#create /bin/sh
+	ln -sv bash $XGPATH_DEST/bin/sh
 }
 
 

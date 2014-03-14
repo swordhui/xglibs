@@ -42,7 +42,7 @@ xgb_config()
 	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-shared --without-debug --enable-widec"
+	XGB_CONFIG+=" --with-shared --without-debug --enable-widec --enable-pc-files"
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -65,23 +65,32 @@ xgb_install()
 	chmod -v 644 $XGPATH_DEST/usr/lib/libncurses++w.a
 	mkdir -v $XGPATH_DEST/lib
 	mv -v $XGPATH_DEST/usr/lib/libncursesw.so.5* $XGPATH_DEST/lib
+	err_check "mv1"
 	ln -sfv ../../lib/libncursesw.so.5 $XGPATH_DEST/usr/lib/libncursesw.so
+	err_check "ln2"
 
 	for lib in curses ncurses form panel menu
 	do
 		rm -vf $XGPATH_DEST/usr/lib/lib${lib}.so
+		err_check "rm3"
 		echo "INPUT(-l${lib}w)" > $XGPATH_DEST/usr/lib/lib${lib}.so
 		ln -sfv lib${lib}w.a $XGPATH_DEST/usr/lib/lib${lib}.a
+		err_check "ln4"
 	done
 
 	ln -sfv libncurses++w.a $XGPATH_DEST/usr/lib/libncurses++.a
+	err_check "ln5"
 
 	#Finally, make sure look for - lcurses  are still buildable:
 	rm -vf $XGPATH_DEST/usr/lib/libcursesw.so
+	err_check "rm6"
 	echo "INPUT(-lncursesw)" > $XGPATH_DEST/usr/lib/libcursesw.so
 	ln -sfv libncurses.so $XGPATH_DEST/usr/lib/libcurses.so
+	err_check "ln7"
 	ln -sfv libncursesw.a $XGPATH_DEST/usr/lib/libcursesw.a
+	err_check "ln8"
 	ln -sfv libncurses.a $XGPATH_DEST/usr/lib/libcurses.a
+	err_check "ln9"
 
 	#docs
 	mkdir -p $XGPATH_DEST/usr/share/doc/$N-$V$R

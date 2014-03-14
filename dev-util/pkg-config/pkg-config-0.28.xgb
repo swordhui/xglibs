@@ -48,6 +48,15 @@ xgb_config()
 	./configure $XGB_CONFIG
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make check
+}
+
+
+
 #build
 xgb_build()
 {

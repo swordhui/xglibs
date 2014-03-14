@@ -56,8 +56,13 @@ xgb_build()
 	#run make in current directory
 	make 
 	err_check "make gmp failed."
+}
 
-	#make check
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make check
 }
 
 #install

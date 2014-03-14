@@ -68,6 +68,15 @@ xgb_build()
 	return 0
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make check
+}
+
+
+
 #install
 xgb_install()
 {

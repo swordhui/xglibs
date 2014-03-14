@@ -43,7 +43,7 @@ xgb_config()
 	cd $N-$V$R
 
 	#libiberty: user the one from binutils
-	sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
+	#sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
 
 	#enable -formit-frame-pointer
 	sed -i 's/^XCFLAGS =$/& -fomit-frame-pointer/' gcc/Makefile.in
@@ -61,7 +61,7 @@ xgb_config()
 	XGB_CONFIG+=" --libexecdir=/usr/lib --enable-shared \
 		--enable-threads=posix --enable-__cxa_atexit \
 		--enable-clocale=gnu --enable-languages=c,c++,objc \
-		--disable-bootstrap"
+		--disable-bootstrap --with-system-zlib "
 
 
 	#Third, call configure with $XGB_CONFIG

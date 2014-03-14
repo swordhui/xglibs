@@ -14,7 +14,7 @@ HOMEPAGE="http://www.linuxfoundation.org/collaborate/workgroups/networking/iprou
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://devresources.linuxfoundation.org/dev/$N/download/$N-$V$R.tar.bz2"
+SRC_URI="https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-$V.tar.xz"
 
 
 # Binary package URI.
@@ -32,7 +32,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config

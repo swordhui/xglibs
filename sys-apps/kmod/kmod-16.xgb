@@ -53,7 +53,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+="  --sysconfdir=/etc --disable-manpages"
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -82,6 +82,15 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "make failed"
+
+	#symbol links
+	ln -sv kmod $XGPATH_DEST/usr/bin/lsmod
+	ln -sv kmod $XGPATH_DEST/usr/bin/rmmod
+	ln -sv kmod $XGPATH_DEST/usr/bin/insmod
+	ln -sv kmod $XGPATH_DEST/usr/bin/modinfo
+	ln -sv kmod $XGPATH_DEST/usr/bin/modprobe
+	ln -sv kmod $XGPATH_DEST/usr/bin/depmod
 }
 
 #post install

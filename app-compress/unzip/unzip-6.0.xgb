@@ -42,8 +42,12 @@ xgb_config()
 {
 	echo "config $N-$V$R..."
 
+
 	#fist, cd build directory
 	cd unzip60
+
+
+
 }
 
 #build
@@ -51,8 +55,18 @@ xgb_build()
 {
 	echo "make $N-$V$R..."
 
-	#run make in current directory
-	make -f unix/Makefile linux
+	case "$XGB_ARCH" in
+	i?86)
+		sed -i -e 's/DASM_CRC"/DASM_CRC -DNO_LCHMOD"/' unix/Makefile
+		make -f unix/Makefile linux
+		err_check "make failed"
+		;;
+	*)
+		sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD/' unix/Makefile
+		make -f unix/Makefile linux_noasm
+		err_check "make failed"
+		;;
+	esac
 }
 
 #check
