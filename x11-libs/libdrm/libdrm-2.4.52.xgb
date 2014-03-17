@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="An interpreted, interactive, object-oriented programming language."
+DESCRIPTION="X.Org libdrm library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.python.org/"
+HOMEPAGE="http://dri.freedesktop.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="http://www.python.org/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.python.org/ftp/python/$V/Python-$V.tgz"
+SRC_URI="http://dri.freedesktop.org/libdrm/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -34,20 +34,22 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/Python-$V.tgz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
 xgb_config()
 {
-	echo "config $N-$V..."
+	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd Python-$V$R
+	cd $N-$V$R
+
+	sed -e "/pthread-stubs/d" -i configure.ac && autoreconf -fiv 
+	err_check "patch $N-$V failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --enable-shared --with-system-expat --with-system-ffi \
-		--enable-unicode=ucs4 "
+	XGB_CONFIG+=" --enable-udev "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -60,6 +62,13 @@ xgb_build()
 
 	#run make in current directory
 	make
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make check
 }
 
 #install

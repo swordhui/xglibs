@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="An interpreted, interactive, object-oriented programming language."
+DESCRIPTION="utilities and libraries for handling ELF (Executable and Linkable Format) files." 
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.python.org/"
+HOMEPAGE="https://fedorahosted.org/elfutils"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.python.org/ftp/python/$V/Python-$V.tgz"
+SRC_URI="https://fedorahosted.org/releases/e/l/$N/$V/elfutils-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -34,20 +33,20 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/Python-$V.tgz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
 xgb_config()
 {
-	echo "config $N-$V..."
+	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd Python-$V$R
+	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --enable-shared --with-system-expat --with-system-ffi \
-		--enable-unicode=ucs4 "
+	XGB_CONFIG+=" --program-prefix=\"eu-\" "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -60,6 +59,13 @@ xgb_build()
 
 	#run make in current directory
 	make
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install

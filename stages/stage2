@@ -3,6 +3,7 @@ x11protos
 libXau
 libXdmcp
 sqlite
+libffi
 python
 xcb-proto
 libxcb
@@ -43,6 +44,14 @@ libxkbfile-1.0.8
 libxshmfence-1.1
 xcb-util
 xcb-util-image
+xcb-util-keysyms
+xcb-util-renderutil
+xcb-util-wm
+libxml2
+libdrm
+elfutils
+libvdpau
+llvm
 errorrrrr
 x11utils-7.5
 ed-1.4
