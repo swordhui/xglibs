@@ -46,7 +46,7 @@ xgb_config()
 	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc  --without-ssl "
+	XGB_CONFIG+=" --sysconfdir=/etc --with-ssl=openssl "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

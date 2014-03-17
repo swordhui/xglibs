@@ -3,17 +3,19 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A in-process library that implements SQL database engine"
+DESCRIPTION="Portable Network Graphics library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.sqlite.org"
+HOMEPAGE="http://www.libpng.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://sqlite.org/2014/sqlite-autoconf-3080301.tar.gz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://prdownloads.sourceforge.net/libpng/libpng-$V.tar.xz \
+http://downloads.sourceforge.net/libpng-apng/libpng-1.6.9-apng.patch.gz"
 
 
 # Binary package URI.
@@ -32,7 +34,16 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	err_check "unpack $N-$V failed."
+
+	#fist, cd build directory
+	cd $N-$V$R
+	err_check "unpack $N-$V failed."
+
+	#patch
+	gzip -cd $XGPATH_SOURCE/libpng-1.6.9-apng.patch.gz | patch -p1
+	err_check "patch $N-$V failed."
 }
 
 #config
@@ -40,15 +51,7 @@ xgb_config()
 {
 	echo "config $N-$V$R..."
 
-	#fist, cd build directory
-	cd $(basename $SRC_URI .tar.gz)
-
 	#second, add package specified config params to XGB_CONFIG
-	CFLAGS+=" -DSQLITE_ENABLE_FTS3=1 \
-	          -DSQLITE_ENABLE_COLUMN_METADATA=1     \
-			  -DSQLITE_ENABLE_UNLOCK_NOTIFY=1       \
-			  -DSQLITE_SECURE_DELETE=1 "
-	export CFLAGS
 	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
@@ -62,6 +65,13 @@ xgb_build()
 
 	#run make in current directory
 	make
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make check
 }
 
 #install

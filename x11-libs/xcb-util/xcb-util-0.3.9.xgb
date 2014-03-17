@@ -13,9 +13,8 @@ HOMEPAGE="http://www.x.org/wiki/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRCURL="http://xorg.freedesktop.org/releases/individual/lib"
 
-SRC_URI="$SRCURL/$N-$V.tar.bz2"
+SRC_URI="http://xcb.freedesktop.org/dist/xcb-util-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -23,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="libxcb"
 
 # Build time depend
 DEPEND="${RDEPEND}"

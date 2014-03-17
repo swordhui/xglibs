@@ -15,7 +15,9 @@ HOMEPAGE="http://www.x.org/wiki/"
 
 SRCURL="http://xorg.freedesktop.org/releases/individual/lib"
 
-SRC_URI="$SRCURL/$N-$V.tar.bz2"
+SRC_URI="$SRCURL/$N-$V.tar.bz2 \
+http://www.linuxfromscratch.org/patches/blfs/7.5/libXft-2.3.1-freetype_fix-1.patch
+"
 
 
 # Binary package URI.
@@ -41,6 +43,9 @@ xgb_config()
 
 	echo "config $N-$V$R..."
 	cd $N-$V$R
+
+	 patch -Np1 -i $XGPATH_SOURCE/libXft-2.3.1-freetype_fix-1.patch
+	 err_check "patch $N-$V failed"
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var --disable-static "

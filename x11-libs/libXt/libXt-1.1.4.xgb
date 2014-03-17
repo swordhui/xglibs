@@ -43,7 +43,8 @@ xgb_config()
 	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var --disable-static "
+	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var \
+		--disable-static --with-appdefaultdir=/etc/X11/app-defaults "
 
 	./configure $XGB_CONFIG
 }

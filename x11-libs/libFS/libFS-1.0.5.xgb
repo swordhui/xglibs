@@ -42,6 +42,11 @@ xgb_config()
 	echo "config $N-$V$R..."
 	cd $N-$V$R
 
+	 sed -e '/#include <X11/ i\#include <X11\/Xtrans\/Xtransint.h>' \
+      	-e 's/_FSTransReadv(svr->trans_conn/readv(svr->trans_conn->fd/' \
+	    -i src/FSlibInt.c
+	err_check "patch $N-$Vfailed"
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var --disable-static "
 
