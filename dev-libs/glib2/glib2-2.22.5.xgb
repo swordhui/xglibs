@@ -57,7 +57,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 }
 
 #check

@@ -51,7 +51,7 @@ xgb_config()
 #build
 xgb_build()
 {
-	make
+	make $XGPARA_MAKE
 }
 
 #install

@@ -56,7 +56,7 @@ xgb_build()
 	#bison program is not already in $PATH
 
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 }
 
 #install

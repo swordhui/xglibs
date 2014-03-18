@@ -47,7 +47,7 @@ xgb_build()
 	cp /boot/config-xiange .config
 	err_check "change to /usr/src failed"
 
-	make
+	make $XGPARA_MAKE
 	err_check "[Error] linux_header: check falied."
 
 	make modules

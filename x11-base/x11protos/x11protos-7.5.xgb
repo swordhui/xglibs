@@ -119,7 +119,7 @@ xgb_build()
 	do
 		name=${i%.tar.bz2}
 		pushd $name
-		make
+		make $XGPARA_MAKE
 		err_check "make $name failed."
 		popd
 	done

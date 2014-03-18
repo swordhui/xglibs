@@ -75,7 +75,7 @@ xgb_build()
 	make clean
 	echo "clean $N-$V$R failed"
 
-	make
+	make $XGPARA_MAKE
 	echo "make $N-$V$R failed"
 }
 

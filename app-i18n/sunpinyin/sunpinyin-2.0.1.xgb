@@ -57,11 +57,11 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 	err_check "build $N-$V failed."
 
 	cd wrapper/xim
-	make
+	make $XGPARA_MAKE
 }
 
 #install

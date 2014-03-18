@@ -52,7 +52,7 @@ xgb_config()
 xgb_build()
 {
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 }
 
 xgb_check()

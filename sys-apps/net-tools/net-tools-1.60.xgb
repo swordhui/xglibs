@@ -59,7 +59,7 @@ xgb_config()
 	sed -i -e 's|HAVE_IP_TOOLS 0|HAVE_IP_TOOLS 1|g' \
 	       -e 's|HAVE_MII 0|HAVE_MII 1|g' config.h &&
 	sed -i -e 's|# HAVE_IP_TOOLS=0|HAVE_IP_TOOLS=1|g' \
-	       -e 's|# HAVE_MII=0|HAVE_MII=1|g' config.make
+	       -e 's|# HAVE_MII=0|HAVE_MII=1|g' config.make $XGPARA_MAKE
 }
 
 #build
@@ -68,7 +68,7 @@ xgb_build()
         echo "make $N-$V$R..."
 
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 }
 
 #install

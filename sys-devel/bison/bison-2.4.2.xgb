@@ -57,7 +57,7 @@ xgb_build()
 	echo '#define YYENABLE_NLS 1' >> lib/config.h
 
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 }
 
 #install
