@@ -52,7 +52,8 @@ xgb_config()
 	#fist, cd build directory
 	cd Mesa-$V
 
-	XGB_CONFIG+=" --sysconfdir=/etc              \
+	./configure $XGB_CONFIG   \
+            --sysconfdir=/etc              \
             --enable-texture-float         \
             --enable-gles1                 \
             --enable-gles2                 \
@@ -64,10 +65,8 @@ xgb_config()
             --enable-gallium-gbm           \
             --enable-glx-tls               \
             --with-llvm-shared-libs        \
-            --with-egl-platforms=\"drm,x11\" \
-            --with-gallium-drivers=\"i915,nouveau,r300,r600,radeonsi,svga,swrast\" "
-
-	./autogen.sh $XGB_CONFIG
+            --with-egl-platforms="drm,x11" \
+            --with-gallium-drivers="i915,nouveau,r300,r600,radeonsi,svga,swrast" 
 }
 
 #build
@@ -76,7 +75,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make
+	make $XGPARA_MAKE
 }
 
 #install
