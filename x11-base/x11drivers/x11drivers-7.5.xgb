@@ -13,16 +13,25 @@ HOMEPAGE="http://www.x.org/wiki/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRCURL="http://www.x.org/releases/X11R7.5/src/driver"
-Xproto="xf86-input-keyboard-1.4.0.tar.bz2
-xf86-input-mouse-1.5.0.tar.bz2
-xf86-video-ati-6.12.4.tar.bz2
-xf86-video-r128-6.8.1.tar.bz2
-xf86-video-intel-2.9.1.tar.bz2
-xf86-video-vesa-2.2.1.tar.bz2"
+SRCURL="http://xorg.freedesktop.org/archive/individual/driver"
+Xproto="xf86-input-evdev-2.8.2.tar.bz2 \
+xf86-input-synaptics-1.7.3.tar.bz2 \
+xf86-input-vmmouse-13.0.0.tar.bz2 \
+xf86-video-ati-7.3.0.tar.bz2 \
+xf86-video-cirrus-1.5.2.tar.bz2 \
+xf86-video-fbdev-0.4.4.tar.bz2 \
+xf86-video-intel-2.21.15.tar.bz2 \
+xf86-video-mach64-6.9.4.tar.bz2 \
+xf86-video-mga-1.6.3.tar.bz2 \
+xf86-video-nouveau-1.0.10.tar.bz2 \
+xf86-video-openchrome-0.3.3.tar.bz2 \
+xf86-video-r128-6.9.2.tar.bz2 \
+xf86-video-savage-2.3.7.tar.bz2 \
+xf86-video-sis-0.10.7.tar.bz2 \
+xf86-video-tdfx-1.4.5.tar.bz2 \
+xf86-video-vesa-2.3.3.tar.bz2 "
 
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
 SRC_URI=""
 
 
@@ -47,6 +56,12 @@ xgb_init()
 	do
 		SRC_URI+="$SRCURL/$i "
 	done
+
+	#patch
+	SRC_URI+="http://www.linuxfromscratch.org/patches/blfs/7.5/xf86-video-intel-2.21.15-api_change-1.patch "
+	SRC_URI+="http://www.linuxfromscratch.org/patches/blfs/7.5/xf86-video-sis-0.10.7-upstream_fixes-1.patch "
+	SRC_URI+="http://www.linuxfromscratch.org/patches/blfs/7.5/xf86-video-vmware-13.0.1-xatracker-1.patch "
+
 }
 
 #unpack
@@ -81,7 +96,37 @@ xgb_config()
 		echo ">>> config $name ..."
 		echo ""
 
-		./configure $XGB_CONFIG
+		case "$i" in
+		xf86-video-intel-[0-9].*)
+			patch -Np1 -i $XGPATH_SOURCE/xf86-video-intel-2.21.15-api_change-1.patch
+			err_check "patch intel driver failed."
+			XGB_CONFIG+="--enable-kms-only --with-default-accel=sna --enable-glamor"
+			./configure $XGB_CONFIG
+			;;
+
+		xf86-video-sis-[0-9].*)
+			patch -Np1 -i $XGPATH_SOURCE/xf86-video-sis-0.10.7-upstream_fixes-1.patch
+			err_check "patch intel driver failed."
+			./configure $XGB_CONFIG
+			;;
+
+		xf86-video-tdfx-[0-9].*)
+			sed -i -e "/mibstore.h/d" -e "/miInitializeBackingStore/d" src/tdfx_driver.c
+			err_check "patch intel driver failed."
+			./configure $XGB_CONFIG
+			;;
+
+		xf86-video-vmware-[0-9].*)
+			patch -Np1 -i $XGPATH_SOURCE/xf86-video-vmware-13.0.1-xatracker-1.patch
+			err_check "patch intel driver failed."
+			./configure $XGB_CONFIG
+			;;
+
+
+		*)
+			./configure $XGB_CONFIG
+			;;
+		esac
 		err_check "config $name failed."
 		popd
 	done

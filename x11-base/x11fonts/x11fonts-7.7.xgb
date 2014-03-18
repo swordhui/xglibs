@@ -1,0 +1,160 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Fonts for Xorg X11"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.x.org/wiki/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRCURL="http://www.x.org/releases/individual/font"
+Xproto="encodings-1.0.4.tar.bz2 \
+font-adobe-100dpi-1.0.3.tar.bz2 \
+font-adobe-75dpi-1.0.3.tar.bz2 \
+font-adobe-utopia-100dpi-1.0.4.tar.bz2 \
+font-adobe-utopia-75dpi-1.0.4.tar.bz2 \
+font-adobe-utopia-type1-1.0.4.tar.bz2 \
+font-alias-1.0.3.tar.bz2 \
+font-arabic-misc-1.0.3.tar.bz2 \
+font-bh-100dpi-1.0.3.tar.bz2 \
+font-bh-75dpi-1.0.3.tar.bz2 \
+font-bh-lucidatypewriter-100dpi-1.0.3.tar.bz2 \
+font-bh-lucidatypewriter-75dpi-1.0.3.tar.bz2 \
+font-bh-ttf-1.0.3.tar.bz2 \
+font-bh-type1-1.0.3.tar.bz2 \
+font-bitstream-100dpi-1.0.3.tar.bz2 \
+font-bitstream-75dpi-1.0.3.tar.bz2 \
+font-bitstream-type1-1.0.3.tar.bz2 \
+font-cronyx-cyrillic-1.0.3.tar.bz2 \
+font-cursor-misc-1.0.3.tar.bz2 \
+font-daewoo-misc-1.0.3.tar.bz2 \
+font-dec-misc-1.0.3.tar.bz2 \
+font-ibm-type1-1.0.3.tar.bz2 \
+font-isas-misc-1.0.3.tar.bz2 \
+font-jis-misc-1.0.3.tar.bz2 \
+font-micro-misc-1.0.3.tar.bz2 \
+font-misc-cyrillic-1.0.3.tar.bz2 \
+font-misc-ethiopic-1.0.3.tar.bz2 \
+font-misc-meltho-1.0.3.tar.bz2 \
+font-misc-misc-1.1.2.tar.bz2 \
+font-mutt-misc-1.0.3.tar.bz2 \
+font-schumacher-misc-1.1.2.tar.bz2 \
+font-screen-cyrillic-1.0.4.tar.bz2 \
+font-sony-misc-1.0.3.tar.bz2 \
+font-sun-misc-1.0.3.tar.bz2 \
+font-winitzki-cyrillic-1.0.3.tar.bz2 \
+font-xfree86-type1-1.0.4.tar.bz2"
+
+
+SRC_URI=""
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	local i
+
+	for i in $Xproto
+	do
+		SRC_URI+="$SRCURL/$i "
+	done
+}
+
+#unpack
+xgb_unpack()
+{
+	local i
+
+	for i in $Xproto
+	do
+		tar xf $XGPATH_SOURCE/$i
+		err_check "unpack $i failed."
+	done
+}
+
+#config
+xgb_config()
+{
+	local i
+	local name
+
+	echo "config $N-$V$R..."
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var \
+		--with-fontrootdir=/usr/share/fonts --disable-static "
+
+	for i in $Xproto
+	do
+		name=${i%.tar.bz2}
+		pushd $name
+
+		echo ""
+		echo ">>> config $name ..."
+		echo ""
+
+		./configure $XGB_CONFIG
+		err_check "config $name failed."
+		popd
+	done
+}
+
+#build
+xgb_build()
+{
+	local i
+	local name
+
+	echo "build $N-$V$R..."
+
+	for i in $Xproto
+	do
+		name=${i%.tar.bz2}
+		pushd $name
+		make $XGPARA_MAKE
+		err_check "make $name failed."
+		popd
+	done
+}
+
+#install
+xgb_install()
+{
+	local i
+	local name
+
+	echo "install $N-$V$R..."
+
+	for i in $Xproto
+	do
+		name=${i%.tar.bz2}
+		pushd $name
+		make DESTDIR=$XGPATH_DEST install
+		err_check "install $name failed."
+		popd
+	done
+	
+	#create symbol
+	mkdir -p $XGPATH_DEST/usr/lib/X11
+	ln -s /usr/share/fonts $XGPATH_DEST/usr/lib/X11
+
+}
+
