@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="X.Org X servers"
+DESCRIPTION="Mesa OpenGL Utility library."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://xorg.freedesktop.org/"
+HOMEPAGE="http://www.mesa3d.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://xorg.freedesktop.org/releases/individual/xserver/$N-$V.tar.bz2"
+SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/glu/glu-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,10 +21,12 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="openssl pixman x11fonts xkeyboard-config"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
+
 
 #unpack
 xgb_unpack()
@@ -41,11 +43,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var \
-		--with-xkb-output=/var/lib/xkb \
-		--enable-install-setuid --disable-static "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -60,6 +61,13 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -67,15 +75,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "Install $V-$N failed."
-
-	#copy resource file
-	mkdir $XGPATH_DEST/root
-	cat > $XGPATH_DEST/root/.xinitrc << "EOF"
-# Begin .xinitrc file
-xterm  -g 80x40+0+0   &
-xclock -g 100x100-0+0 &
-twm
-EOF
 }
 

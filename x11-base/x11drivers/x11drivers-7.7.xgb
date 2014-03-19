@@ -166,10 +166,5 @@ xgb_install()
 		err_check "install $name failed."
 		popd
 	done
-
-	#change to right driver path.
-	mv $XGPATH_DEST/usr/lib/{xorg,X11}
-	err_check "install $name failed."
-
 }
 
