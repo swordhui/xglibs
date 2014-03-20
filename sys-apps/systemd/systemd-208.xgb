@@ -56,7 +56,7 @@ xgb_config()
 	XGB_CONFIG+=" --sysconfdir=/etc  --localstatedir=/var --libexecdir=/usr/lib \
 		--docdir=/usr/share/doc/systemd-$V  \
 		--with-rootprefix= --with-rootlibdir=/lib \
-		--enable-split-usr --disable-gudev  \
+		--enable-split-usr  \
 		--disable-gcrypt "
 
 	#Third, call configure with $XGB_CONFIG

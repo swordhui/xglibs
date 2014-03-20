@@ -80,26 +80,5 @@ xgb_install()
 
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-	grep "wqy-bitmap" /etc/X11/xorg.conf \
-		|| sed -i "s#FontPath.*/fonts/misc/\"#&\n\tFontPath     \"/usr/share/fonts/wenquanyi/wqy-bitmap\"#" /etc/X11/xorg.conf
-	if [ "$?" == "0" ]; then
-		err_check "generate font info faile.d"
-		echo ">>> Generate font cache file.."
-		fc-cache
-	fi
-	return 0
-}
 
-#pre remove
-xgb_postrm()
-{
-	echo "running before package delete..."
-	sed -i "/FontPath.*wqy-bitmap/d" /etc/X11/xorg.conf
-	echo ">>> Generate font cache file.."
-	fc-cache
-}
 

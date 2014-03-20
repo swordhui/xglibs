@@ -80,23 +80,5 @@ xgb_install()
 
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-	grep "wqy-zenhei" /etc/X11/xorg.conf \
-		|| sed -i "s#FontPath.*/fonts/misc/\"#&\n\tFontPath     \"/usr/share/fonts/wenquanyi/wqy-zenhei\"#" /etc/X11/xorg.conf
-	err_check "generate font info faile.d"
-	echo ">>> Generate font cache file.."
-	fc-cache
-}
 
-#pre remove
-xgb_postrm()
-{
-	echo "running before package delete..."
-	sed -i "/FontPath.*wqy-zenhei/d" /etc/X11/xorg.conf
-	echo ">>> Generate font cache file.."
-	fc-cache
-}
 

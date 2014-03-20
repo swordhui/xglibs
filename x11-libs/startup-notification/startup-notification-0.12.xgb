@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Lightweight GTK+ based systray for UNIX desktop"
+DESCRIPTION="Application startup notification and feedback library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://gna.org/projects/fvwm-crystal/"
+HOMEPAGE="http://www.freedesktop.org/wiki/Software/startup-notification"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://download.gna.org/fvwm-crystal/trayer/1.0/$N-$V.tar.gz"
+SRC_URI="http://www.freedesktop.org/software/$N/releases/$N-$V.tar.gz"
 
 
 # Binary package URI.
@@ -21,10 +21,12 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="libxcb"
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
+
 
 #unpack
 xgb_unpack()
@@ -42,12 +44,11 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
-	sed -i "s/-DGTK_DISABLE_DEPRECATED//g" Makefile.common
-	err_check "[Error] patch $N-$V failed."
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --disable-static "
 
-	sed -i "s/GDK_DISPLAY/gdk_display_get_default/g" *.c
-	sed -i "s/GDK_DISPLAY/gdk_display_get_default/g" systray/*.c
-	sed -i "s/-o \$@/& -lX11/g" Makefile
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -56,17 +57,14 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make PREFIX=/usr
+	make $XGPARA_MAKE
 }
-
 #install
 xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
-	mkdir -p $XGPATH_DEST/usr
-
 	#install everything to $XGPATH_DEST
-	make PREFIX=$XGPATH_DEST/usr install
+	make DESTDIR=$XGPATH_DEST install
 }
 

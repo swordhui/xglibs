@@ -49,6 +49,10 @@ xgb_build()
 {
 	echo "make $N-$V$R..."
 
+	sed -i "s/gcc \$(LDFLAGS) -o habak xcore.o random.o habak.o/& -lX11/g" \
+		src/Makefile
+		
+
 	#run make in current directory
 	make $XGPARA_MAKE
 }

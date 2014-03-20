@@ -1,0 +1,111 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="The Network Security Services (NSS) package"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://foo.bar.com/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_3_15_4_RTM/src/nss-$V.tar.gz \
+http://www.linuxfromscratch.org/patches/blfs/7.5/nss-3.15.4-standalone-1.patch"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="nspr sqlite"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+	err_check "enter directory failed."
+
+	patch -Np1 -i $XGPATH_SOURCE/nss-3.15.4-standalone-1.patch
+	err_check "patch failed."
+
+	cd nss
+
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	#make $XGPARA_MAKE
+	make BUILD_OPT=1                      \
+  		NSPR_INCLUDE_DIR=/usr/include/nspr  \
+  		USE_SYSTEM_ZLIB=1                   \
+  		ZLIB_LIBS=-lz                       \
+  		$([ $(uname -m) = x86_64 ] && echo USE_64=1) \
+  		$([ -f /usr/include/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1) -j1
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	mkdir -p $XGPATH_DEST/lib
+	mkdir -p $XGPATH_DEST/include/nss
+	mkdir -p $XGPATH_DEST/usr/bin
+	mkdir -p $XGPATH_DEST/usr/lib/pkgconfig
+
+	cd ../dist                                                       
+	install -v -m755 Linux*/lib/*.so              $XGPATH_DEST/usr/lib
+	err_check "install failed 1"
+	install -v -m644 Linux*/lib/{*.chk,libcrmf.a} $XGPATH_DEST/usr/lib
+	err_check "install failed 2"
+	install -v -m755 -d                           $XGPATH_DEST/usr/include/nss
+	err_check "install failed 3"
+	cp -v -RL {public,private}/nss/*              $XGPATH_DEST/usr/include/nss
+	err_check "install failed 4"
+	chmod -v 644                                  $XGPATH_DEST/usr/include/nss/* 
+	err_check "install failed 5"
+	install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} $XGPATH_DEST/usr/bin
+	err_check "install failed 6"
+	install -v -m644 Linux*/lib/pkgconfig/nss.pc  $XGPATH_DEST/usr/lib/pkgconfig
+	err_check "install failed 7"
+}
+

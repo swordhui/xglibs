@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Scalable Vector Graphics (SVG) rendering library"
+DESCRIPTION="rxvt clone with xft and unicode support"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://librsvg.sourceforge.net/"
+HOMEPAGE="http://software.schmorp.de/pkg/rxvt-unicode.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnome.org/pub/GNOME/sources/librsvg/2.40/$N-$V.tar.xz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://dist.schmorp.de/rxvt-unicode/Attic/rxvt-unicode-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,10 +22,12 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gdk-pixbuf libcroco pango"
+RDEPEND="gdk-pixbuf startup-notification"
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
+
 
 #unpack
 xgb_unpack()
@@ -41,9 +44,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --disable-mozilla-plugin --disable-static "
+	XGB_CONFIG+=" --enable-everything "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -62,7 +66,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check
+	#make check
 }
 
 #install
@@ -72,5 +76,16 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	mkdir -p $XGPATH_DEST/etc/X11/app-defaults
+
+	cat >> $XGPATH_DEST/etc/X11/app-defaults/URxvt << "EOF"
+URxvt*perl-ext: matcher
+URxvt*urlLauncher: firefox
+URxvt.background: black
+URxvt.foreground: yellow
+URxvt*font: xft:Monospace:pixelsize=12
+EOF
 }
 
