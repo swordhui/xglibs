@@ -155,6 +155,17 @@ ppp
 iptables
 networkmanager
 slim
+fvwm-xiange
+lua
+conky
+nmap
+alsa-lib
+alsa-utils
+aalib
+exiv2
+lcms
+libmng
+volumeicon
 errorrrrr
 x11utils-7.5
 ed-1.4
