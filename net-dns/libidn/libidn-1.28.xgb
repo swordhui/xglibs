@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Easily read/write XML (esp config files)"
+DESCRIPTION="Internationalized Domain Names (IDN) implementation"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://search.cpan.org/~grantm/XML-Simple-2.20/lib/XML/Simple.pm"
+HOMEPAGE="http://www.gnu.org/software/libidn/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://search.cpan.org/CPAN/authors/id/G/GR/GRANTM/XML-Simple-$V.tar.gz"
+SRC_URI="http://ftp.gnu.org/gnu/libidn/libidn-1.28.tar.gz"
 
 
 # Binary package URI.
@@ -28,12 +28,18 @@ DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/XML-Simple-$V.tar.gz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
@@ -42,8 +48,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd XML-Simple-$V
-	perl Makefile.PL PREFIX=/usr DESTDIR=$XGPATH_DEST
+	cd $N-$V$R
+	err_check "enter directory failed."
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --disable-static "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -59,7 +71,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make test
+	#make check
 }
 
 #install
