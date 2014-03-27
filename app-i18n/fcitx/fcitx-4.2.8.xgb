@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="presage icu"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -45,8 +45,12 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
+	mkdir build
+	cd build
+
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_QT=Off \
+		-DENABLE_GTK3_IM_MODULE=On -DENABLE_GIR=Off -DENABLE_QT_IM_MODULE=Off
 }
 
 #build

@@ -5,15 +5,16 @@
 # Short one-line description of this package.
 DESCRIPTION="Basepack of plugins for gstreamer"
 
+
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://gstreamer.sourceforge.net"
+HOMEPAGE="http://gstreamer.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://gstreamer.freedesktop.org/src/$N/$N-$V.tar.bz2"
+SRC_URI="http://ftp.gnome.org/pub/gnome/sources/$N/0.10/$N-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,20 +22,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="aalib cairo flac libjpeg-turbo libpng gtk3 libdv speex taglib"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -50,7 +56,7 @@ xgb_config()
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	#./configure $XGB_CONFIG
 }
 
 #build
@@ -59,7 +65,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	#make $XGPARA_MAKE
 }
 
 #check
@@ -75,6 +81,23 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	#make DESTDIR=$XGPATH_DEST install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

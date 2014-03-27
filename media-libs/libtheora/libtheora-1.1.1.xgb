@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A dynamic, any to any, pixel format conversion library"
+DESCRIPTION="The Theora Video Compression Codec"
+
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gegl.org/babl/"
+HOMEPAGE="http://www.theora.org"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.gimp.org/pub/babl/0.1/babl-$V.tar.bz2"
+SRC_URI="http://downloads.xiph.org/releases/theora/libtheora-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,19 +22,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="libogg libvorbis"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -43,9 +50,13 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
+
+	sed -i 's/png_\(sizeof\)/\1/g' examples/png2theora.c
+	err_check "patch 1 failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -58,6 +69,13 @@ xgb_build()
 
 	#run make in current directory
 	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install

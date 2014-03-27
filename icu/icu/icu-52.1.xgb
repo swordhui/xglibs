@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A dynamic, any to any, pixel format conversion library"
+DESCRIPTION="The International Components for Unicode"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gegl.org/babl/"
+HOMEPAGE="http://site.icu-project.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.gimp.org/pub/babl/0.1/babl-$V.tar.bz2"
+SRC_URI="http://download.icu-project.org/files/icu4c/$V/icu4c-52_1-src.tgz"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="llvm"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -33,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -42,13 +42,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N/source
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	CXX=g++ ./configure $XGB_CONFIG
 }
 
 #build
@@ -58,6 +59,13 @@ xgb_build()
 
 	#run make in current directory
 	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make check
 }
 
 #install

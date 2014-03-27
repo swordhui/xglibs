@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Streaming media framework"
+DESCRIPTION="Audio compression format designed for speech."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://gstreamer.sourceforge.net"
+HOMEPAGE="http://www.speex.org"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="http://gstreamer.sourceforge.net"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://gstreamer.freedesktop.org/src/gstreamer/$N-$V.tar.xz"
+SRC_URI="http://downloads.us.xiph.org/releases/speex/speex-1.2rc1.tar.gz"
 
 
 # Binary package URI.
@@ -22,19 +22,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="glib2"
+RDEPEND="libogg"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -43,11 +49,11 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N-1.2rc1
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --libexecdir=/usr/lib "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

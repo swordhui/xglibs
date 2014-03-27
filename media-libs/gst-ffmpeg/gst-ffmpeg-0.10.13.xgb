@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A dynamic, any to any, pixel format conversion library"
+DESCRIPTION="FFmpeg based gstreamer plugin"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gegl.org/babl/"
+HOMEPAGE="http://gstreamer.freedesktop.org/modules/gst-ffmpeg.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.gimp.org/pub/babl/0.1/babl-$V.tar.bz2"
+SRC_URI="http://gstreamer.freedesktop.org/src/$N/$N-$V.tar.bz2 \
+http://www.linuxfromscratch.org/patches/blfs/7.5/$N-$V-gcc-4.7-1.patch"
 
 
 # Binary package URI.
@@ -21,12 +22,18 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="gst-plugins-base"
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} yasm"
 
 
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
@@ -43,6 +50,9 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
+
+	patch -p1 < $XGPATH_SOURCE/gst-ffmpeg-0.10.13-gcc-4.7-1.patch
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
@@ -58,6 +68,13 @@ xgb_build()
 
 	#run make in current directory
 	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install

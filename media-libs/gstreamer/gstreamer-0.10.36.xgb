@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A dynamic, any to any, pixel format conversion library"
+DESCRIPTION="Streaming media framework"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gegl.org/babl/"
+HOMEPAGE="http://gstreamer.sourceforge.net"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.gimp.org/pub/babl/0.1/babl-$V.tar.bz2"
+SRC_URI="http://ftp.gnome.org/pub/gnome/sources/$N/0.10/$N-0.10.36.tar.xz"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="glib2 libxml2"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -33,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -43,9 +43,16 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
+
+	sed -i  -e '/YYLEX_PARAM/d'                                       \
+	        -e '/parse-param.*scanner/i %lex-param { void *scanner }' \
+            gst/parse/grammar.y
+
+	err_check "patch 1 failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -58,6 +65,13 @@ xgb_build()
 
 	#run make in current directory
 	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install

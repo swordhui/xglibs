@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A dynamic, any to any, pixel format conversion library"
+DESCRIPTION="File transfer program to keep remote files into sync"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gegl.org/babl/"
+HOMEPAGE="http://rsync.samba.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.gimp.org/pub/babl/0.1/babl-$V.tar.bz2"
+SRC_URI="http://samba.org/ftp/rsync/src/rsync-$V.tar.gz"
 
 
 # Binary package URI.
@@ -21,12 +21,18 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="zlib"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
@@ -43,9 +49,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --without-included-zlib "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -60,6 +67,13 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -67,5 +81,39 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	mkdir -p $XGPATH_DEST/etc
+	touch $XGPATH_DEST/etc/rsyncd.conf
+
+cat > $XGPATH_DEST/etc/rsyncd.conf << "EOF"
+# This is a basic rsync configuration file
+# It exports a single module without user authentication.
+
+motd file = /home/rsync/welcome.msg
+use chroot = yes
+
+[localhost]
+    path = /home/rsync
+    comment = Default rsync module
+    read only = yes
+    list = yes
+    uid = rsyncd
+    gid = rsyncd
+
+EOF
+	
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+
+	groupadd -g 48 rsyncd
+	useradd -c "rsyncd Daemon" -d /home/rsync -g rsyncd \
+    	-s /bin/false -u 48 rsyncd
+
+	echo "Done"
 }
 

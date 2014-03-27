@@ -46,7 +46,8 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --localstatedir=/var --enable-ppp "
+	XGB_CONFIG+=" --sysconfdir=/etc --localstatedir=/var --enable-ppp \
+	 	--with-session-tracking=systemd "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

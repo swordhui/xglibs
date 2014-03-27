@@ -13,7 +13,8 @@ HOMEPAGE="http://www.gegl.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.gimp.org/pub/gegl/0.2/gegl-$V.tar.bz2"
+SRC_URI="ftp://ftp.gimp.org/pub/gegl/0.2/gegl-$V.tar.bz2 \
+http://www.linuxfromscratch.org/patches/blfs/7.5/gegl-0.2.0-ffmpeg2-1.patch "
 
 
 # Binary package URI.
@@ -21,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="babl glib2 gtk2 pango cairo libjpeg libsvg"
+RDEPEND="babl glib2 gtk2 pango cairo libjpeg-turbo librsvg"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -43,8 +44,11 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
+	patch -Np1 -i $XGPATH_SOURCE/gegl-0.2.0-ffmpeg2-1.patch
+	err_check "patch $N-$V failed."
+
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --without-vala "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -56,7 +60,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	LC_ALL=en_US make $XGPARA_MAKE
 }
 
 #install
