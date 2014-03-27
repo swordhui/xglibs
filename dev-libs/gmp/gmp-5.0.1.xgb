@@ -47,7 +47,11 @@ xgb_config()
 	#run configure
 	XGB_CONFIG+=" --enable-cxx --enable-mpbsd "
 
-	ABI=64 ./configure $XGB_CONFIG
+	if  [ "$XGB_ARCH" == "x86_64" ]; then
+		ABI=64 ./configure $XGB_CONFIG
+	else
+		./configure $XGB_CONFIG
+	fi
 }
 
 #build

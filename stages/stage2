@@ -3,8 +3,6 @@ x11protos
 libXau
 libXdmcp
 sqlite
-libffi
-python
 xcb-proto
 libxcb
 libpng
@@ -107,8 +105,6 @@ twm
 xterm
 xclock
 xinit
-pcre
-glib2
 atk
 cairo
 harfbuzz

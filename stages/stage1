@@ -54,6 +54,10 @@ kmod
 libpipeline
 make
 patch
+libffi
+python
+pcre
+glib2
 systemd
 dbus
 util-linux
