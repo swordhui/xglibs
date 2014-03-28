@@ -212,6 +212,9 @@ gst-plugins-base
 gst-plugins-good
 gst-ffmpeg
 firefox
+libetpan
+compface
+claws-mail
 errorrrrr
 fcitx
 x11utils-7.5

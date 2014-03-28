@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="An email client (and news reader) based on GTK+"
+DESCRIPTION="Utilities and library to convert to/from X-Face format"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.claws-mail.org/"
+HOMEPAGE="http://www.xemacs.org/Download/optLibs.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://downloads.sourceforge.net/project/sylpheed-claws/Claws%20Mail/$V/claws-mail-$V.tar.bz2"
+SRC_URI="http://ftp.xemacs.org/pub/xemacs/aux/compface-$V.tar.gz"
 
 
 # Binary package URI.
@@ -29,12 +28,18 @@ DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
@@ -44,10 +49,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	#err_check "enter directory failed."
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --mandir=/usr/share/man "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -76,5 +81,9 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	mkdir -p $XGPATH_DEST/usr/bin
+	install -m755 -v xbm2xface.pl $XGPATH_DEST/usr/bin
 }
 
