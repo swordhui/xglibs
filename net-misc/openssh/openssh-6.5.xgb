@@ -150,6 +150,22 @@ xgb_install()
 	chown -v root:sys $XGPATH_DEST/var/lib/sshd
 	err_check "install $N-$V failed"
 
+	#create systemd service
+	mkdir -p $XGPATH_DEST/lib/systemd/system
+    cat > $XGPATH_DEST/lib/systemd/system/sshd.service << EOF
+
+[Unit]
+Description=OpenSSH server daemon
+After=syslog.target network.target auditd.service
+
+[Service]
+ExecStart=/usr/sbin/sshd -D -e
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 }
 
 #post install
@@ -163,6 +179,9 @@ xgb_postinst()
 	useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd \
 	    -s /bin/false -u 50 sshd
 	err_check "Create sshd:sshd failed."
+
+	#reload daemons
+	systemctl daemon-reload
 }
 
 #pre remove

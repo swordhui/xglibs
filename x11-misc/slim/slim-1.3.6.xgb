@@ -78,5 +78,23 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install $N-$V failed."
+
+	#service
+ 	mkdir -p $XGPATH_DEST/lib/systemd/system
+    cat > $XGPATH_DEST/lib/systemd/system/slim.service << EOF
+[Unit]
+Description=SLiM Simple Login Manager
+After=systemd-user-sessions.service
+
+[Service]
+ExecStart=/usr/bin/slim -nodaemon
+StandardOutput=null
+
+[Install]
+WantedBy=graphical.target
+Alias=display-manager.service
+
+EOF
+
 }
 

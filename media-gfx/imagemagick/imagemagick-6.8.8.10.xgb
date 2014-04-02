@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Network configuration and management in an easy way. Desktop environment independent."
+DESCRIPTION="A collection of tools and libraries for many image formats"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gnome.org/projects/NetworkManager/"
+HOMEPAGE="http://www.imagemagick.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnome.org/pub/gnome/sources/NetworkManager/0.9/NetworkManager-$V.tar.xz"
+SRC_URI="ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-6.8.8-10.tar.xz"
 
 
 # Binary package URI.
@@ -21,11 +21,10 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="dbus-glib intltool libnl nss systemd dhcpcd iptables ppp"
+RDEPEND="xz-utils librsvg "
 
 # Build time depend
 DEPEND="${RDEPEND}"
-
 
 
 #unpack
@@ -33,7 +32,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
 }
 
 #config
@@ -42,12 +41,12 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd NetworkManager-$V$R
-	err_check "enter directory failed."
+	cd ImageMagick-6.8.8-10
+	err_check "cd failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --localstatedir=/var --enable-ppp \
-	 	--with-session-tracking=systemd "
+	XGB_CONFIG+=" --sysconfdir=/etc --with-modules --with-perl \
+		--disable-static --with-rsvg --with-wmf "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -66,7 +65,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make check
 }
 
 #install
@@ -76,18 +75,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install $N-$V failed."
-
-	#/usr/lib/systemd to /lib/systemd
-	mv $XGPATH_DEST/usr/lib/systemd $XGPATH_DEST/lib
-	err_check "install 2 failed."
-
-	mkdir -p $XGPATH_DEST/etc/NetworkManager/
-	touch $XGPATH_DEST/etc/NetworkManager/NetworkManager.conf
-	cat >> $XGPATH_DEST/etc/NetworkManager/NetworkManager.conf << "EOF"
-[main]
-plugins=keyfile
-EOF
-
 }
 

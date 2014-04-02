@@ -76,5 +76,21 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	#icon
+	local imgconv1=/usr/share/icons/hicolor/64x64/apps/claws-mail.png
+	local imgconv2=/usr/share/pixmaps/claws-mail.png
+	local menu_type=others
+	local menu_name=Claws-mail
+	local menu_cmd=claws-mail
+	local menu_index=C12claws-mail
+
+	mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
+	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+	convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
+	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+	        > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
 }
 

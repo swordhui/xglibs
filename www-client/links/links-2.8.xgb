@@ -74,4 +74,17 @@ xgb_install()
 	mkdir -p $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps
 	cp links_32x32.xpm $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps/links.xpm
 	err_check "Install $N-$V failed."
+
+	#menu entry
+    local imgconv1=""
+    local imgconv2=/usr/share/icons/hicolor/32x32/apps/links.xpm
+    local menu_type=net
+    local menu_name=Links
+    local menu_cmd="links -g"
+    local menu_index=C01links
+
+    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
 }

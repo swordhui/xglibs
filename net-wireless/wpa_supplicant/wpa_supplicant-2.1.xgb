@@ -125,5 +125,21 @@ xgb_install()
 		$XGPATH_DEST/etc/dbus-1/system.d/wpa_supplicant.conf
 	err_check "install failed 5."
 
+	#systed-service
+	mkdir -p $XGPATH_DEST/lib/systemd/system
+	cat > $XGPATH_DEST/lib/systemd/system/wpa_supplicant.service << EOF
+[Unit]
+Description=WPA supplicant
+
+[Service]
+Type=dbus
+BusName=fi.epitest.hostap.WPASupplicant
+ExecStart=/sbin/wpa_supplicant -u
+
+[Install]
+WantedBy=multi-user.target
+Alias=dbus-fi.epitest.hostap.WPASupplicant.service
+EOF
+
 }
 

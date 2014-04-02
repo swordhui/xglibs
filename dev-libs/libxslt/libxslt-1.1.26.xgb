@@ -13,8 +13,7 @@ HOMEPAGE="http://www.xmlsoft.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="ftp://xmlsoft.org/libxml2/$N-$V.tar.gz"
+SRC_URI="http://xmlsoft.org/sources/libxslt-$V.tar.gz"
 
 
 # Binary package URI.

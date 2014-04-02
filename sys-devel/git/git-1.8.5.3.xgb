@@ -24,6 +24,8 @@ BIN_URI=""
 # Runtime Depend
 RDEPEND=""
 
+# tk for git gui, svn-core for git svn
+
 # Build time depend
 DEPEND="${RDEPEND}"
 
