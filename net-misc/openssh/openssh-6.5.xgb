@@ -180,16 +180,21 @@ xgb_postinst()
 	    -s /bin/false -u 50 sshd
 	err_check "Create sshd:sshd failed."
 
+	#create keys
+	ssh-keygen -t dsa -N xiange -f /etc/ssh/ssh_host_dsa_key
+	err_check "Create dsa key failed."
+
+	ssh-keygen -t rsa -N xiange -f /etc/ssh/ssh_host_rsa_key
+	err_check "Create rsa key failed."
+
 	#reload daemons
 	systemctl daemon-reload
+
 }
 
 #pre remove
 xgb_prerm()
 {
 	echo "running before package delete..."
-	userdel sshd 2>/dev/null
-	groupdel sshd 2>/dev/null
-	return 0
 }
 

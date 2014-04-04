@@ -233,8 +233,12 @@ gnome-doc-utils
 speech_tools
 festival
 stardict
-errorrrrr
 fcitx
+popt
+samba
+apache
+pure-ftpd
+errorrrrr
 x11utils-7.5
 ed-1.4
 freetype-2.3.12

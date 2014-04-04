@@ -3,17 +3,16 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Notifications daemons"
+DESCRIPTION="an Authentication Agent for Polkit"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.galago-project.org/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
-# gpkg. 
-# $N = package name, such as autoconf, x-org
+# gpkg.  # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnome.org/pub/gnome/sources/$N/0.7/$N-0.7.6.tar.xz"
+SRC_URI="http://ftp.gnome.org/pub/gnome/sources/$N/$V/$N-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,7 +20,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="gtk3 polkit"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -49,9 +48,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -sysconfdir=/etc --disable-static "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -63,7 +63,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	#make $XGPARA_MAKE
+	make $XGPARA_MAKE
 }
 
 #check
@@ -76,21 +76,9 @@ xgb_check()
 #install
 xgb_install()
 {
-	local dbus_file=org.freedesktop.Notifications.service
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install failed."
-
-	#service file
-	mkdir -p $XGPATH_DEST/usr/share/dbus-1/services
-	touch $XGPATH_DEST/usr/share/dbus-1/services/$dbus_file
-	cat > $XGPATH_DEST/usr/share/dbus-1/services/$dbus_file << EOF
-[D-BUS Service]
-Name=org.freedesktop.Notifications
-Exec=/usr/libexec/notification-daemon
-
-EOF
 }
 

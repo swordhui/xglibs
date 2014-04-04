@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libetpan compface"
+RDEPEND="libetpan compface gnutls"
 
 # Build time depend
 DEPEND="${RDEPEND}"
