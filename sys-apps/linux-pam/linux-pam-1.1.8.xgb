@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="LXDE Task manager"
+DESCRIPTION="Pluggable Authentication Modules"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://lxde.sf.net/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://sourceforge.net/projects/lxde/files/LXTask%20%28task%20manager%29/LXTask%20$V/lxtask-$V.tar.gz"
+SRC_URI="http://linux-pam.org/library/Linux-PAM-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,19 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gtk2"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -42,11 +48,12 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd Linux-PAM-$V$R
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --sysconfdir=/etc --libdir=/usr/lib \
+		--enable-securedir=/lib/security "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -75,20 +82,31 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install failed."
+	err_check "install failed"
 
- 	#start up files
-    local imgconv1=/usr/share/icons/hicolor/64x64/apps/claws-mail.png
-    local imgconv2=/usr/share/icons/gnome/32x32/apps/utilities-system-monitor.png
-    local menu_type=sys
-    local menu_name=lxtask
-    local menu_cmd=lxtask
-    local menu_index=C00lxtask
+	#chkpwd set to suid?
+	chmod -v 4755 $XGPATH_DEST/sbin/unix_chkpwd
+	err_check "install 2 failed"
 
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    #convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	#other file
+	mkdir -p $XGPATH_DEST/etc/pam.d
+	touch $XGPATH_DEST/etc/pam.d/other
+
+	cat > $XGPATH_DEST/etc/pam.d/other << "EOF"
+# Begin /etc/pam.d/other
+
+auth        required        pam_warn.so
+auth        required        pam_deny.so
+account     required        pam_warn.so
+account     required        pam_deny.so
+password    required        pam_warn.so
+password    required        pam_deny.so
+session     required        pam_warn.so
+session     required        pam_deny.so
+
+# End /etc/pam.d/other
+
+EOF
+
 }
 

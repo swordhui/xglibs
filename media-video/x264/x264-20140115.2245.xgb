@@ -3,18 +3,19 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="D-Bus bindings for glib"
+DESCRIPTION="A free library for encoding X264/AVC streams"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://dbus.freedesktop.org/"
+HOMEPAGE="http://www.videolan.org/developers/x264.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://dbus.freedesktop.org/releases/dbus-glib/$N-$V.tar.gz"
+SRC_V="x264-snapshot-20140115-2245-stable"
+
+SRC_URI="ftp://ftp.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-20140115-2245-stable.tar.bz2"
 
 
 # Binary package URI.
@@ -22,10 +23,11 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="dbus glib2 expat"
+RDEPEND=""
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} yasm"
+
 
 
 #unpack
@@ -33,7 +35,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
 }
 
 #config
@@ -42,12 +44,10 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $SRC_V
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc \
-	            --libexecdir=/usr/lib/dbus-1.0/dbus-1 \
-				--disable-static "
+	XGB_CONFIG+=" --enable-shared --disable-cli "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

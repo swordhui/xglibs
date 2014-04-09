@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="LXDE Task manager"
+DESCRIPTION="Fast lightweight tabbed filemanager"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://lxde.sf.net/"
+HOMEPAGE="http://pcmanfm.sourceforge.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://sourceforge.net/projects/lxde/files/LXTask%20%28task%20manager%29/LXTask%20$V/lxtask-$V.tar.gz"
+SRC_URI="http://sourceforge.net/projects/pcmanfm/files/PCManFM%20%2B%20Libfm%20%28tarball%20release%29/PCManFM/pcmanfm-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,19 +21,21 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gtk2"
+RDEPEND="gnome-icon-theme libfm"
 
 # Build time depend
 DEPEND="${RDEPEND}"
-
-
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	err_check "unpack $N-$V failed."
+
+	#fist, cd build directory
+	cd $N-$V$R
 }
 
 #config
@@ -41,9 +43,6 @@ xgb_config()
 {
 	echo "config $N-$V$R..."
 
-	#fist, cd build directory
-	cd $N-$V$R
-	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
@@ -61,13 +60,6 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
-}
-
 #install
 xgb_install()
 {
@@ -77,18 +69,20 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
- 	#start up files
+
+   #start up files
     local imgconv1=/usr/share/icons/hicolor/64x64/apps/claws-mail.png
-    local imgconv2=/usr/share/icons/gnome/32x32/apps/utilities-system-monitor.png
-    local menu_type=sys
-    local menu_name=lxtask
-    local menu_cmd=lxtask
-    local menu_index=C00lxtask
+    local imgconv2=/usr/share/icons/gnome/32x32/apps/system-file-manager.png
+    local menu_type=others
+    local menu_name=pcmanfm
+    local menu_cmd=pcmanfm
+    local menu_index=C00pcmanfm
 
     mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
     #convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
     touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
     echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
             > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+
 }
 

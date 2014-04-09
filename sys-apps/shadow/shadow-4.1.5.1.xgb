@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="linux-pam"
 
 # Build time depend
 DEPEND="${RDEPEND}"
