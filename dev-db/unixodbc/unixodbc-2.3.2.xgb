@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="free implementation of Windows(tm) on Unix"
+DESCRIPTION="This is a sample skeleton xiange build script file"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.winehq.org/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/wine/Source/wine-$V.tar.bz2"
+SRC_URI="http://www.unixodbc.org/unixODBC-2.3.2.tar.gz"
 
 
 # Binary package URI.
@@ -21,19 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libgphoto2 mpg123 libjpeg-turbo libpng libtiff"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/unixODBC-$V$R.tar.gz
 }
 
 #config
@@ -42,14 +48,11 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd unixODBC-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
-	if [ "$XGB_ARCH" == "x86_64" ]; then
-		XGB_CONFIG+=" --enable-win64 "
-		echo "win64 enabled."
-	fi
+	XGB_CONFIG+=" --sysconfdir=/etc/unixODBC "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -64,6 +67,13 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -73,7 +83,13 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
-	ln -sv wine64 $XGPATH_DEST/usr/bin/wine
+	find doc -name "Makefile*" -delete
+	chmod 644 doc/{lst,ProgrammerManual/Tutorial}/*
 	err_check "install 2 failed."
+
+	install -v -m755 -d $XGPATH_DEST/usr/share/doc/unixODBC-$V
+	err_check "install 3 failed."
+
+	cp      -v -R doc/* $XGPATH_DEST/usr/share/doc/unixODBC-$V
 }
 

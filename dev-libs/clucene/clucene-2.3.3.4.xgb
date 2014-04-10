@@ -3,17 +3,19 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="free implementation of Windows(tm) on Unix"
+DESCRIPTION="High-performance, full-featured text search engine based off of lucene in C++"
+
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.winehq.org/"
+HOMEPAGE="http://clucene.sourceforge.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/wine/Source/wine-$V.tar.bz2"
+SRC_URI="http://downloads.sourceforge.net/clucene/clucene-core-$V.tar.gz \
+http://www.linuxfromscratch.org/patches/blfs/7.5/clucene-2.3.3.4-contribs_lib-1.patch"
 
 
 # Binary package URI.
@@ -21,19 +23,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libgphoto2 mpg123 libjpeg-turbo libpng libtiff"
+RDEPEND="boost"
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} cmake"
 
 
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/clucene-core-$V$R.tar.gz
 }
 
 #config
@@ -42,17 +50,19 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N-core-$V$R
+	err_check "enter directory failed."
 
-	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
-	if [ "$XGB_ARCH" == "x86_64" ]; then
-		XGB_CONFIG+=" --enable-win64 "
-		echo "win64 enabled."
-	fi
+	patch -Np1 -i $XGPATH_SOURCE/clucene-2.3.3.4-contribs_lib-1.patch
+	err_check "patch failed."
 
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	mkdir build
+	cd build
+	err_check "cd failed."
+
+	cmake -DCMAKE_INSTALL_PREFIX=/usr \
+	      -DBUILD_CONTRIBS_LIB=ON ..
+
 }
 
 #build
@@ -64,6 +74,13 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -71,9 +88,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install failed."
-
-	ln -sv wine64 $XGPATH_DEST/usr/bin/wine
-	err_check "install 2 failed."
 }
 
