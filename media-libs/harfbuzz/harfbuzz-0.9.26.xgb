@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="glib2 freetype"
+RDEPEND="glib2 freetype icu graphite2"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -46,7 +46,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-gobject "
+	XGB_CONFIG+=" --with-gobject --with-graphite2 "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

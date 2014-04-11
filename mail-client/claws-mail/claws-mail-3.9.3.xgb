@@ -25,7 +25,7 @@ BIN_URI=""
 RDEPEND="libetpan compface gnutls"
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} imagemagick"
 
 
 
