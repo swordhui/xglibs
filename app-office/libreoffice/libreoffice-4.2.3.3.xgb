@@ -13,23 +13,20 @@ HOMEPAGE="http://www.libreoffice.org"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_BASE="http://download.documentfoundation.org/libreoffice/src/4.2.0"
-SRC_LIBS="$SRC_BASE/libreoffice-dictionaries-$V.tar.xz \
+SRC_BASE="http://download.documentfoundation.org/libreoffice/src/4.2.3"
+SRC_LIBS="$SRC_BASE/libreoffice-$V.tar.xz \
 	$SRC_BASE/libreoffice-help-$V.tar.xz 
-	$SRC_BASE/libreoffice-translations-4.2.0.4.tar.xz
+	$SRC_BASE/libreoffice-translations-$V.tar.xz
+	$SRC_BASE/libreoffice-dictionaries-$V.tar.xz
 	$SRC_BASE/46eb0e7f213ad61bd5dee0c494132cb0-libwps-0.2.9.tar.bz2
 	$SRC_BASE/b85436266b2ac91d351ab5684b181151-libwpg-0.2.2.tar.bz2
 	$SRC_BASE/a3dcac551fae5ebbec16e844810828c4-libwpd-0.9.9.tar.bz2
 	$SRC_BASE/d62650a6f908e85643e557a236ea989c-vigra1.6.0.tar.gz
 	$SRC_BASE/0168229624cfac409e766913506961a8-ucpp-1.3.2.tar.gz
-	$SRC_BASE/32f8e1417a64d3c6f2c727f9053f55ea-redland-1.0.16.tar.gz
-	$SRC_BASE/b12c5f9cfdb6b04efce5a4a186b8416b-rasqal-0.9.30.tar.gz
-	$SRC_BASE/4ceb9316488b0ea01acf011023cf7fff-raptor2-2.0.9.tar.gz
-	$SRC_BASE/f3ebe34d4d8695bf889279b54673e10c-Python-3.3.3.tar.bz2
 	$SRC_BASE/ea2acaf140ae40a87a952caa75184f4d-liborcus-0.5.1.tar.bz2
 	$SRC_BASE/804c6cb5698db30b75ad0ff1c25baefd-openldap-2.4.31.tgz
 	$SRC_BASE/46e92b68e31e858512b680b3b61dc4c1-mythes-1.2.3.tar.gz
-	$SRC_BASE/01a380acfec23bf617117ce98e318f3d-mdds_0.10.1.tar.bz2
+	$SRC_BASE/47203e7cade74e5c385aa812f21e7932-mdds_0.10.2.tar.bz2
 	$SRC_BASE/26b3e95ddf3d9c077c480ea45874b3b8-lp_solve_5.5.tar.gz
 	$SRC_BASE/1f24ab1d39f4a51faf22244c94a6203f-xmlsec1-1.2.14.tar.gz
 	$SRC_BASE/36271d3fa0d9dec1632029b6d7aac925-liblangtag-0.5.1.tar.bz2
@@ -47,20 +44,18 @@ SRC_LIBS="$SRC_BASE/libreoffice-dictionaries-$V.tar.xz \
 	$SRC_BASE/f872f4ac066433d8ff92f5e316b36ff9-dejavu-fonts-ttf-2.33.zip
 	$SRC_BASE/c74b7223abe75949b4af367942d96c7a-crosextrafonts-carlito-20130920.tar.gz
 	$SRC_BASE/368f114c078f94214a308a74c7e991bc-crosextrafonts-20130214.tar.gz
-	$SRC_BASE/ac4781e01619be13461bb2d562b94a7b-cppunit-1.13.1.tar.gz
 	$SRC_BASE/22f8a85daf4a012180322e1f52a7563b-libcmis-0.4.1.tar.gz
 	$SRC_BASE/1756c4fa6c616ae15973c104cd8cb256-Adobe-Core35_AFMs-314.tar.gz
-	$SRC_BASE/ff369e69ef0f0143beb5626164e87ae2-neon-0.29.5.tar.gz
 	$SRC_BASE/libvisio-0.0.31.tar.bz2
-	$SRC_BASE/libodfgen-0.0.3.tar.bz2
+	$SRC_BASE/libodfgen-0.0.4.tar.bz2
 	$SRC_BASE/libmwaw-0.2.0.tar.bz2
 	$SRC_BASE/libmspub-0.0.6.tar.bz2
 	$SRC_BASE/Firebird-2.5.2.26540-0.tar.bz2
-	$SRC_BASE/libetonyek-0.0.1.tar.bz2
+	$SRC_BASE/libetonyek-0.0.3.tar.bz2
 	$SRC_BASE/libfreehand-0.0.0.tar.bz2
-	$SRC_BASE/libe-book-0.0.2.tar.bz2
+	$SRC_BASE/libe-book-0.0.3.tar.bz2
 	$SRC_BASE/libcdr-0.0.14.tar.bz2
-	$SRC_BASE/libabw-0.0.1.tar.bz2 "
+	$SRC_BASE/libabw-0.0.2.tar.bz2 "
 
 
 SRC_URI="$SRC_BASE/libreoffice-$V.tar.xz \
@@ -72,10 +67,10 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gperf unzip archive-zip wget which zip libjpeg-turbo glu gtk3 clucene cups curl dbus expat gst-plugins-base1 harfbuzz icu lcms librsvg libxml2 libxslt mesa  nss openssl poppler graphite2 unixodbc"
+RDEPEND="gperf unzip archive-zip wget which zip libjpeg-turbo glu gtk3 clucene cups curl dbus expat gst-plugins-base1 harfbuzz icu lcms librsvg libxml2 libxslt mesa  nss openssl poppler graphite2 unixodbc neon redland"
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} python3 cppunit"
 
 
 
@@ -106,7 +101,7 @@ xgb_config()
 	err_check "conf 2 failed."
 
 	#diction
-	tar -xf $XGPATH_SOURCE/libreoffice-dictionaries-4.2.0.4.tar.xz --no-overwrite-dir --strip-components=1
+	tar -xf $XGPATH_SOURCE/libreoffice-dictionaries-$V.tar.xz --no-overwrite-dir --strip-components=1
 	err_check "conf 3 failed."
 
 	for i in $SRC_LIBS; 
@@ -154,9 +149,12 @@ xgb_config()
              --with-system-libxml        \
              --with-system-mesa-headers  \
              --with-system-nss           \
+             --with-system-neon          \
+             --with-system-redland       \
              --with-system-odbc          \
              --with-system-openssl       \
              --with-system-poppler       \
+             --with-system-cppunit       \
              --with-system-zlib          \
              --enable-gtk3          	\
              --enable-gstreamer          \
@@ -173,7 +171,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE 
+	make build 
 }
 
 #check
@@ -189,6 +187,135 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	make DESTDIR=$XGPATH_DEST distro-pack-install
+	err_check "install failed."
+
+	#remove all gid
+	rm $XGPATH_DEST/gid*
+	err_check "install 2 failed."
+
+	install -v -m644    sysui/desktop/appstream-appdata/*.xml \
+                    $XGPATH_DEST/usr/share/appdata
+	err_check "install 3 failed."
+
+	#start menu: base
+	#for i in writer base calc draw impress math main
+	#do
+
+	#office
+	imgconv1=
+   	imgconv2=/usr/share/icons/hicolor/32x32/apps/libreoffice-main.png
+   	menu_type=others
+   	menu_name=loffice
+   	menu_cmd=loffice
+   	menu_index=C50loffice
+
+   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "install 4 failed."
+
+	#writer
+	imgconv1=
+   	imgconv2=/usr/share/icons/hicolor/32x32/apps/libreoffice-writer.png
+   	menu_type=others
+   	menu_name=lowriter
+   	menu_cmd=lowriter
+   	menu_index=C51lowriter
+
+   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "install 5 failed."
+
+	#calc
+	imgconv1=
+   	imgconv2=/usr/share/icons/hicolor/32x32/apps/libreoffice-calc.png
+   	menu_type=others
+   	menu_name=localc
+   	menu_cmd=localc
+   	menu_index=C52localc
+
+   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "install 6 failed."
+
+	#draw
+	imgconv1=
+   	imgconv2=/usr/share/icons/hicolor/32x32/apps/libreoffice-draw.png
+   	menu_type=others
+   	menu_name=lodraw
+   	menu_cmd=lodraw
+   	menu_index=C53lodraw
+
+   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "install 7 failed."
+
+	#impress
+	imgconv1=
+   	imgconv2=/usr/share/icons/hicolor/32x32/apps/libreoffice-impress.png
+   	menu_type=others
+   	menu_name=loimpress
+   	menu_cmd=loimpress
+   	menu_index=C54loimpress
+
+   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "install 8 failed."
+
+	#math
+	imgconv1=
+   	imgconv2=/usr/share/icons/hicolor/32x32/apps/libreoffice-math.png
+   	menu_type=others
+   	menu_name=lomath
+   	menu_cmd=lomath
+   	menu_index=C55lomath
+
+   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "install 8 failed."
+
+	#base
+	imgconv1=
+   	imgconv2=/usr/share/icons/hicolor/32x32/apps/libreoffice-base.png
+   	menu_type=others
+   	menu_name=lobase
+   	menu_cmd=lobase
+   	menu_index=C56lobase
+
+   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "install 8 failed."
+
+	#pixmaps for desktop
+	mkdir -pv $XGPATH_DEST/usr/share/pixmaps 
+	for i in writer base calc draw impress math startcenter
+	do
+  		ln -sv /usr/share/icons/hicolor/32x32/apps/libreoffice-$i.png \
+			$XGPATH_DEST/usr/share/pixmaps/
+		err_check "install icon $i failed."
+	done
+
+	#dictions
+	chown -cR 0:0 dictionaries/
+	mkdir -pv $XGPATH_DEST/usr/lib/libreoffice/share/extensions/dict-en
+	cp -vR dictionaries/en/*  $XGPATH_DEST/usr/lib/libreoffice/share/extensions/dict-en 
+	err_check "install dict failed."
 }
+
+
+
 

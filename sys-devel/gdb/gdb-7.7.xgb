@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GL extensions for Gtk+ 2.0"
+DESCRIPTION="GNU debugger"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://gtkglext.sourceforge.net/"
+HOMEPAGE="http://sources.redhat.com/gdb/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$V/$N-$V.tar.gz"
+SRC_URI="http://ftp.gnu.org/gnu/gdb/gdb-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -27,13 +27,12 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -43,10 +42,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	err_check "cd failed."
+	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static --with-gdktarget=x11 "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -65,7 +64,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check
+	#make check
 }
 
 #install

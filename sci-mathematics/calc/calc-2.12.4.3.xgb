@@ -13,7 +13,7 @@ HOMEPAGE="http://www.isthe.com/chongo/tech/comp/calc/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://www.isthe.com/chongo/src/calc/calc-$V.tar.bz2"
+SRC_URI="http://downloads.sourceforge.net/calc/calc-$V.tar.bz2"
 
 
 # Binary package URI.

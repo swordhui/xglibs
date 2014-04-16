@@ -13,7 +13,10 @@ HOMEPAGE="http://ftgl.wiki.sourceforge.net/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/ftgl/FTGL%20Source/2.1.3%7Erc5/ftgl-2.1.3-rc5.tar.gz"
+SRC_URI="http://downloads.sourceforge.net/project/ftgl/FTGL%20Source/2.1.3%7Erc5/ftgl-2.1.3-rc5.tar.gz \
+	http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/media-libs/ftgl/files/ftgl-2.1.3_rc5-gentoo.patch \
+	http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/media-libs/ftgl/files/ftgl-2.1.3_rc5-underlink.patch "
+
 
 
 # Binary package URI.
@@ -33,7 +36,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
+	tar xf $XGPATH_SOURCE/ftgl-2.1.3-rc5.tar.gz
 }
 
 #config
@@ -43,12 +46,29 @@ xgb_config()
 
 	#fist, cd build directory
 	cd ftgl-2.1.3~rc5
+	err_check "cd failed."
+
+	#patch
+	patch -p0 -i $XGPATH_SOURCE/ftgl-2.1.3_rc5-gentoo.patch
+	err_check "patch 1 failed."
+
+
+	patch -p0 -i $XGPATH_SOURCE/ftgl-2.1.3_rc5-underlink.patch
+	err_check "patch 2 failed."
+
+	sed -e "s/AM_CONFIG_HEADER/AC_CONFIG_HEADERS/" -i configure.ac
+	err_check "patch 3 failed."
+
+	#autoreconf
+	#err_check "reconf  failed."
+
+	LDFLAGS+=" -lGL -lGLU -lm"
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --with-x "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	LDFLAGS=$LDFLAGS ./configure $XGB_CONFIG
 }
 
 #build

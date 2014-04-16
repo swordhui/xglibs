@@ -63,6 +63,7 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc    \
+			--docdir=/usr/share/doc/llvm-$V \
             --enable-libffi            \
             --enable-optimized         \
             --enable-shared            \

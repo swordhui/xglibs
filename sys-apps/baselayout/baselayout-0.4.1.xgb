@@ -42,6 +42,14 @@ xgb_install()
 	#create symbal link /bin/sh for make.
 	mkdir -p $XGPATH_DEST
 	tar xapf $XGPATH_SOURCE/$N-$V$R.tar.xz -C $XGPATH_DEST
+	err_check "install failed."
+
+	#remove /lib64 and /usr/lib64 if possible
+	if [ "$XGB_ARCH" == "i686" ]; then
+		rm -d $XGPATH_DEST/lib64
+		rm -d $XGPATH_DEST/usr/lib64
+		rm -d $XGPATH_DEST/usr/local/lib64
+	fi
 }
 
 

@@ -55,6 +55,8 @@ xgb_config()
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --libdir=/usr/lib           \
             --with-rcdir=/tmp/cupsinit        \
+			--sysconfdir=/etc \
+			--localstatedir=/var \
             --with-docdir=/usr/share/cups/doc \
             --with-system-groups=lpadmin "
 
@@ -68,8 +70,8 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
-}
+	make $XGPARA_MAKE 
+} 
 
 #check
 xgb_check()
@@ -96,8 +98,10 @@ xgb_install()
 xgb_postinst()
 {
 	echo "running after package installed..."
-	useradd -c "Print Service User" -d /var/spool/cups -g lp -s /bin/false -u 9 lp
+	userdel lp
+	groupdel lpadmin
 	groupadd -g 19 lpadmin
+	useradd -c "Print Service User" -d /var/spool/cups -g lpadmin -s /bin/false -u 9 lp
 	echo "done"
 }
 

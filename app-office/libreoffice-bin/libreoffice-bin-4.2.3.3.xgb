@@ -13,8 +13,7 @@ HOMEPAGE="http://foo.bar.com/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/presage/presage-$V.tar.gz"
+SRC_URI="http://mirror2.layerjet.com/tdf/libreoffice/stable/4.2.3/rpm/x86_64/LibreOffice_4.2.3_Linux_x86-64_rpm.tar.gz"
 
 
 # Binary package URI.
@@ -22,18 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="sqlite"
+RDEPEND="open-jdk-bin"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -42,14 +48,8 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd LibreOffice_4.2.3.3_Linux_x86-64_rpm
 	err_check "enter directory failed."
-
-	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --disable-static "
-
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
 }
 
 #build
@@ -58,22 +58,58 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	#make $XGPARA_MAKE
 }
 
 #check
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check
+	#make check
 }
 
 #install
 xgb_install()
 {
+	local i
 	echo "install to $XGPATH_DEST"
 
-	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	mkdir -p $XGPATH_DEST
+
+	mkdir build
+	cd build
+	err_check "cd build failed."
+
+	for i in ../RPMS/*;
+	do
+		echo "installing $i"
+		rpmunpack "$i"
+		err_check "unpack $i failed."
+
+		pushd $(basename $i .rpm)
+		err_check "cd $i failed."
+
+		cp -r * $XGPATH_DEST/
+		err_check "install $i failed."
+
+		popd
+	done
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

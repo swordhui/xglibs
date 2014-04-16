@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GL extensions for Gtk+ 2.0"
+DESCRIPTION="an interpreted, interactive, object-oriented programming language."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://gtkglext.sourceforge.net/"
+HOMEPAGE="http://www.python.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$V/$N-$V.tar.gz"
+SRC_URI="http://www.python.org/ftp/python/$V/Python-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,19 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="expat libffi"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/Python-$V$R.tar.xz
 }
 
 #config
@@ -42,11 +48,11 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-	err_check "cd failed."
+	cd Python-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static --with-gdktarget=x11 "
+	XGB_CONFIG+=" --enable-shared --with-system-expat --with-system-ffi "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -65,7 +71,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check
+	#make check
 }
 
 #install
@@ -75,5 +81,29 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	chmod -v 755 $XGPATH_DEST/usr/lib/libpython3.3m.so 
+	err_check "install 2 failed."
+	chmod -v 755 $XGPATH_DEST/usr/lib/libpython3.so
+	err_check "install 3 failed."
+
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

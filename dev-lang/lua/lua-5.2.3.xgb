@@ -80,6 +80,11 @@ xgb_install()
 	make INSTALL_TOP=$XGPATH_DEST/usr install
 	err_check "install $N-$V failed."
 
+	#install docs
+	mkdir -pv $XGPATH_DEST/usr/share/doc/lua-$V 
+	cp -v doc/*.{html,css,gif,png} $XGPATH_DEST/usr/share/doc/lua-$V
+	err_check "install doc of $N-$V failed."
+
 	#install pc.
 	mkdir -p $XGPATH_DEST/usr/lib/pkgconfig
 

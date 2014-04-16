@@ -23,7 +23,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gtk2 libvdpau cdparanoia-III samba libdvdnav libdvdcss libbluray alsa-lib aalib libmad lzo speex libtheora mpg123 liba52 faac faad2 libdv xvid libvpx lame unrar x264 "
+RDEPEND="gtk2 libvdpau cdparanoia-III samba libdvdnav libdvdcss libbluray alsa-lib aalib libmad lzo speex libtheora mpg123 liba52 faac faad2 libdv xvid libvpx lame unrar x264 mplayer-skin-clearlook"
 
 # Build time depend
 DEPEND="${RDEPEND} yasm"
@@ -79,13 +79,25 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
-	#install everything to $XGPATH_DEST
-	mkdir -p $XGPATH_DEST/usr
-	make prefix=$XGPATH_DEST/usr install
+	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
-	mkdir -p $XGPATH_DEST/etc
-	install -v -m644 etc/codecs.conf $XGPATH_DEST/etc/mplayer
+	install -v -m644 etc/codecs.conf $XGPATH_DEST/etc/mplayer/
 	err_check "install 2 failed."
+
+	#icons
+    local imgconv1=
+    local imgconv2=/usr/share/icons/hicolor/32x32/apps/mplayer.png
+    local menu_type=audio
+    local menu_name=mplayer
+    local menu_cmd="gmplayer -fs"
+    local menu_index=C12mplayer
+
+    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+
+
 }
 
