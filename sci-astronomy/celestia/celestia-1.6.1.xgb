@@ -30,7 +30,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gtk2 lua-5.1.4"
+RDEPEND="gtk2 lua-5.1.4 gtkglext"
 
 # Build time depend
 DEPEND="${RDEPEND}"

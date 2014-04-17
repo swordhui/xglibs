@@ -1,0 +1,124 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Super Nintendo Entertainment System (SNES) emulator"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://code.google.com/p/snes9x-gtk/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://snes9x-gtk.googlecode.com/files/snes9x-$V-src.tar.bz2 \
+http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/games-emulation/snes9x/files/snes9x-1.53-build.patch \
+http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/games-emulation/snes9x/files/snes9x-1.53-cross-compile.patch "
+
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V-src.tar.bz2
+	err_check "unpack $N-$V failed."
+
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R-src
+	err_check "cd failed."
+
+	 sed -i -e '/pedantic/d' {gtk,unix}/configure.ac
+	err_check "patch 1 failed."
+	 sed -i -e '75i#define OF(x) x' unzip/{un,}zip.h 
+	err_check "patch 2 failed."
+	 sed -i -e '22i#define OF(x) x' unzip/ioapi.h 
+	err_check "patch 3 failed."
+
+	patch -p1 -i $XGPATH_SOURCE/snes9x-1.53-build.patch
+	err_check "patch 4 failed."
+
+	patch -p1 -i $XGPATH_SOURCE/snes9x-1.53-cross-compile.patch
+	err_check "patch 5 failed."
+
+	cd unix
+	autoreconf
+	err_check "patch 6 failed."
+	LDFLAGS+=" -Wl,-z,noexecstack "
+
+
+	LDFLAGS=$LDFLAGS ./configure $XGB_CONFIG 
+	err_check "config 1 failed."
+
+	cd ../gtk
+	autoreconf
+	err_check "patch 7 failed."
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG --disable-dependency-tracking \
+		--datadir=/usr/share --with-gtk3 --with-zlib --without-pulseaudio \
+		--without-oss
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	cd ../unix
+	make $XGPARA_MAKE
+	err_check "compile $N-$V failed."
+
+	make $XGPARA_MAKE -C ../gtk
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+	mkdir -p $XGPATH_DEST/usr/bin
+	install -m 0755 snes9x $XGPATH_DEST/usr/bin
+	err_check "install $N-$V failed."
+
+	#install everything to $XGPATH_DEST
+	cd ../gtk
+	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	#icons
+    local imgconv1=
+    local imgconv2=/usr/share/icons/hicolor/32x32/apps/snes9x.png
+    local menu_type=games
+    local menu_name="Snes9x"
+    local menu_cmd=snes9x-gtk
+    local menu_index=C15snes9x
+
+    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+}
+

@@ -73,8 +73,10 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
-	ln -sv wine64 $XGPATH_DEST/usr/bin/wine
-	err_check "install 2 failed."
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		ln -sv wine64 $XGPATH_DEST/usr/bin/wine
+		err_check "install 2 failed."
+	fi
 
 	#winemine
 	convert programs/winemine/winemine.ico /tmp/0/winemine.png

@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="rasqal"
 
 # Build time depend
 DEPEND="${RDEPEND}"
