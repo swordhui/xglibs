@@ -152,6 +152,13 @@ xgb_install()
 #post install
 xgb_postinst()
 {
+	#install locale
+    echo "Install locales.."
+    mkdir -pv /usr/lib/locale
+    localedef -i en_US -f ISO-8859-1 en_US
+    localedef -i en_US -f UTF-8 en_US.UTF-8
+    localedef -i zh_CN -f GB2312 zh_CN.GB2312
+    localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
 	return 0
 }
 

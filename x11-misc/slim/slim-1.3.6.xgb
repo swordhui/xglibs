@@ -58,7 +58,7 @@ xgb_config()
 	cd build
 	err_check "cd build failed."
 
-	cmake -DCMAKE_INSTALL_PREFIX=/usr ../
+	cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_PAM=1 ../
 }
 
 #build
@@ -95,6 +95,26 @@ WantedBy=graphical.target
 Alias=display-manager.service
 
 EOF
+
+	#pam.d
+	mkdir -p $XGPATH_DEST/etc/pam.d
+	cat > $XGPATH_DEST/etc/pam.d/slim << "EOF" 
+# Begin /etc/pam.d/slim 
+ 
+# always allow root 
+auth      include     system-auth 
+ 
+# include the default account settings 
+account   include     system-account 
+ 
+# include system session defaults 
+session   include     system-session 
+
+password  include     system-password
+ 
+# End /etc/pam.d/su 
+EOF
+
 
 }
 

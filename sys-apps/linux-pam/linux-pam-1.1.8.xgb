@@ -87,26 +87,5 @@ xgb_install()
 	#chkpwd set to suid?
 	chmod -v 4755 $XGPATH_DEST/sbin/unix_chkpwd
 	err_check "install 2 failed"
-
-	#other file
-	mkdir -p $XGPATH_DEST/etc/pam.d
-	touch $XGPATH_DEST/etc/pam.d/other
-
-	cat > $XGPATH_DEST/etc/pam.d/other << "EOF"
-# Begin /etc/pam.d/other
-
-auth        required        pam_warn.so
-auth        required        pam_deny.so
-account     required        pam_warn.so
-account     required        pam_deny.so
-password    required        pam_warn.so
-password    required        pam_deny.so
-session     required        pam_warn.so
-session     required        pam_deny.so
-
-# End /etc/pam.d/other
-
-EOF
-
 }
 

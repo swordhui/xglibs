@@ -17,6 +17,7 @@ ncurses
 attr
 acl
 libcap
+linux-pam
 shadow
 psmisc
 procps-ng
@@ -83,3 +84,18 @@ fuse
 ntfs3g
 tree
 unrar
+libxml2
+libnl
+wpa_supplicant
+dbus-glib
+nspr
+sqlite
+nss
+iptables
+js
+polkit
+dbus-glib
+ppp
+networkmanager
+alsa-lib
+alsa-utils

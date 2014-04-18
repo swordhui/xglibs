@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="linux-pam"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -51,7 +51,7 @@ xgb_config()
 		--with-env-editor \
 		--enable-shell-sets-home \
 		--disable-root-sudo \
-		--without-pam \
+		--with-pam \
 		--without-sendmail"
 
 	#Third, call configure with $XGB_CONFIG
@@ -74,5 +74,27 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	#pam
+	mkdir -p $XGPATH_DEST/etc/pam.d
+	cat > $XGPATH_DEST/etc/pam.d/sudo << "EOF"
+# Begin /etc/pam.d/sudo
+
+# include the default auth settings
+auth      include     system-auth
+
+# include the default account settings
+account   include     system-account
+
+# Set default environment variables for the service user
+session   required    pam_env.so
+
+# include system session defaults
+session   include     system-session
+
+# End /etc/pam.d/sudo
+EOF
+	chmod 644 $XGPATH_DEST/etc/pam.d/sudo
 }
 

@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="openssl"
+RDEPEND="linux-pam openssl"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -49,6 +49,7 @@ xgb_config()
 		--datadir=/usr/share/sshd \
 		--libexecdir=/usr/lib/openssh \
 		--with-md5-passwords \
+		--with-pam \
 		--with-privsep-path=/var/lib/sshd "
 
 	sed -i.bak 's/ -ldes//' configure
@@ -70,7 +71,8 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check 2>&1
+	make tests 
+	echo "done"
 }
 
 xgb_ssh_deamon()
@@ -141,11 +143,6 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install $N-$V failed"
 
-	#write daemon file
-	xgb_ssh_deamon
-	chmod a+x $XGPATH_DEST/etc/rc.d/init.d/sshd
-	err_check "install $N-$V failed"
-
 	install -v -m700 -d $XGPATH_DEST/var/lib/sshd &&
 	chown -v root:sys $XGPATH_DEST/var/lib/sshd
 	err_check "install $N-$V failed"
@@ -181,11 +178,20 @@ xgb_postinst()
 	err_check "Create sshd:sshd failed."
 
 	#create keys
-	ssh-keygen -t dsa -N xiange -f /etc/ssh/ssh_host_dsa_key
-	err_check "Create dsa key failed."
+	if [ -f /etc/ssh/ssh_host_dsa_key ]; then
+		#key found
+		echo "/etc/ssh/ssh_host_dsa_key is found."
+	else
+		ssh-keygen -t dsa -N xiange -f /etc/ssh/ssh_host_dsa_key
+		err_check "Create dsa key failed."
+	fi
 
-	ssh-keygen -t rsa -N xiange -f /etc/ssh/ssh_host_rsa_key
-	err_check "Create rsa key failed."
+	if [ -f /etc/ssh/ssh_host_rsa_key ]; then
+		echo "/etc/ssh/ssh_host_rsa_key is found."
+	else
+		ssh-keygen -t rsa -N xiange -f /etc/ssh/ssh_host_rsa_key
+		err_check "Create rsa key failed."
+	fi
 
 	#reload daemons
 	systemctl daemon-reload

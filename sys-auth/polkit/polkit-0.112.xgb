@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="js glib2 intltool"
+RDEPEND="linux-pam js glib2 intltool"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -54,7 +54,7 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --localstatedir=/var \
-		--disable-static --with-authfw=shadow --enable-systemd --disable-man-pages "
+		--disable-static --with-authfw=pam --enable-systemd --disable-man-pages "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -91,6 +91,19 @@ xgb_install()
 
 	chown -R 27:27 $XGPATH_DEST/usr/share/polkit-1/rules.d
 	err_check "install 2 faile.d"
+
+	#pam
+	cat > $XGPATH_DEST/etc/pam.d/polkit-1 << "EOF"
+# Begin /etc/pam.d/polkit-1
+
+auth     include        system-auth
+account  include        system-account
+password include        system-password
+session  include        system-session
+
+# End /etc/pam.d/polkit-1
+EOF
+
 }
 
 #post install

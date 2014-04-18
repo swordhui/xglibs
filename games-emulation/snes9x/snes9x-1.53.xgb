@@ -24,7 +24,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="gtk3"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -80,6 +80,9 @@ xgb_config()
 	./configure $XGB_CONFIG --disable-dependency-tracking \
 		--datadir=/usr/share --with-gtk3 --with-zlib --without-pulseaudio \
 		--without-oss
+	err_check "config 2 failed."
+
+	cd ../unix
 }
 
 #build
@@ -88,7 +91,6 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	cd ../unix
 	make $XGPARA_MAKE
 	err_check "compile $N-$V failed."
 
