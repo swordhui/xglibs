@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="at-spi-core atk"
+RDEPEND="at-spi2-core atk"
 
 # Build time depend
 DEPEND="${RDEPEND}"

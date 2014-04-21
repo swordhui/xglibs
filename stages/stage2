@@ -106,6 +106,8 @@ xinit
 atk
 cairo
 icu
+cmake
+graphite2
 harfbuzz
 pango
 nasm
@@ -137,7 +139,6 @@ xfontsel
 curl
 lzo
 libarchive
-cmake
 tint2
 slim
 lua
@@ -225,5 +226,22 @@ apache
 pure-ftpd
 vte
 sakura
+polkit-gnome
+xsel
+menu-cache
+libfm
+pcmanfm
 fvwm-xiange
+wine
+gtkglext
+lua-5.1.4
+celestia
+sdl
+sdl-image
+sdl-mixer
+etr
+snes9x
+ftgl
+chromium
+
 
