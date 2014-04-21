@@ -68,9 +68,16 @@ xgb_build()
 #install
 xgb_install()
 {
+	local instarch
+
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		instarch="x86_64"
+	else
+		instarch="i386"
+	fi
 	#copy image
 	mkdir -p $XGPATH_DEST/boot
-	cp arch/$XGB_ARCH/boot/bzImage $XGPATH_DEST/boot/vmlinuz-$V$R
+	cp arch/$instarch/boot/bzImage $XGPATH_DEST/boot/vmlinuz-$V$R
 	err_check "[Error] install kernel image failed"
 
 	cp .config $XGPATH_DEST/boot/config-$V$R
