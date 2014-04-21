@@ -91,4 +91,10 @@ xgb_install()
 
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	depmod
+}
 

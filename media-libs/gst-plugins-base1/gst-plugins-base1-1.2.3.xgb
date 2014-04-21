@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gstreamer1 alsa-lib libogg libtheora libvobis cdparanoia-III"
+RDEPEND="gstreamer1 alsa-lib libogg libtheora libvorbis cdparanoia-III"
 
 # Build time depend
 DEPEND="${RDEPEND}"

@@ -83,3 +83,10 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	glib-compile-schemas /usr/share/glib-2.0/schemas
+}
+

@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libtiff libjpeg zlib"
+RDEPEND="libtiff libjpeg-turbo zlib"
 
 # Build time depend
 DEPEND="${RDEPEND}"
