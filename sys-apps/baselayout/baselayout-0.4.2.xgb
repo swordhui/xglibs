@@ -52,4 +52,25 @@ xgb_install()
 	fi
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	echo "XGROOT=$XGROOT"
+
+	if [ -f $XGROOT/etc/passwd ]; then
+		echo "passwd found, skip."
+	else
+		cp $XGROOT/etc/samples/passwd.sample $XGROOT/etc/passwd
+		err_check "copy $XGROOT/etc/samples/passwd.sample failed."
+	fi
+
+	if [ -f $XGROOT/etc/group ]; then
+		echo "group found, skip."
+	else
+		cp $XGROOT/etc/samples/group.sample $XGROOT/etc/group
+		err_check "copy $XGROOT/etc/samples/group.sample failed."
+	fi
+}
+
 

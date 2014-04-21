@@ -69,7 +69,7 @@ xgb_unpack()
 xgb_config()
 {
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --libdir=/lib "
+	XGB_CONFIG+=" --libdir=/lib --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -91,8 +91,8 @@ xgb_install()
 
 
 	mkdir -p $XGPATH_DEST/usr/lib
-	mv -v $XGPATH_DEST/lib/lib{readline,history}.a $XGPATH_DEST/usr/lib
-	err_check "move libreadline failed."
+	#mv -v $XGPATH_DEST/lib/lib{readline,history}.a $XGPATH_DEST/usr/lib
+	#err_check "move libreadline failed."
 
 	rm -v $XGPATH_DEST/lib/lib{readline,history}.so
 	err_check "rm libreadline.so failed."

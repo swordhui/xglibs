@@ -64,6 +64,7 @@ xgb_check()
 {
 	echo "checking $N-$V$R.."
 	make check
+	echo "done"
 }
 
 #install
@@ -73,5 +74,13 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	mkdir -p /etc/pango
+	pango-querymodules > '/etc/pango/pango.modules'
 }
 
