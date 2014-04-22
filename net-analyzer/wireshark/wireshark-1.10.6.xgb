@@ -99,3 +99,11 @@ xgb_install()
 
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' /usr/bin/dumpcap 
+	err_check "set cap for dumpcap failed."
+}
+

@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libpng libjpeg-turbo freetype"
+RDEPEND="libpng libjpeg-turbo freetype slim-xiange"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -78,6 +78,11 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install $N-$V failed."
+
+	#change theme to xiange
+	sed -i "s/^current_theme[ \t]*default/current_theme xiange/g" \
+		$XGPATH_DEST/etc/slim.conf
+	err_check "change theme failed."
 
 	#service
  	mkdir -p $XGPATH_DEST/lib/systemd/system

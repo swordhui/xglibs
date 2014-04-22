@@ -129,6 +129,7 @@ librsvg
 fvwm
 wqy-bitmap
 wqy-zenhei
+console8x16
 xcompmgr
 transset-df
 startup-notification
@@ -140,6 +141,7 @@ curl
 lzo
 libarchive
 tint2
+slim-xiange
 slim
 lua
 conky
@@ -243,7 +245,7 @@ etr
 snes9x
 ftgl
 chromium
-cppuint
+cppunit
 python3
 raptor2
 rasqal
@@ -253,5 +255,7 @@ boost
 clucene
 archive-zip
 libreoffice
-
-
+libpcap
+wireshark
+lxtask
+pidgin-lwqq

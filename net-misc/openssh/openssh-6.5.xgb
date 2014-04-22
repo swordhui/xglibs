@@ -178,24 +178,26 @@ xgb_postinst()
 	err_check "Create sshd:sshd failed."
 
 	#create keys
-	if [ -f /etc/ssh/ssh_host_dsa_key ]; then
-		#key found
-		echo "/etc/ssh/ssh_host_dsa_key is found."
-	else
-		ssh-keygen -t dsa -N xiange -f /etc/ssh/ssh_host_dsa_key
-		err_check "Create dsa key failed."
-	fi
+	rm -f /etc/ssh/ssh_host_dsa_key
+	ssh-keygen -t dsa -N "" -f /etc/ssh/ssh_host_dsa_key
+	err_check "Create dsa key failed."
 
-	if [ -f /etc/ssh/ssh_host_rsa_key ]; then
-		echo "/etc/ssh/ssh_host_rsa_key is found."
-	else
-		ssh-keygen -t rsa -N xiange -f /etc/ssh/ssh_host_rsa_key
-		err_check "Create rsa key failed."
-	fi
+	rm -f /etc/ssh/ssh_host_rsa_key
+	ssh-keygen -t rsa -N "" -f /etc/ssh/ssh_host_rsa_key
+	err_check "Create rsa key failed."
+
+	rm -f /etc/ssh/ssh_host_ed25519_key
+	ssh-keygen -t ed25519 -N "" -f /etc/ssh/ssh_host_ed25519_key
+	err_check "Create ed25519 key failed."
+
+	rm -f /etc/ssh/ssh_host_ecdsa_key
+	ssh-keygen -t ecdsa -N "" -f /etc/ssh/ssh_host_ecdsa_key
+	err_check "Create ecdsa key failed."
 
 	#reload daemons
 	systemctl daemon-reload
-
+	systemctl enable sshd
+	echo "done"
 }
 
 #pre remove

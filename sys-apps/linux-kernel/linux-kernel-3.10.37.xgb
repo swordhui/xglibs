@@ -89,12 +89,16 @@ xgb_install()
 	make INSTALL_MOD_PATH=$XGPATH_DEST modules_install
 	err_check "[Error] install modules falied."
 
+	#load fbcon autome
+	mkdir -p $XGPATH_DEST/etc/modules-load.d
+	echo "fbcon" > $XGPATH_DEST/etc/modules-load.d/fbcon.conf
+
 }
 
 #post install
 xgb_postinst()
 {
 	echo "running after package installed..."
-	depmod
+	depmod $V
 }
 
