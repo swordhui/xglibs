@@ -40,8 +40,12 @@ err_check()
 
 imgfile="/root/xg64.img"
 
+#4G
+disksize=4000000000
+blocks=$(($disksize/512))
+
 showinfo "create image file $imgfile..."
-dd if=/dev/zero of=$imgfile count=$((2*1024*3600))
+dd if=/dev/zero of=$imgfile count=$blocks
 err_check "failed."
 
 

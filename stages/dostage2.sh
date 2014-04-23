@@ -40,29 +40,34 @@ err_check()
 	fi
 }
 
-showinfo "installing firmware..."
-gpkg -ib /mnt/oldpacks/linux-firmware-1.0.xgp 
-err_check "firmware failed."
+showinfo "updating gtk2 modules"
+gtk-query-immodules-2.0
+err_check "gtk2 query module failed."
 
-showinfo "installing kernel.."
-gpkg -ib /mnt/oldpacks/linux-kernel-3.10.37-all64.xgp
-err_check "install kernel failed."
+showinfo "updating gtk3 modules"
+gtk-query-immodules-3.0
+err_check "gtk3 query module failed."
+
+showinfo "updating gtk icons.."
+gtk-update-icon-cache
+err_check "gtk update icon cache  failed."
 
 
-showinfo "installing initram.."
-gpkg -ib /mnt/oldpacks/xiange-initram-1.0.xgp
-err_check "install kernel failed."
+showinfo "enable slim.."
+systemctl enable slim
+err_check "enable slim failed."
 
-#change blkid
+showinfo "enable fvwm-xiange"
+systemctl enable xiange-welcome
+err_check "enable slim failed."
 
-showinfo "enable network manager.."
-systemctl enable NetworkManager
-err_check "enable network manager failed."
 
-#enable sshd
-showinfo "enable network manager.."
-systemctl enable sshd
-err_check "enable sshd failed"
 
-showOK "all done. ready for stage2"
+showinfo "creating user xiang..."
+useradd -m -G audio,video,tty xiange
+
+showinfo "please input password for user xiange"
+passwd xiange
+
+showOK "all done. system ready to use"
 

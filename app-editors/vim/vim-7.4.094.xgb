@@ -119,24 +119,48 @@ set ruler
 set tags=tags
 set ai
 
-autocmd FileType python set omnifunc=pythoncomplete#Complete
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType c set omnifunc=ccomplete#Complete
+"clipboard
+set clipboard+=unnamed
 
-set t_Co=256
+"show status bar always
+set laststatus=2
+set statusline=%F%m%r%h%w\ [%{&ff}]\ [%Y]\ [%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}
+
+
+"autocmd FileType python set omnifunc=pythoncomplete#Complete
+"autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+"autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+"autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+"autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+"autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+"autocmd FileType c set omnifunc=ccomplete#Complete
+
+"file type
+filetype on
+filetype plugin on
+filetype indent on
+set completeopt=longest,menu
+
+"remove auto comment
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+"mouse
+"set mouse=a
+"set selection=exclusive
+"set selectmode=mouse,key
+
+set t_Co=8
 set ts=4
+set shiftwidth=4
+
 
 au VimLeave * exe 'if strlen(v:this_session) | exe "mksession! " . v:this_session | endif '
 
-
-syntax on
-"if (&term == "iterm") || (&term == "putty")
 set background=dark
-"endif
+syntax on
+if (&term == "xterm") || (&term == "iterm") || (&term == "putty")
+set t_Co=256
+endif
 " End /etc/vimrc
 EOF
 

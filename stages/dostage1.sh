@@ -54,6 +54,10 @@ gpkg -ib /mnt/oldpacks/xiange-initram-1.0.xgp
 err_check "install kernel failed."
 
 #change blkid
+newid=$(blkid -o value /dev/loop0p1 | head -n 1)
+showinfo "change UUID to $newid..."
+sed -i "s@root=UUID=[^ \t]*@root=UUID=$newid@g" /boot/grub/grub.cfg
+err_check "change UUID to $newid failed."
 
 showinfo "enable network manager.."
 systemctl enable NetworkManager

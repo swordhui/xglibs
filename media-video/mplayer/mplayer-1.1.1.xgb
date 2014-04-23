@@ -23,7 +23,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="gtk2 libvdpau cdparanoia-III samba libdvdnav libdvdcss libbluray alsa-lib aalib libmad lzo speex libtheora mpg123 liba52 faac faad2 libdv xvid libvpx lame unrar x264 mplayer-skin-clearlook"
+RDEPEND="gtk2 libvdpau cdparanoia-III samba libdvdnav libdvdcss libbluray alsa-lib aalib libmad lzo speex libtheora mpg123 liba52 faac faad2 libdv xvid libvpx lame unrar x264 mplayer-skin-clearlook fribidi libass"
 
 # Build time depend
 DEPEND="${RDEPEND} yasm"

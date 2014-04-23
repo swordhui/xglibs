@@ -40,3 +40,4 @@ nettle
 gnutls
 pv
 strace
+ctags
