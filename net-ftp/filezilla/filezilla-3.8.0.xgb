@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libidn xdg-utils wxGTK"
+RDEPEND="libidn xdg-utils wxGTK gnutls sqlite"
 
 # Build time depend
 DEPEND="${RDEPEND}"
