@@ -75,3 +75,15 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	groupdel camera
+	groupadd -g 70 camera
+	err_check "create group camera failed."
+
+	#generate rules
+	/usr/lib/libgphoto2/print-camera-list udev-rules mode 0660 group camera > /etc/udev/rules.d/90-my-libgphoto2.rules
+	err_check "generate camera rules failed."
+}

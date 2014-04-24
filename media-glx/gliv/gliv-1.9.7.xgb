@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="An image viewer that uses OpenGL"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://guichaz.free.fr/gliv/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://guichaz.free.fr/gliv/files/gliv-$V.tar.bz2
+	http://xiangelinux.googlecode.com/files/gliv-1.9.6_cr2.patch"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="gtk2 gtkglext"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	patch -p 1 < /$XGPATH_SOURCE/gliv-1.9.6_cr2.patch
+	err_check "patch failed."
+
+	#Third, call configure with $XGB_CONFIG
+	LDFLAGS=" -lGLU " ./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	
+
+	#start icons
+	local imgconv1=/usr/share/pixmaps/gliv.png
+	local imgconv2=/usr/share/icons/hicolor/32x32/apps/gliv.png
+	local menu_type=image
+	local menu_name=Gliv
+	local menu_cmd=gliv
+	local menu_index=C50gliv
+
+	mkdir -p ${XGPATH_DEST}$(dirname $imgconv1)
+	cp gliv.png ${XGPATH_DEST}$imgconv1
+	err_check "copy icon failed."
+	mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
+	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+	convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
+	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+	        > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	err_check "make icon failed."
+
+	#desktop entries
+	mkdir -p $XGPATH_DEST/usr/share/applications
+	cp gliv.desktop.tmpl $XGPATH_DEST/usr/share/applications/gliv.desktop
+}
+

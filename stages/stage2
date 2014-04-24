@@ -233,7 +233,9 @@ polkit-gnome
 xsel
 menu-cache
 libfm
+desktop-file-utils
 pcmanfm
+xdialog
 fvwm-xiange
 wine
 gtkglext
@@ -279,3 +281,6 @@ libisoburn
 simpleburn
 leafpad
 transmission
+rdesktop
+xg-rdt
+lxrandr

@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="gtk2"
 
 # Build time depend
 DEPEND="${RDEPEND}"

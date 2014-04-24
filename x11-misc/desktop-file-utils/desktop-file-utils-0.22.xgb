@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Fvwm theme for Xiange Linux"
+DESCRIPTION="Command line utilities to work with desktop menu entries"
+
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://code.google.com/p/xiangelinux/"
+HOMEPAGE="http://freedesktop.org/wiki/Software/desktop-file-utils"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://xiangelinux.googlecode.com/files/$N-$V.tar.xz"
+SRC_URI="http://freedesktop.org/software/$N/releases/$N-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,12 +22,18 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="fvwm sakura festival xsel fcitx polkit polkit-gnome conky tint2 xdialog"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
@@ -43,6 +50,29 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install
@@ -53,4 +83,12 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 }
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	update-desktop-database /usr/share/applications
+}
+
 

@@ -123,7 +123,7 @@ scrollbar_key=S
 set_tab_name_key=N
 fullscreen_key=F11
 set_colorset_accelerator=5
-icon_file=terminal-tango.svg
+icon_file=terminal-tango.png
 EOF
 	err_check "create config file failed."
 
@@ -136,7 +136,7 @@ EOF
     local menu_index=C05console
 
     mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
+    convert -background none $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
     touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
     echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
             > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index

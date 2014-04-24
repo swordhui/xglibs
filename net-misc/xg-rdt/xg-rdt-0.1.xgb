@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A Remote Desktop Protocol Client"
+DESCRIPTION="rdesktop wrapper for Xiange System."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://rdesktop.sourceforge.net/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$V/rdesktop-$V.tar.gz"
+SRC_URI="http://foo.bar.com/$N-$V.tar.xz"
 
 
 # Binary package URI.
@@ -22,19 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="openssl"
+RDEPEND="xdialog rdesktop"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -46,12 +51,7 @@ xgb_config()
 	cd $N-$V$R
 	err_check "enter directory failed."
 
-	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-x --with-openssl=/usr --with-sound=alsa --with-ipv6 "
-
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
-}
+	}
 
 #build
 xgb_build()
@@ -59,7 +59,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	#make $XGPARA_MAKE
 }
 
 #check
@@ -76,5 +76,21 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	#menu entry
+    local imgconv1=""
+    local imgconv2=/usr/share/pixmaps/rdesktop32.png
+    local menu_type=net
+    local menu_name=rdesktop
+    local menu_cmd="xgrdt-login"
+    local menu_index=C30rdesktop
+
+    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
+    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
+            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+
+
 }
 

@@ -60,24 +60,5 @@ showinfo "updating hicolor icons"
 xdg-icon-resource forceupdate --theme hicolor
 err_check "update hicolor icon failed."
 
-
-showinfo "enable slim.."
-systemctl enable slim
-err_check "enable slim failed."
-
-showinfo "enable fvwm-xiange"
-systemctl enable xiange-welcome
-err_check "enable slim failed."
-
-
-
-
-
-showinfo "creating user xiang..."
-useradd -m -G audio,video,tty,cdrom,camera xiange
-
-showinfo "please input password for user xiange"
-passwd xiange
-
 showOK "all done. system ready to use"
 
