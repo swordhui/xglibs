@@ -33,6 +33,9 @@ DEPEND="${RDEPEND}"
 xgb_init()
 {
 	echo "init $N-$V$R build script..."
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		SRC_URI="http://fpdownload.macromedia.com/get/flashplayer/pdc/11.0.1.152/install_flash_player_11_linux.x86_64.tar.gz"
+	fi
 }
 
 #unpack
@@ -40,7 +43,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/install_flash_player_11_linux.i386.tar.gz
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -80,9 +83,14 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
-	mkdir -p $XGPATH_DEST/opt/firefox/plugins
+	mkdir -p $XGPATH_DEST/lib/mozilla/plugins
+	err_check "mkdir failed."
 
-	cp libflashplayer.so $XGPATH_DEST/opt/firefox/plugins
+	cp -r usr $XGPATH_DEST/
+	err_check "cp 1 failed."
+
+	cp libflashplayer.so $XGPATH_DEST/lib/mozilla/plugins
+	err_check "cp 2 failed."
 
 	#install everything to $XGPATH_DEST
 	#make DESTDIR=$XGPATH_DEST install

@@ -53,7 +53,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-zlib=/usr --with-inotify --with-systemd-daemon \
+	XGB_CONFIG+=" --docdir=/usr/share/doc/$N-$V --with-zlib=/usr --with-inotify --with-systemd-daemon \
 		--with-gtk "
 
 	#Third, call configure with $XGB_CONFIG

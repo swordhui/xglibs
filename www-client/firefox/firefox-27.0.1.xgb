@@ -49,9 +49,24 @@ xgb_config()
 			--localstatedir=/var \
 			--enable-system-sqlite \
 			--enable-system-cairo \
+			--with-system-nspr \
+			--enable-system-pixman \
+			--with-system-libevent=/usr \
+			--with-system-nss \
 			--with-system-jpeg \
 			--with-system-png \
 			--with-system-zlib \
+			--with-system-bz2=/usr \
+			--enable-system-ffi \
+			--with-system-icu \
+			--enable-startup-notification \
+			--disable-gconf \
+			--with-system-libvpx \
+			--disable-pulseaudio \
+			--enable-gstreamer \
+			--enable-shared-js \
+			--disable-static-js \
+			--disable-static \
 			--disable-gnomevfs"
 
 
@@ -74,5 +89,50 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+	
+	
+	#icons
+	mkdir -p $XGPATH_DEST/usr/share/pixmaps
+	cp $XGPATH_DEST/usr/lib/firefox-$V/browser/chrome/icons/default/default48.png $XGPATH_DEST/usr/share/pixmaps/firefox.png
+	err_check "install icon failed."
+
+	#desktop files
+	mkdir -p $XGPATH_DEST/usr/share/applications
+	cat > $XGPATH_DEST/usr/share/applications/firefox.desktop << EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name[en]=firefox
+Name[zh_CN]=火狐浏览器
+GenericName[en]=Web Browser
+GenericName[zh_CN]=浏览器
+Comment[en]=Your web, the way you like it
+Comment[zh_CN]=你的网络你做主
+Exec=firefox %U
+Icon=firefox.png
+Terminal=false
+MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+Categories=Network;WebBrowser;
+Encoding=UTF-8
+EOF
+	err_check "install desktop file failed."
+
+	#start menu
+    local imgconv1=""
+    local imgconv2=/usr/lib/firefox-$V/browser/chrome/icons/default/default32.png
+    local menu_type=net
+    local menu_cmd="firefox"
+    local menu_index=C00firefox
+
+    local convpara=""
+	local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+	declare -A Name
+	Name[en]="firefox"
+	Name[zh_CN]="火狐浏览器"
+
+	xgb_mkmenu
 }
 
