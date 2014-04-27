@@ -70,8 +70,21 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "Install $N-$V failed."
 
-	mkdir -p $XGPATH_DEST/etc/xg_launch/image
-	echo "+ Gimp%/usr/share/icons/hicolor/32x32/apps/gimp.png% Exec gimp" \
-		> $XGPATH_DEST/etc/xg_launch/image/C10gimp 
+ 	#menu entry
+    local imgconv1=""
+    local imgconv2=/usr/share/icons/hicolor/32x32/apps/gimp.png
+    local menu_type=image
+    local menu_name=Gimp
+    local menu_cmd="gimp"
+    local menu_index=C10gimp
+
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="Gimp"
+    Name[zh_CN]="GNU图像处理程序"
+
+    xgb_mkmenu
 }
 
