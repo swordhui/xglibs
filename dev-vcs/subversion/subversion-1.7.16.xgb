@@ -49,7 +49,7 @@ xgb_config()
 	err_check "patch failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-swig=/usr "
+	XGB_CONFIG+=" --with-swig=/usr --with-ssl --with-openssl "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
