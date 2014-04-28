@@ -27,6 +27,15 @@ RDEPEND=""
 # Build time depend
 DEPEND="${RDEPEND}"
 
+#init 
+xgb_init()
+{
+    echo "init $N-$V$R build script..."
+    if [ "$XGB_ARCH" == "x86_64" ]; then
+        SRC_URI="http://dl.google.com/dl/earth/client/current/google-earth-stable_current_x86_64.rpm"
+    fi
+}
+
 
 
 #unpack
@@ -77,10 +86,10 @@ xgb_install()
 	cd $XGPATH_DEST
 	err_check "enter dest dir failed."
 
-	rpmunpack $XGPATH_SOURCE/google-earth-stable_current_i386.rpm
+	rpmunpack $XGPATH_SOURCE/$(basename $SRC_URI)
 	err_check "unpack RPM failed."
 
-	cd google-earth-stable_current_i386
+	cd google-earth-stable_current*
 	err_check "unpack RPM failed."
 
 	mv * ../
@@ -90,11 +99,28 @@ xgb_install()
 	rm -rf google-earth-stable_current_i386
 
 	#create symbal link for ld-lsb.so.3
-	mkdir lib
-	cd lib
-	ln -sv ld-linux.so.2 ld-lsb.so.3
+	mkdir -p lib
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		ln -sv ld-linux-x86-64.so.2 lib/ld-lsb-x86-64.so.3
+	else
+		ln -sv ld-linux.so.2 ld-lsb.so.3
+	fi
 
-	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
+	#icons
+    local imgconv1=""
+    local imgconv2=/opt/google/earth/free/product_logo_32.png
+    local menu_type=sci
+    local menu_name=GoogleEarth
+    local menu_cmd="/opt/google/earth/free/googleearth"
+    local menu_index=C20googleearth
+
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="GoogleEarth"
+    Name[zh_CN]="谷歌地球"
+
+    xgb_mkmenu
 }
 

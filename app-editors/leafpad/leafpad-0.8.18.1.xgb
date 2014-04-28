@@ -86,11 +86,13 @@ xgb_install()
 	local menu_cmd=leafpad
 	local menu_index=C20leafpad
 
-	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-	        > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
 
+    declare -A Name
+    Name[en]="leafpad"
+    Name[zh_CN]="简易编辑器leafpad"
 
+    xgb_mkmenu
 }
 

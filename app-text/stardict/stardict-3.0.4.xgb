@@ -87,14 +87,21 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
-	#32x32 icon
-	convert $XGPATH_DEST/usr/share/pixmaps/stardict.png -resize 32x32 \
-		$XGPATH_DEST/usr/share/pixmaps/stardict32x32.png
+ 	#menu entry
+    local imgconv1="/usr/share/pixmaps/stardict.png"
+    local imgconv2="/usr/share/pixmaps/stardict32x32.png"
+    local menu_type=others
+    local menu_name=stardict
+    local menu_cmd="stardict"
+    local menu_index=C12stardict
 
-	#menu
-	mkdir -p $XGPATH_DEST/etc/xg_launch/others
-	echo "+ StarDict%/usr/share/pixmaps/stardict32x32.png% Exec stardict" \
-		> $XGPATH_DEST/etc/xg_launch/others/C12stardict
-	echo "Done"
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="StarDict"
+    Name[zh_CN]="星际译王"
+
+    xgb_mkmenu
 }
 

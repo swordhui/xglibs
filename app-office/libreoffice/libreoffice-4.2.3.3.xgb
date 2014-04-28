@@ -210,11 +210,14 @@ xgb_install()
    	menu_cmd=loffice
    	menu_index=C50loffice
 
-   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	err_check "install 4 failed."
+    convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LibreOffice"
+    Name[zh_CN]="自由办公"
+
+    xgb_mkmenu
 
 	#writer
 	imgconv1=
@@ -224,11 +227,14 @@ xgb_install()
    	menu_cmd=lowriter
    	menu_index=C51lowriter
 
-   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	err_check "install 5 failed."
+    convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LoWriter"
+    Name[zh_CN]="自由办公-文字处理"
+    xgb_mkmenu
+
 
 	#calc
 	imgconv1=
@@ -238,11 +244,13 @@ xgb_install()
    	menu_cmd=localc
    	menu_index=C52localc
 
-   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	err_check "install 6 failed."
+    convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LoCalc"
+    Name[zh_CN]="自由办公-电子表格"
+    xgb_mkmenu
 
 	#draw
 	imgconv1=
@@ -252,11 +260,14 @@ xgb_install()
    	menu_cmd=lodraw
    	menu_index=C53lodraw
 
-   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	err_check "install 7 failed."
+ 	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LoDraw"
+    Name[zh_CN]="自由办公-绘图程序"
+    xgb_mkmenu
+
 
 	#impress
 	imgconv1=
@@ -266,11 +277,15 @@ xgb_install()
    	menu_cmd=loimpress
    	menu_index=C54loimpress
 
-   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	err_check "install 8 failed."
+	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LoImpress"
+    Name[zh_CN]="自由办公-演示文稿"
+    xgb_mkmenu
+
+
 
 	#math
 	imgconv1=
@@ -280,11 +295,14 @@ xgb_install()
    	menu_cmd=lomath
    	menu_index=C55lomath
 
-   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	err_check "install 8 failed."
+	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LoMath"
+    Name[zh_CN]="自由办公-公式编辑"
+    xgb_mkmenu
+
 
 	#base
 	imgconv1=
@@ -294,11 +312,13 @@ xgb_install()
    	menu_cmd=lobase
    	menu_index=C56lobase
 
-   	mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-   	touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-   	echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-	err_check "install 8 failed."
+	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LoBase"
+    Name[zh_CN]="自由办公-数据库"
+    xgb_mkmenu
 
 	#pixmaps for desktop
 	mkdir -pv $XGPATH_DEST/usr/share/pixmaps 

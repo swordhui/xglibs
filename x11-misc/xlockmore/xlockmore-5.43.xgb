@@ -46,10 +46,12 @@ xgb_config()
 	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --enable-pam "
+
+	CFLAGS+=" -I/usr/include/freetype2 -I/usr/include/FTGL"
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	CFLAGS="$CFLAGS" CXXFLAGS="$CFLAGS" ./configure $XGB_CONFIG
 }
 
 #build
@@ -71,6 +73,12 @@ xgb_install()
 	make prefix=$XGPATH_DEST/usr install
 	err_check "install $N-$V failed."
 
+	#pam
+	mkdir -p $XGPATH_DEST/etc/pam.d
+	err_check "install $N-$V failed 1."
+	install -m 0644 etc/xlock.pamd $XGPATH_DEST/etc/pam.d/xlock
+	err_check "install $N-$V failed 2."
+
 	#copy resource
 	mkdir -p $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps/
 	cp pixmaps/s-lock.xpm $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps/xlock.xpm
@@ -80,8 +88,22 @@ xgb_install()
 	cp pixmaps/m-lock.xpm $XGPATH_DEST/usr/share/icons/hicolor/48x48/apps/xlock.xpm
 	err_check "install $N-$V failed."
 
-	mkdir -p $XGPATH_DEST/etc/xg_launch/sys/
-	echo "+ Lock%/usr/share/icons/hicolor/32x32/apps/xlock.xpm%  Exec xlock -mode matrix" > $XGPATH_DEST/etc/xg_launch/sys/C05xlock
+	#menu entry
+    local imgconv1=""
+    local imgconv2=/usr/share/icons/hicolor/32x32/apps/xlock.xpm
+    local menu_type=sys
+    local menu_name=Lock
+    local menu_cmd="xlock -mode matrix"
+    local menu_index=C20xlock
+
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="LockScreen"
+    Name[zh_CN]="锁住屏幕"
+
+    xgb_mkmenu
 
 }
 

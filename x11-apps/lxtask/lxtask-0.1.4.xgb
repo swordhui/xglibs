@@ -78,17 +78,20 @@ xgb_install()
 	err_check "install failed."
 
  	#start up files
-    local imgconv1=/usr/share/icons/hicolor/64x64/apps/claws-mail.png
+    local imgconv1=""
     local imgconv2=/usr/share/icons/gnome/32x32/apps/utilities-system-monitor.png
     local menu_type=sys
     local menu_name=lxtask
     local menu_cmd=lxtask
-    local menu_index=C00lxtask
+    local menu_index=C08lxtask
 
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    #convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="lxtask"
+    Name[zh_CN]="任务管理"
+
+    xgb_mkmenu
 }
 

@@ -69,20 +69,33 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
+	#copy icons
+	mkdir -p $XGPATH_DEST/usr/share/pixmaps
+	err_check "install 2 failed."
+	cp /usr/share/icons/gnome/32x32/apps/system-file-manager.png \
+		$XGPATH_DEST/usr/share/pixmaps/
+	err_check "install 3 failed."
+
+	cp /usr/share/icons/gnome/32x32/places/user-desktop.png \
+		$XGPATH_DEST/usr/share/pixmaps/
+	err_check "install 4 failed."
+
 
    #start up files
-    local imgconv1=/usr/share/icons/hicolor/64x64/apps/claws-mail.png
-    local imgconv2=/usr/share/icons/gnome/32x32/apps/system-file-manager.png
-    local menu_type=others
+    local imgconv1=""
+    local imgconv2=/usr/share/pixmaps/system-file-manager.png
+    local menu_type=sys
     local menu_name=pcmanfm
     local menu_cmd=pcmanfm
-    local menu_index=C00pcmanfm
+    local menu_index=C05pcmanfm
 
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    #convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+ 	local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
 
+    declare -A Name
+    Name[en]="pcmanfm"
+    Name[zh_CN]="我的电脑"
+
+    xgb_mkmenu
 }
 

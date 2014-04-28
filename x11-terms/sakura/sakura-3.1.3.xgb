@@ -133,7 +133,7 @@ EOF
     local menu_type=sys
     local menu_name=Console
     local menu_cmd='${MyShell}'
-    local menu_index=C05console
+    local menu_index=C15console
 
     local convpara="-background none"
 	local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"

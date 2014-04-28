@@ -72,9 +72,21 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install $N-$V failed."
 
-	#xiange quick launch
-	mkdir -p $XGPATH_DEST/etc/xg_launch/others
-	echo "+ epdfview%/usr/share/epdfview/pixmaps/icon_epdfview-32.png%      Exec epdfview" \
-		> $XGPATH_DEST/etc/xg_launch/others/C20epdfview 
+ 	#menu entry
+    local imgconv1=""
+    local imgconv2="/usr/share/epdfview/pixmaps/icon_epdfview-32.png"
+    local menu_type=others
+    local menu_name=epdfview
+    local menu_cmd="epdfview"
+    local menu_index=C20epdfview
+
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="epdfview"
+    Name[zh_CN]="PDF查看器"
+
+    xgb_mkmenu
 }
 

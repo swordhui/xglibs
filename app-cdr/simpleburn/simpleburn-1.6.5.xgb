@@ -92,11 +92,13 @@ xgb_install()
     local menu_cmd=simpleburn
     local menu_index=C50simpleburn
 
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    #convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+ 	local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
 
+    declare -A Name
+    Name[en]="SimpleBurn"
+    Name[zh_CN]="光盘刻录"
+
+    xgb_mkmenu
 }
 

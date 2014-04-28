@@ -118,9 +118,13 @@ xgb_install()
     local menu_cmd=snes9x-gtk
     local menu_index=C15snes9x
 
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="snes9x"
+    Name[zh_CN]="超任模拟器snes9x"
+
+    xgb_mkmenu
 }
 

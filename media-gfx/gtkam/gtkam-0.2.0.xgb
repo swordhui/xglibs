@@ -76,12 +76,21 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
-	#32x32 icon
-	convert $XGPATH_DEST/usr/share/pixmaps/gtkam-camera.png -resize 32x32 \
-	    $XGPATH_DEST/usr/share/pixmaps/gtkam32x32.png
+	#menu entry
+    local imgconv1="/usr/share/pixmaps/gtkam-camera.png"
+    local imgconv2="/usr/share/icons/hicolor/32x32/apps/gtkam-camera.png"
+    local menu_type=image
+    local menu_name=gtkam
+    local menu_cmd="gtkam"
+    local menu_index=C15gtkam
 
-	mkdir -p $XGPATH_DEST/etc/xg_launch/image
-	echo "+ gtkam%/usr/share/pixmaps/gtkam32x32.png% Exec gtkam" \
-		> $XGPATH_DEST/etc/xg_launch/image/C15gtkam
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="gtkam"
+    Name[zh_CN]="连接数码相机"
+
+    xgb_mkmenu
 }
 

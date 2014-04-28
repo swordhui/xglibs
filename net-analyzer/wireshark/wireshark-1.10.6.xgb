@@ -79,24 +79,36 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
+	#images
+	mkdir -p $XGPATH_DEST/usr/share/pixmaps
+	err_check "install 2 failed."
+	cp image/hi32* $XGPATH_DEST/usr/share/pixmaps/
+	err_check "install 3 failed."
+	cp image/hi48* $XGPATH_DEST/usr/share/pixmaps/
+	err_check "install 4 failed."
+	
+
 	#start
-    local imgconv1="image/wsicon32.png"
-    local imgconv2=/usr/share/icons/hicolor/32x32/apps/wireshark.png
+    local imgconv1=""
+    local imgconv2=/usr/share/pixmaps/hi32-app-wireshark.png
     local menu_type=net
     local menu_name=WireShark
     local menu_cmd="wireshark"
     local menu_index=C30wireshark
 
-	mkdir -p $XGPATH_DEST/usr/share/icons/hicolor/32x32/apps/
-	err_check "install 2 failed."
-	cp $imgconv1 $XGPATH_DEST/$imgconv2
-	err_check "install 3 failed."
+	local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
 
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+    declare -A Name
+    Name[en]="WireShark"
+    Name[zh_CN]="网海鲨鱼"
 
+    xgb_mkmenu
+	err_check "make start item failed."
+
+	#destop
+	mkdir -p $XGPATH_DEST/usr/share/applications
+	cp debian/wireshark.desktop $XGPATH_DEST/usr/share/applications
 }
 
 #post install

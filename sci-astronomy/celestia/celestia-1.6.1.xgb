@@ -138,11 +138,13 @@ xgb_install()
     local menu_cmd=celestia
     local menu_index=C10celestia
 
-    mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    convert $XGPATH_DEST$imgconv1 -resize 32x32 $XGPATH_DEST$imgconv2
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+ 	local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="Celestia"
+    Name[zh_CN]="桌面天文馆"
+
+    xgb_mkmenu
 }
 

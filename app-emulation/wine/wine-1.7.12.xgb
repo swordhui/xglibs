@@ -79,10 +79,8 @@ xgb_install()
 	fi
 
 	#winemine
-	convert programs/winemine/winemine.ico /tmp/0/winemine.png
-	err_check "install 3 failed."
 
-	imgconv1=/tmp/0/winemine-8.png
+	imgconv1=""
     imgconv2=/usr/share/pixmaps/winemine.png
     menu_type=wine
     menu_name=winemine
@@ -90,19 +88,23 @@ xgb_install()
     menu_index=C20winemine
 
     mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    cp $imgconv1 $XGPATH_DEST$imgconv2
-	err_check "install 4 failed."
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	convert programs/winemine/winemine.ico $XGPATH_DEST$imgconv2
+	err_check "install 3 failed."
+	cp $XGPATH_DEST/usr/share/pixmaps/winemine{-8,}.png
+	rm $XGPATH_DEST/usr/share/pixmaps/winemine-*
 
+ 	local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
 
+    declare -A Name
+    Name[en]="WineMine"
+    Name[zh_CN]="虚拟扫雷"
+	xgb_mkmenu
+
+   
 	#winefile
-	convert programs/winefile/winefile.ico /tmp/0/winefile.png
-	err_check "install 5 failed."
 
-	imgconv1=/tmp/0/winefile-8.png
+	imgconv1=""
     imgconv2=/usr/share/pixmaps/winefile.png
     menu_type=wine
     menu_name=winefile
@@ -110,18 +112,22 @@ xgb_install()
     menu_index=C21winefile
 
     mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    cp $imgconv1 $XGPATH_DEST$imgconv2
-	err_check "install 6 failed."
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	convert programs/winefile/winefile.ico $XGPATH_DEST$imgconv2
+	err_check "install 5 failed."
+	cp $XGPATH_DEST/usr/share/pixmaps/winefile{-8,}.png
+	rm $XGPATH_DEST/usr/share/pixmaps/winefile-*
+
+ 	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="WineFile"
+    Name[zh_CN]="虚拟文件浏览器"
+	xgb_mkmenu
+
 
 	#regedit
-	convert programs/regedit/regedit.ico /tmp/0/regedit.png
-	err_check "install 7 failed."
-
-	imgconv1=/tmp/0/regedit-8.png
+	imgconv1=""
     imgconv2=/usr/share/pixmaps/regedit.png
     menu_type=wine
     menu_name=regedit
@@ -129,12 +135,17 @@ xgb_install()
     menu_index=C22regedit
 
     mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
-    mkdir -p ${XGPATH_DEST}/etc/xg_launch/$menu_type
-    cp $imgconv1 $XGPATH_DEST$imgconv2
-	err_check "install 8 failed."
-    touch $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
-    echo "+ ${menu_name}%${imgconv2}% Exec $menu_cmd" \
-            > $XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index
+	convert programs/regedit/regedit.ico $XGPATH_DEST$imgconv2
+	err_check "install 7 failed."
+	cp $XGPATH_DEST/usr/share/pixmaps/regedit{-8,}.png
+	rm $XGPATH_DEST/usr/share/pixmaps/regedit-*
 
+ 	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="Wine_regedit"
+    Name[zh_CN]="虚拟注册表"
+	xgb_mkmenu
 }
 
