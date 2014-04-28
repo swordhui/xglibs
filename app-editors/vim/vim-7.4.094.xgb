@@ -118,6 +118,7 @@ set backspace=2
 set ruler
 set tags=tags
 set ai
+set ic
 
 "clipboard
 set clipboard+=unnamed
@@ -157,7 +158,9 @@ set shiftwidth=4
 au VimLeave * exe 'if strlen(v:this_session) | exe "mksession! " . v:this_session | endif '
 
 set background=dark
+highlight! link DiffText MatchParen
 syntax on
+
 if (&term == "xterm") || (&term == "iterm") || (&term == "putty")
 set t_Co=256
 endif
