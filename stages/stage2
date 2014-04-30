@@ -236,6 +236,7 @@ libfm
 desktop-file-utils
 pcmanfm
 xdialog
+rdesktop
 fvwm-xiange
 wine
 gtkglext
@@ -281,9 +282,8 @@ libisoburn
 simpleburn
 leafpad
 transmission
-rdesktop
-xg-rdt
 lxrandr
 adobe-flash
 open-jdk-bin
 gliv
+xarchiver

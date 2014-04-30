@@ -1,0 +1,4 @@
+#!/bin/sh
+find | cpio -o -H newc > /tmp/test.cpio
+gzip /tmp/test.cpio
+echo "/tmp/test.cpio.gz is done."

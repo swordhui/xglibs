@@ -41,4 +41,6 @@ gnutls
 pv
 strace
 ctags
+keyutils
+krb5
 cifs-utils
