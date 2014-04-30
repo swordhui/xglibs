@@ -80,4 +80,5 @@ showinfo "please input password for user xiange"
 passwd xiange
 
 showOK "all done. system ready to use"
+showFailed "You can call gpkg --sync to update xglibs now."
 
