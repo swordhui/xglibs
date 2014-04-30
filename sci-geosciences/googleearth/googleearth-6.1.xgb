@@ -25,7 +25,7 @@ BIN_URI=""
 RDEPEND=""
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} rpm2targz"
 
 #init 
 xgb_init()
@@ -103,7 +103,7 @@ xgb_install()
 	if [ "$XGB_ARCH" == "x86_64" ]; then
 		ln -sv ld-linux-x86-64.so.2 lib/ld-lsb-x86-64.so.3
 	else
-		ln -sv ld-linux.so.2 ld-lsb.so.3
+		ln -sv ld-linux.so.2 lib/ld-lsb.so.3
 	fi
 
 	#icons

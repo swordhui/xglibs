@@ -13,8 +13,7 @@ HOMEPAGE="http://foo.bar.com/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://launchpad.net/lightdm/1.11/$V/+download/lightdm-$V.tar.xz"
+SRC_URI="http://downloads.sourceforge.net/project/gswitchit/libxklavier/$V/libxklavier-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -22,10 +21,10 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libxklavier"
+RDEPEND=""
 
 # Build time depend
-DEPEND="${RDEPEND} itstool"
+DEPEND="${RDEPEND}"
 
 
 
@@ -40,7 +39,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -53,8 +52,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --localstatedir=/var --disable-tests \
-		--enable-liblightdm-gobject "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -83,29 +81,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install failed."
-	#service
-    mkdir -p $XGPATH_DEST/lib/systemd/system
-    cat > $XGPATH_DEST/lib/systemd/system/lightdm.service << EOF
-[Unit]
-Description=Light Display Manager
-Documentation=man:lightdm(1)
-After=systemd-user-sessions.service
-
-[Service]
-ExecStart=/usr/sbin/lightdm
-Restart=always
-IgnoreSIGPIPE=no
-BusName=org.freedesktop.DisplayManager
-
-[Install]
-Alias=display-manager.service
-EOF
-}
-
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
 }
 
