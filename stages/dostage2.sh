@@ -80,5 +80,5 @@ showinfo "please input password for user xiange"
 passwd xiange
 
 showOK "all done. system ready to use"
-showFailed "You can call gpkg --sync to update xglibs now."
+showFailed "You can call stage-gpkg.sh to update xglibs now."
 
