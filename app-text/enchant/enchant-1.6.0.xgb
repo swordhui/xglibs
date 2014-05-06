@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="glib2 aspell"
+RDEPEND="glib2 aspell which"
 
 # Build time depend
 DEPEND="${RDEPEND}"

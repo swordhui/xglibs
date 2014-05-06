@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="English dictioary for aspell 6"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="ftp://ftp.gnu.org/gnu/aspell/dict/0index.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-$V/OpenJDK-$V-$XGB_ARCH-bin.tar.xz"
+SRC_URI="ftp://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-7.1-0.tar.bz2"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="atk cairo cups gdk-pixbuf giflib gtk2 lcms"
+RDEPEND="aspell"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -48,9 +48,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $(basename $SRC_URI .tar.xz)
+	cd $(basename $SRC_URI .tar.bz2)
 	err_check "enter directory failed."
 
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure
 }
 
 #build
@@ -58,6 +63,8 @@ xgb_build()
 {
 	echo "make $N-$V$R..."
 
+	#run make in current directory
+	make $XGPARA_MAKE
 }
 
 #check
@@ -72,31 +79,7 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
-	install -vdm755 $XGPATH_DEST/opt/open-jdk-bin 
-	err_check "install 1 failed."
-
-	mv * $XGPATH_DEST/opt/open-jdk-bin
-	err_check "install 2 failed."
-
-	chown -R root:root $XGPATH_DEST/opt/open-jdk-bin
-	err_check "install 3 failed."
-
-	#path
-	install -vdm755 $XGPATH_DEST/etc/profile.d
-	touch $XGPATH_DEST/etc/profile.d/open-jdk-bin.sh
-	cat > $XGPATH_DEST/etc/profile.d/open-jdk-bin.sh << EOF
-export CLASSPATH=.:/usr/share/java
-export PATH="\$PATH:/opt/open-jdk-bin/bin"
-
-EOF
-
-}
-
-#post install
-xgb_postinst()
-{
-	echo ""
-	echo "open-jdk-bin has been installed to your system."
-	. /etc/profile.d/open-jdk-bin.sh
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
 }
 

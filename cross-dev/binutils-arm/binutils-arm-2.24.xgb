@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="A spell checker replacement for ispell"
+DESCRIPTION="bin tools for ARM platform."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://aspell.net/"
+HOMEPAGE="http://www.gnu.org/software/binutils/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnu.org/gnu/aspell/aspell-$V.tar.gz"
+SRC_URI="http://ftp.gnu.org/gnu/binutils/binutils-$V$R.tar.bz2"
 
 
 # Binary package URI.
@@ -21,19 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="which"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/binutils-$V$R.tar.bz2
 }
 
 #config
@@ -42,13 +48,17 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	mkdir build
+	cd build
+	err_check "enter directory build failed"
+
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc "
+	XGB_CONFIG="--prefix=/opt/arm-veex/tools --target=arm-none-linux-gnueabi \
+		--with-sysroot=/opt/arm-veex/sysroot --enable-shared "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	../binutils-$V/configure $XGB_CONFIG
 }
 
 #build
@@ -60,6 +70,13 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -67,20 +84,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install $N-$V failed."
-
-	#ispell 
-	install -v -m 755 scripts/ispell $XGPATH_DEST/usr/bin/
-	err_check "install $N-$V failed 2"
-
-	install -v -m 755 scripts/spell $XGPATH_DEST/usr/bin/
-	err_check "install $N-$V failed 3"
-
-	#config
-	mkdir -p $XGPATH_DEST/etc/
-cat > $XGPATH_DEST/etc/aspell.conf << EOF
-master	en
-lang	en
-EOF
 }
 

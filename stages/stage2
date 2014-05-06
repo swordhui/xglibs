@@ -175,8 +175,6 @@ network-manager-applet
 xdg-utils
 xlockmore
 presage
-aspell
-enchant
 babl
 gegl
 libexif
