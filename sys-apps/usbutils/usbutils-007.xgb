@@ -14,7 +14,6 @@ HOMEPAGE="http://linux-usb.sourceforge.net/"
 # $V = package version, such as 2.6.10
 
 SRC_URI="https://www.kernel.org/pub/linux/utils/usb/$N/$N-$V.tar.xz"
-#http://ftp.be.debian.org/pub/linux/utils/usb/usbutils/usbutils-007.tar.xz
 
 
 # Binary package URI.
@@ -22,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libusb-compat"
+RDEPEND="libusb"
 
 # Build time depend
 DEPEND="${RDEPEND}"
