@@ -44,3 +44,8 @@ ctags
 keyutils
 krb5
 cifs-utils
+aspell
+aspell-en
+hunspell
+hunspell-dict-en
+enchant

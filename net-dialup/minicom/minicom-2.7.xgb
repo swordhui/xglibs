@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="eneric interface into various existing spell checking libraries"
+DESCRIPTION="Serial Communication Program"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://alioth.debian.org/projects/minicom"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://www.abisource.com/downloads/$N/$V/enchant-$V.tar.gz"
+SRC_URI="http://alioth.debian.org/frs/download.php/file/3977/minicom-2.7.tar.gz"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="glib2 aspell which"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -43,10 +43,9 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --sysconfdir=/etc "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -65,7 +64,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make check
 }
 
 #install
