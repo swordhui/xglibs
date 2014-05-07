@@ -22,6 +22,8 @@ ntfs3g
 tree
 unrar
 libxml2
+docbook-xsl
+docbook-xml
 libnl
 rfkill
 wpa_supplicant
@@ -47,7 +49,10 @@ krb5
 cifs-utils
 aspell
 aspell-en
+hyphen
 hunspell
 hunspell-dict-en
 enchant
 libatasmart
+udisks
+minicom

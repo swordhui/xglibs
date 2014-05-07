@@ -120,6 +120,9 @@ libtiff
 jasper
 gdk-pixbuf
 hicolor-icon-theme
+xml-simple
+icon-naming-utils
+gnome-icon-theme
 cups
 gtk2
 tcl
@@ -164,9 +167,6 @@ gst-plugins-base1
 libcanberra
 notification-daemon
 libwnck
-xml-simple
-icon-naming-utils
-gnome-icon-theme
 iso-codes
 libgpg-error
 libgcrypt
@@ -229,6 +229,7 @@ vte
 sakura
 polkit-gnome
 xsel
+gvfs
 menu-cache
 libfm
 desktop-file-utils

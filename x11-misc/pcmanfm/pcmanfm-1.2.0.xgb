@@ -86,7 +86,7 @@ xgb_install()
     local imgconv2=/usr/share/pixmaps/system-file-manager.png
     local menu_type=sys
     local menu_name=pcmanfm
-    local menu_cmd=pcmanfm
+    local menu_cmd="dbus-launch pcmanfm"
     local menu_index=C05pcmanfm
 
  	local convpara=""

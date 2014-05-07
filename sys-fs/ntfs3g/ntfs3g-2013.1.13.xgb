@@ -76,5 +76,14 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	#create link to mount.ntfs
+	ln -sv mount.ntfs-3g $XGPATH_DEST/sbin/mount.ntfs
+	err_check "install 2 failed."
+
+	#load fuse as default
+	mkdir -p $XGPATH_DEST/etc/modules-load.d
+    echo "fuse" > $XGPATH_DEST/etc/modules-load.d/fuse.conf
 }
 

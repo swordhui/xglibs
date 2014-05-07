@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="library used to develop file managers"
+DESCRIPTION="Fvwm theme for Xiange Linux"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://blog.lxde.org"
+HOMEPAGE="http://code.google.com/p/xiangelinux/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://sourceforge.net/projects/pcmanfm/files/PCManFM%20%2B%20Libfm%20%28tarball%20release%29/libfm%20%28required%20by%20PCManFM%29/libfm-$V.tar.xz"
+SRC_URI="http://xiangelinux.googlecode.com/files/$N-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,18 +21,12 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="menu-cache udisks"
+RDEPEND="fvwm sakura festival xsel fcitx polkit polkit-gnome conky tint2 xdialog lxrandr imagematick habak"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
-
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
 
 #unpack
 xgb_unpack()
@@ -49,29 +43,6 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	err_check "enter directory failed."
-
-	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static --enable-udisks"
-
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
-}
-
-#build
-xgb_build()
-{
-	echo "make $N-$V$R..."
-
-	#run make in current directory
-	make $XGPARA_MAKE
-}
-
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
 }
 
 #install

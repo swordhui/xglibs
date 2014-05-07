@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="pango atk gdk-pixbuf hicolor-icon-theme cups"
+RDEPEND="pango atk gdk-pixbuf hicolor-icon-theme cups gnome-icon-theme"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -75,6 +75,11 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	#use gnome icon theme
+	mkdir -p $XGPATH_DEST/etc/skel
+	echo 'gtk-icon-theme-name="gnome"' > $XGPATH_DEST/etc/skel/.gtkrc-2.0
 }
 
 #post install

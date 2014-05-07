@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Library that implements support for numerous digital cameras"
+DESCRIPTION="This is a sample skeleton xiange build script file"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gphoto.org/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/gphoto/$N-$V.tar.bz2"
+SRC_URI="http://www.libimobiledevice.org/downloads/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,11 +21,18 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libusb libexif"
+RDEPEND="libusbmuxd"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
@@ -42,6 +49,7 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --disable-static "
@@ -63,7 +71,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check
+	#make check
 }
 
 #install
@@ -73,23 +81,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install failed."
-
-	#move udev ruls to /lib/udev
-	mkdir -p $XGPATH_DEST/lib
-	mv $XGPATH_DEST/usr/lib/udev $XGPATH_DEST/lib/
-
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-	groupdel camera
-	groupadd -g 70 camera
-	err_check "create group camera failed."
-
-	#generate rules
-	/usr/lib/libgphoto2/print-camera-list udev-rules mode 0660 group camera > /etc/udev/rules.d/90-my-libgphoto2.rules
-	err_check "generate camera rules failed."
-}

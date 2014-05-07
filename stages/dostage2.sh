@@ -56,10 +56,17 @@ showinfo "updating mime info..."
 update-desktop-database /usr/share/applications
 err_check "gtk update icon cache  failed."
 
+showinfo "compile schemas.."
+glib-compile-schemas /usr/share/glib-2.0/schemas
+err_check "compile schema failed."
+
 showinfo "updating hicolor icons"
 xdg-icon-resource forceupdate --theme hicolor
 err_check "update hicolor icon failed."
 
+showinfo "updating gnome icons"
+xdg-icon-resource forceupdate --theme gnome
+err_check "update gnome icon failed."
 
 showinfo "enable slim.."
 systemctl enable slim
