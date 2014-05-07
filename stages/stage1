@@ -23,6 +23,7 @@ tree
 unrar
 libxml2
 libnl
+rfkill
 wpa_supplicant
 dbus-glib
 nspr
@@ -49,3 +50,4 @@ aspell-en
 hunspell
 hunspell-dict-en
 enchant
+libatasmart
