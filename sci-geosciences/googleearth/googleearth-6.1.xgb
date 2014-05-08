@@ -96,7 +96,7 @@ xgb_install()
 	err_check "unpack RPM failed."
 
 	cd ..
-	rm -rf google-earth-stable_current_i386
+	rm -rf google-earth-stable_current*
 
 	#create symbal link for ld-lsb.so.3
 	mkdir -p lib
