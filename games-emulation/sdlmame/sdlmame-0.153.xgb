@@ -66,13 +66,18 @@ xgb_check()
 #install
 xgb_install()
 {
+	local progname="mame"
 	echo "install to $XGPATH_DEST"
+
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		progname="mame64"
+	fi
 
 	#install everything to $XGPATH_DEST
 	mkdir -p $XGPATH_DEST/opt/mame/roms
 	err_check "sdlmame: install 1 failed."
 
-	cp mame64 $XGPATH_DEST/opt/mame
+	cp $progname $XGPATH_DEST/opt/mame
 	err_check "sdlmame: install 2 failed."
 
 	cp -r artwork $XGPATH_DEST/opt/mame/
@@ -398,7 +403,7 @@ EOF
     local imgconv2=/opt/mame/mame32.png
     local menu_type=games
     local menu_name="Mame"
-    local menu_cmd="/opt/mame/mame64 -inipath /opt/mame"
+    local menu_cmd="/opt/mame/$progname -inipath /opt/mame"
     local menu_index=C20mame
 
     local convpara=""
