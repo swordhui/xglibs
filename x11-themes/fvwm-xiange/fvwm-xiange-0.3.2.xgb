@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="fvwm sakura festival xsel fcitx polkit polkit-gnome conky tint2 xdialog lxrandr imagematick habak"
+RDEPEND="fvwm sakura festival xsel fcitx polkit polkit-gnome conky tint2 xdialog lxrandr imagemagick habak"
 
 # Build time depend
 DEPEND="${RDEPEND}"

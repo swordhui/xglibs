@@ -1,6 +1,5 @@
 libffi
 python
-pcre
 glib2
 systemd
 dbus
