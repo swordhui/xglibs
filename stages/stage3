@@ -8,4 +8,6 @@ boost
 clucene
 archive-zip
 libreoffice
-
+iperf
+gdb
+sdlmame

@@ -46,7 +46,11 @@ xgb_config()
 	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static --enable-xlib-xcb --enable-gl --enable-tee "
+	XGB_CONFIG+=" --disable-static "
+
+	#remove opti-paras to avoid firefox bug
+	export CFLAGS="-pipe -O2"
+	export CXXFLAGS="$CFLAGS"
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -66,6 +70,7 @@ xgb_check()
 {
 	echo "checking $N-$V$R.."
 	make check
+	echo "Done"
 }
 
 #install
