@@ -27,6 +27,7 @@ iana-etc
 m4
 flex
 bison
+pcre
 grep
 readline
 bash

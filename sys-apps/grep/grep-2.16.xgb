@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="pcre"
 
 # Build time depend
 DEPEND="${RDEPEND}"

@@ -295,10 +295,15 @@ EOF
 #post install
 xgb_postinst()
 {
-	echo "enable shadow password.."
-	pwconv
+	if [ -z "$XGROOT" ]; then
+		echo "enable shadow password.."
+		pwconv
 
-	echo "enable shadow group password.."
-	grpconv
+		echo "enable shadow group password.."
+		grpconv
+	else
+		echo "XGROOT=$XGROOT"
+		echo "Please run pwconv and grpconv in chroot enviroment."
+	fi
 }
 

@@ -41,21 +41,22 @@ err_check()
 }
 
 showinfo "installing firmware..."
-gpkg -ib /mnt/oldpacks/linux-firmware-1.0.xgp 
+gpkg -ub /mnt/oldpacks/linux-firmware-1.0.xgp 
 err_check "firmware failed."
 
 showinfo "installing kernel.."
-gpkg -ib /mnt/oldpacks/linux-kernel-3.10.37-all64.xgp
+gpkg -ub /mnt/oldpacks/linux-kernel-3.10.37-all.xgp
 err_check "install kernel failed."
 
 
 showinfo "installing initram.."
-gpkg -ib /mnt/oldpacks/xiange-initram-1.0.xgp
+gpkg -ub /mnt/oldpacks/xiange-initram-1.0.xgp
 err_check "install kernel failed."
 
 #change blkid
-newid=$(blkid -o value /dev/loop0p1 | head -n 1)
-showinfo "change UUID to $newid..."
+devname=$(mount | grep "on / " | grep -o "^[^ \t]*")
+newid=$(blkid -o value $devname 2>/dev/null | head -n 1)
+showinfo "change UUID to $newid (dev $devname)..."
 sed -i "s@root=UUID=[^ \t]*@root=UUID=$newid@g" /boot/grub/grub.cfg
 err_check "change UUID to $newid failed."
 
