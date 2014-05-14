@@ -1,0 +1,76 @@
+#!/bin/bash
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Base layout for Xiange Linux"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://code.google.com/p/xiangelinux"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+SRC_URI="http://downloads.sourceforge.net/project/xiangelinux/baselayout/$N-$V.tar.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	echo "[Unpack] dir=`pwd`"
+	#current directory is in $XGPATH_UNPACK
+	#no patch
+}
+
+
+
+#install
+xgb_install()
+{
+	#create symbal link /bin/sh for make.
+	mkdir -p $XGPATH_DEST
+	tar xapf $XGPATH_SOURCE/$N-$V$R.tar.xz -C $XGPATH_DEST
+	err_check "install failed."
+
+	#remove /lib64 and /usr/lib64 if possible
+	if [ "$XGB_ARCH" == "i686" ]; then
+		rm -d $XGPATH_DEST/lib64
+		rm -d $XGPATH_DEST/usr/lib64
+		rm -d $XGPATH_DEST/usr/local/lib64
+	fi
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	echo "XGROOT=$XGROOT"
+
+	if [ -f $XGROOT/etc/passwd ]; then
+		echo "passwd found, skip."
+	else
+		cp $XGROOT/etc/samples/passwd.sample $XGROOT/etc/passwd
+		err_check "copy $XGROOT/etc/samples/passwd.sample failed."
+	fi
+
+	if [ -f $XGROOT/etc/group ]; then
+		echo "group found, skip."
+	else
+		cp $XGROOT/etc/samples/group.sample $XGROOT/etc/group
+		err_check "copy $XGROOT/etc/samples/group.sample failed."
+	fi
+}
+
+

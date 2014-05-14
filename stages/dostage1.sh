@@ -139,4 +139,5 @@ systemctl enable sshd
 err_check "enable sshd failed"
 
 showOK "all done. ready for stage2"
+showinfo "If you want install stage2, please remove vim with gpkg -D vim."
 
