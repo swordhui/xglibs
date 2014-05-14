@@ -13,10 +13,8 @@ HOMEPAGE="http://www.kernel.org"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.kernel.org/pub/linux/kernel/v3.0/linux-3.1.1.tar.bz2 
- 	http://www.kernel.org/pub/linux/kernel/v3.0/patch-3.1.1.bz2
-	http://www.kernel.org/pub/linux/kernel/v3.0/patch-3.1.10.bz2"
+SRC_URI="https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.12.tar.xz \
+	https://www.kernel.org/pub/linux/kernel/v3.x/patch-$V.xz"
 
 
 # Binary package URI.
@@ -37,17 +35,13 @@ DEPEND="${RDEPEND}"
 xgb_unpack()
 {
 	echo "Unpacking ..."
-	tar xf $XGPATH_SOURCE/linux-3.1.1.tar.bz2
+	tar xf $XGPATH_SOURCE/linux-3.12.tar.xz
 	err_check "[Error] linux_header: check falied."
 
-	cd linux-3.1.1
+	cd linux-3.12
 
-	#patch to 3.1.0
-	bzip2 -dc $XGPATH_SOURCE/patch-3.1.1.bz2 | patch -R -p1
-	err_check "[Error] patch 3.1.1 failed"
-	
-	bzip2 -dc $XGPATH_SOURCE/patch-3.1.10.bz2 | patch -p1
-	err_check "[Error] patch 3.1.1 failed"
+	unxz -dc $XGPATH_SOURCE/patch-$V.xz | patch -p1
+	err_check "[Error] patch $V failed"
 }
 
 #build
@@ -55,23 +49,41 @@ xgb_build()
 {
 
 	#copy configure file
-	cp /boot/config-xiange .config
-	err_check "change to /usr/src failed"
+	cp $XGPATH_SCRIPT/configs/config-$XGB_ARCH-$V .config
+	err_check "copy config $XGPATH_SCRIPT/configs/config-$XGB_ARCH-$V failed."
 
 	make $XGPARA_MAKE
-	err_check "[Error] linux_header: check falied."
+	err_check "[Error] linux_kernel: make falied."
 
-	make modules
-	err_check "[Error] linux_header: check falied."
+	make $XGPARA_MAKE modules
+	err_check "[Error] linux_kernel: make modules falied."
 
 }
 
 #install
 xgb_install()
 {
+	local instarch
+
+	case "$XGB_ARCH" in
+	mips*)
+		instarch=vmlinuz
+		;;
+	i686)
+		instarch=arch/i386/boot/bzImage
+		;;
+	x86_64)
+		instarch=arch/x86_64/boot/bzImage
+		;;
+	*)
+		instarch=arch/$XGB_ARCH/boot/bzImage
+		;;
+	esac
+		
+
 	#copy image
 	mkdir -p $XGPATH_DEST/boot
-	cp arch/i386/boot/bzImage $XGPATH_DEST/boot/vmlinuz-$V$R
+	cp $instarch $XGPATH_DEST/boot/vmlinuz-$V$R
 	err_check "[Error] install kernel image failed"
 
 	cp .config $XGPATH_DEST/boot/config-$V$R
@@ -82,10 +94,12 @@ xgb_install()
 	mkdir -p $XGPATH_DEST/lib/modules
 	make INSTALL_MOD_PATH=$XGPATH_DEST modules_install
 	err_check "[Error] install modules falied."
-
-	#install firmware
-	echo ">>> install firmwares "
-	make INSTALL_MOD_PATH=$XGPATH_DEST firmware_install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	depmod $V
+}
 

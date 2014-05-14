@@ -55,3 +55,6 @@ enchant
 libatasmart
 udisks
 minicom
+linux-firmware
+linux-kernel
+xiange-initram

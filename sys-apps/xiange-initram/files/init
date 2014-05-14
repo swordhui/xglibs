@@ -1,0 +1,53 @@
+#!/bin/sh
+
+wait_root()
+{
+	rootid=$(cat /proc/cmdline | grep -o "root=[^ ]*" | sed "s/root=//g")
+	rootdev=$(blkid | sed "s/\"//g" | grep $rootid | grep -o "^[^:]*")
+
+	if [ "x$rootdev" != "x" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+echo "Preparing Xiange system ..."
+mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
+mount -t proc -o nodev,noexec,nosuid proc /proc
+mount -t devtmpfs none /dev
+
+
+
+printf "waiting root "
+i=0
+while [ "$i" != "60" ];
+do
+	i=$(($i+1))
+	wait_root
+	if [ "$?" == "0" ]; then
+		break
+	else
+		printf "."
+		sleep 1
+		continue
+	fi
+done
+
+if [ "x$rootdev" == "x" ]; then
+	echo "!"
+	echo "$rootid is not found, enter failsafe mode."
+	/bin/sh
+fi
+		
+echo "Found $rootdev, booting .."
+mount $rootdev /mnt
+if [ "$?" != "0" ]; then
+	echo "mount $rootdev to /mnt failed, enter failsafe mode"
+	/bin/sh
+fi
+
+mount -t devtmpfs none /mnt/dev
+exec switch_root -c /dev/console /mnt /sbin/init
+
+
