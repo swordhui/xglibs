@@ -187,6 +187,12 @@ xgb_install()
 	ln -sv ../vim/vim74/doc $XGPATH_DEST/usr/share/doc/vim-7.4
 	err_check "install $N failed."
 
+	mkdir -p $XGPATH_DEST/root/.vim
+	err_check "install $N 3 failed."
+
+	mkdir -p $XGPATH_DEST/etc/skel/.vim
+	err_check "install $N 4 failed."
+
 	#write vimrc
 	xgb_vimrc
 }

@@ -82,7 +82,7 @@ devnameraw=$(basename $devname)
 devnameraw2=${devnameraw%[0-9]}
 devindex=${devnameraw#$devnameraw2}
 
-outputf=/boot/grub/boot.cfg
+outputf=/boot/grub/grub.cfg
 mkdir -p /boot/grub
 
 gpkg -info > /tmp/gpkginfo

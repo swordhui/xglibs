@@ -266,7 +266,7 @@ EOF
 xgb_postinst()
 {
 	echo "running after package installed..."
-	update-mime-database
+	update-desktop-database /usr/share/applications
 }
 
 
