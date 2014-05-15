@@ -53,8 +53,9 @@ xgb_config()
 	cd busybox-$BBV
 	err_check "enter directory failed."
 
+	cp $XGPATH_SCRIPT/files/config .config
+	err_check "copy config failed."
 
-	make defconfig
 }
 
 #build
@@ -82,37 +83,38 @@ xgb_install()
 	make install
 	err_check "install busybox 1 failed."
 
+	pushd _install
+	err_check "install busybox 6 failed."
+
 	#prepare root
-	rm _install/linuxrc
+	rm linuxrc
 	err_check "install busybox 2 failed."
 
-	install -m 0755 -d dev _install/
+	install -m 0755 -d dev
 	err_check "install busybox 3 failed."
 
-	install -m 0755 -d etc _install/
+	install -m 0755 -d etc 
 	err_check "install busybox 4 failed."
 
-	ln -sv /proc/mounts _install/mtab
+	ln -sv /proc/mounts etc/mtab
 	err_check "install busybox 5 failed."
 
-	install -m 0755 -d mnt _install/
+	install -m 0755 -d mnt 
 	err_check "install busybox 4 failed."
 
-	install -m 0755 -d proc _install/
+	install -m 0755 -d proc 
 	err_check "install busybox 4 failed."
 
-	install -m 0755 -d sys _install/
+	install -m 0755 -d sys 
 	err_check "install busybox 4 failed."
 
-	install -m 0777 -d tmp _install/
+	install -m 0777 -d tmp 
 	err_check "install busybox 4 failed."
 
-	install -m 0755 $XGPATH_SCRIPT/files/init _install/
+	install -m 0755 $XGPATH_SCRIPT/files/init .
 	err_check "install busybox 5 failed."
 
 	#make initimage
-	pushd _install
-	err_check "install busybox 6 failed."
 
 	mkdir  -p $XGPATH_DEST/boot
 	err_check "install busybox 7 failed."
