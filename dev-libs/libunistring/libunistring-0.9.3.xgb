@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Scheme interpreter"
+DESCRIPTION="manipulating Unicode strings and for manipulating C strings according to the Unicode standard."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gnu.org/software/guile/"
+HOMEPAGE="http://www.gnu.org/software/libunistring/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnu.org/pub/gnu/guile/$N-$V.tar.gz"
+SRC_URI="http://ftp.gnu.org/gnu/libunistring/libunistring-$V.tar.gz"
 
 
 # Binary package URI.
@@ -28,7 +28,11 @@ DEPEND="${RDEPEND}"
 
 
 
-
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
@@ -45,9 +49,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-error-on-warning --disable-static --disable-manpages"
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -66,7 +71,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make check
 }
 
 #install

@@ -40,18 +40,26 @@ xgb_unpack()
 xgb_config()
 {
 	echo "config $N-$V$R..."
+	local lmakef
 
 	#fist, cd build directory
 	cd p7zip_9.20.1
 	err_check "enter directory failed."
 
-	cp makefile.linux_x86_asm_gcc_4.X makefile.linux
+	case "$XGB_ARCH" in
+	x86_64)
+		lmakef=makefile.linux_amd64_asm
+		;;
+	i686)
+		lmakef=makefile.linux_x86_asm_gcc_4.X
+		;;
+	*)
+		lmakef=makefile.linux_any_cpu_gcc_4.X
+		;;
+	esac
 
-	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	cp $lmakef makefile.linux
 
-	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
 }
 
 #build
@@ -60,14 +68,14 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make DEST_HOME=/usr all_test
+	make DEST_HOME=/usr all3
 }
 
 #check
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make test
 }
 
 #install

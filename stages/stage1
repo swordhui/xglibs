@@ -55,7 +55,15 @@ enchant
 libatasmart
 udisks
 minicom
+lrzsz
 mpg123
 linux-firmware
 linux-kernel
 xiange-initram
+vconfig
+dmidecode
+testdisk
+p7zip
+ethtool
+libaio
+squashfs-tools
