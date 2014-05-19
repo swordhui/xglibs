@@ -43,6 +43,9 @@ xgb_config()
 
 	#fist, cd build directory
 	cd Alien-SVN-v$V
+
+	sed -i "s#save_errno#aprerr#" src/subversion/subversion/mod_dav_svn/util.c
+	err_check "patch 1 failed."
 	perl Build.PL PREFIX=/usr DESTDIR=$XGPATH_DEST
 
 }
