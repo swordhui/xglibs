@@ -46,7 +46,7 @@ xgb_config()
 
 	sed -i "s#save_errno#aprerr#" src/subversion/subversion/mod_dav_svn/util.c
 	err_check "patch 1 failed."
-	perl Build.PL PREFIX=/usr DESTDIR=$XGPATH_DEST
+	perl Build.PL PREFIX=/usr destdir=$XGPATH_DEST
 
 }
 
@@ -72,6 +72,6 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	./Build DESTDIR=$XGPATH_DEST install
+	./Build destdir=$XGPATH_DEST install
 }
 

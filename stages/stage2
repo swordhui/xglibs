@@ -214,7 +214,6 @@ apr-util
 neon
 swig
 subversion
-svn-core
 libxslt
 gnome-doc-utils
 speech_tools
