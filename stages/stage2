@@ -226,6 +226,7 @@ samba
 apache
 pure-ftpd
 vte
+libidn
 sakura
 polkit-gnome
 xsel
@@ -272,7 +273,6 @@ openjpeg
 opus
 fdk-aac
 ffmpeg
-libidn
 wxGTK
 filezilla
 libburn

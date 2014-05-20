@@ -193,6 +193,9 @@ xgb_install()
 	cp runtime/vim32x32.png $XGPATH_DEST/usr/share/pixmaps/
 	err_check "install $N 1 failed."
 
+	mkdir -p $XGPATH_DEST/root/.vim
+	mkdir -p $XGPATH_DEST/etc/skel/.vim
+
 	#icon
 	local imgconv1=
 	local imgconv2=/usr/share/pixmaps/vim32x32.png

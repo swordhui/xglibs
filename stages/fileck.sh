@@ -3,6 +3,11 @@
 # file system check tool
 # check what's inside a directory
 
+#generate file list
+echo "Generating file list..."
+find -type f -exec stat -c "%s, %W, %Y, %i, %n" '{}' ';' | sort -n -r > /tmp/cka
+echo "done, parsing file extensions.."
+
 if [ -f /tmp/cka ]; then
 	echo "checking file extensions.."
 else
@@ -78,6 +83,6 @@ do
 	printf "%-10s%-10s%s\n" "$fsize" ${allextcnts["$k"]} "$k"  >> /tmp/ckb
 done
 
-cat /tmp/ckb | sort -n | nl | tee /tm/result
+cat /tmp/ckb | sort -n | nl | tee /tmp/result
 rm /tmp/ckb
 
