@@ -214,7 +214,6 @@ apr-util
 neon
 swig
 subversion
-svn-core
 libxslt
 gnome-doc-utils
 speech_tools
@@ -227,6 +226,7 @@ samba
 apache
 pure-ftpd
 vte
+libidn
 sakura
 polkit-gnome
 xsel
@@ -273,7 +273,6 @@ openjpeg
 opus
 fdk-aac
 ffmpeg
-libidn
 wxGTK
 filezilla
 libburn

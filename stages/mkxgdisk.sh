@@ -48,7 +48,7 @@ mkdir -p /mnt/image
 
 #check mount point
 mountpoint /mnt/image
-if [ "$?" == "0" ];
+if [ "$?" == "0" ]; then
 	showFailed "/mnt image have already mounted, please unmount first."
 	exit 2
 fi
