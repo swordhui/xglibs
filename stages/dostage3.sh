@@ -68,5 +68,9 @@ showinfo "updating gnome icons"
 xdg-icon-resource forceupdate --theme gnome
 err_check "update gnome icon failed."
 
+showinfo "please check OS release information:"
+vi /etc/os-release
+showinfo "Modify them in need."
+
 showOK "all done. system ready to use"
 

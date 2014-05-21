@@ -86,8 +86,12 @@ useradd -m -G audio,video,tty,cdrom,camera xiange
 showinfo "please input password for user xiange"
 passwd xiange
 
+
+showinfo "add xiange to sudo.."
+visudo
+
 showinfo "please check OS release information:"
-cat /etc/os-release
+vi /etc/os-release
 showinfo "Modify them in need."
 
 showOK "all done. system ready to use"

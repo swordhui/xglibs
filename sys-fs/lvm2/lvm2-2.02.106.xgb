@@ -52,9 +52,13 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --exec-prefix= --with-confdir=/etc --enable-applib \
-         --enable-cmdlib --enable-pkgconfig --enable-udev_sync "
+	#XGB_CONFIG+=" --exec-prefix= --with-confdir=/etc --enable-applib \
+    #     --enable-cmdlib --enable-pkgconfig --enable-udev_sync "
 
+	XGB_CONFIG+=" --exec-prefix= --with-confdir=/etc --disable-applib \
+         --disable-cmdlib --disable-pkgconfig --disable-udev_sync \
+		 --disable-readline --disable-blkid_wiping --disable-fsadm \
+		 --disable-blkdeactivate --disable-selinux --with-clvmd=none "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
