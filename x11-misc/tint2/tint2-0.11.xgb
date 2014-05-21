@@ -51,6 +51,10 @@ xgb_config()
 	cd $N-$V
 	err_check "enter directory failed."
 
+	#patch it
+	patch -p1 < $XGPATH_SCRIPT/tint2-systray.patch
+	err_check "patch failed."
+
 	mkdir build
 	cd build
 }
