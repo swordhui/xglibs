@@ -94,6 +94,18 @@ xgb_install()
 	mkdir -p $XGPATH_DEST/lib/modules
 	make INSTALL_MOD_PATH=$XGPATH_DEST modules_install
 	err_check "[Error] install modules falied."
+
+	#auto-load modules
+	mkdir -p $XGPATH_DEST/etc/modules-load.d/
+	cat > $XGPATH_DEST/etc/modules-load.d/kernel-$V.conf << EOF
+fbcon
+fuse
+lib80211_crypt_tkip
+lib80211_crypt_wep
+lib80211_crypt_ccmp
+loop
+snd_seq
+EOF
 }
 
 #post install
