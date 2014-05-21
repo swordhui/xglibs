@@ -7,13 +7,13 @@ unixodbc
 boost
 clucene
 archive-zip
-libreoffice
 iperf
 gdb
 sdl-ttf
 sdlmame
-google-earth
+googleearth
 qemu-kvm
 bochs
 guile
 geda-gaf
+libreoffice
