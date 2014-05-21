@@ -67,3 +67,5 @@ p7zip
 ethtool
 libaio
 squashfs-tools
+cpio
+rpm2targz
