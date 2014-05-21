@@ -81,7 +81,7 @@ err_check "enable slim failed."
 
 
 showinfo "creating user xiang..."
-useradd -m -G audio,video,tty,cdrom,camera xiange
+useradd -m -G audio,video,tty,cdrom,camera,gpkg xiange
 
 showinfo "please input password for user xiange"
 passwd xiange
