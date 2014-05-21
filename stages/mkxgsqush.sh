@@ -58,15 +58,16 @@ EOF
 # $1 is arch. $2 is kerver-version. $3 is device index. $4 is UUID
 # $5 is output file $6 is initrd-file 
 # $7 will be added to kernel command line 
+# $8 is Title
 xg_mkgrubcfg_item()
 {
-	echo -e "menuentry 'Xiange Linux $1 $2' {" >> $5
+	echo -e "menuentry '$8' {" >> $5
 	echo -e "\tinsmod gzio" >> $5
 	echo -e "\tinsmod part_msdos" >> $5
 	echo -e "\tinsmod ext2" >> $5
 	echo -e "\tset root='hd0,msdos$3'" >> $5
 	echo -e "\techo 'Loading Xiange Linux $1 $2...'" >> $5
-	echo -e "\tlinux /boot/vmlinuz-$2 root=UUID=$4 $7 rw quiet" >> $5
+	echo -e "\tlinux /boot/vmlinuz-$1-$2 root=UUID=$4 $7 rw quiet" >> $5
 	if [ -n "$6" ]; then
 		echo -e "\tinitrd $6" >> $5
 	fi
@@ -80,10 +81,10 @@ xg_mkgrubcfg_item()
 xg_do_kernel()
 {
 	#copy kernel
-	cp -a $oldroot/boot/vmlinuz-$1 $newroot/boot
-	err_check "copy $oldroot/boot/vmlinuz-$1 faile.d"
+	cp -a $oldroot/boot/vmlinuz-$1 $newroot/boot/vmlinuz-$XGB_ARCH-$1
+	err_check "copy $oldroot/boot/vmlinuz-$XGB_ARCH-$1 faile.d"
 
-	cp -a $oldroot/boot/config-$1 $newroot/boot
+	cp -a $oldroot/boot/config-$1 $newroot/boot/config-$XGB_ARCH-$1
 	err_check "copy $oldroot/boot/config-$1 faile.d"
 
 	#get initrams
@@ -108,8 +109,11 @@ xg_do_kernel()
 		/lib/modules/$1/kernel/drivers/md/dm-snapshot.ko
 		/lib/modules/$1/kernel/drivers/md/dm-mod.ko"
 		
-	ln -sv lib /tmp/xgmnt/init/lib64
-	err_check "create lib64 failed."
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		ln -sv lib /tmp/xgmnt/init/lib64
+		err_check "create lib64 failed."
+	fi
+
 	mkdir -p /tmp/xgmnt/init/root
 	err_check "create root failed."
 
@@ -148,22 +152,49 @@ xg_do_kernel()
 	err_check "umount proc failed."
 
 	#generate new initramfs
-	find | cpio -o -H newc > $newroot/boot/initramfs-$1.img
-	err_check "generate $newroot/boot/initramfs-$1.img failed."
-	gzip $newroot/boot/initramfs-$1.img
-	err_check "compress $newroot/boot/initramfs-$1.img failed."
+	initrdf=/boot/initramfs-$XGB_ARCH-$1.img
+	find | cpio -o -H newc > $newroot$initrdf
+	err_check "generate $newroot$initrdf."
+	rm -f ${initrdf}.gz
+	gzip $newroot$initrdf
+	err_check "compress $newroot$initrdf failed."
 
 	showinfo "$newroot/boot/initramfs-$1.img.gz is ready."
 
-	initrdf=/boot/initramfs-$1.img.gz
+	initrdf=${initrdf}.gz
 
 	#boot.cfg
-	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" "$initrdf"
-	xg_mkgrubcfg_item "$XGB_ARCH (Safemode)" "$1" "$devindex" "$newid" "$outputf" "$initrdf" "safemode"
+	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" \
+		"$initrdf" "Xiange Linux $XGB_ARCH $1"
+
+	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" \
+		"$initrdf" "Xiange Linux $XGB_ARCH $1 -- Safemode"
 
 }
 
 xg_mksquash()
+{
+	
+	showinfo "copying ..."
+	rm -rf /root/squashroot
+	mkdir -p /root/squashroot
+	ln /root/xg64.img /root/squashroot/
+	err_check "copy failed."
+	
+	showinfo "making squash fs.."
+	
+	cd /root
+	rm -f xiange-sqroot.tmp 2>/dev/null
+	mksquashfs squashroot xiange-sqroot.tmp
+	err_check "make squash fs failed."
+	
+	rm -rf squashroot
+	err_check "rm temperory file failed."
+	mv xiange-sqroot.tmp xiange-sqroot
+	err_check "rename xiange-sqroot.tmp failed."
+}
+
+xg_cksquash()
 {
 	if [ -f "/root/xg64.img" ]; then
 		ls -l /root/xg64.img
@@ -171,22 +202,20 @@ xg_mksquash()
 		showFailed "No Xg64.img found."
 		exit 1
 	fi
-	
-	showinfo "copying ..."
-	rm -rf /tmp/squashroot
-	mkdir -p /tmp/squashroot
-	cp -a /root/xg64.img /tmp/squashroot/
-	err_check "copy failed."
-	
-	showinfo "making squash fs.."
-	
-	cd /tmp
-	rm -f xiange-sqroot
-	mksquashfs squashroot xiange-sqroot
-	err_check "make squash fs failed."
-	
-	rm -rf squashroot
-	err_check "rm temperory file failed."
+
+	if [ -f "/root/xiange-sqroot" ]; then
+		#found, check date
+		if [ "/root/xiange-sqroot" -nt "/root/xg64.img" ]; then
+			#newer, no need recreate.
+			showinfo "xiange-sqroot is newer than xg64.img, pass"
+		else
+			rm -f "/root/xiange-sqroot"
+			xg_mksquash
+		fi
+	else
+		#not found
+		xg_mksquash
+	fi
 }
 
 xg_prepare()
@@ -204,7 +233,7 @@ xg_prepare()
 
 xg_mount_squash()
 {
-	mount xiange-sqroot /tmp/xgmnt/0 -o loop 
+	mount /root/xiange-sqroot /tmp/xgmnt/0 -o loop 
 	err_check "mount xiange-sqroot to /tmp/xgmnt/0 failed."
 	
 	showinfo "mount xiange root.."
@@ -219,10 +248,11 @@ xg_mount_squash()
 	err_check "mount to /mnt/xgmnt/2 faled."
 }
 
+imgfile="/root/xg_sqh.img"
+
 xg_mkddimg()
 {
-	imgfile="/root/xg_sqh.img"
-	disksize=4000000000
+	disksize=2000000000
 	blocks=$(($disksize/512))
 	
 	showinfo "create image file $imgfile, size $(($disksize/1000000000)) GB.."
@@ -251,18 +281,52 @@ xg_mkddimg()
 	err_check "install grub failed."
 
 	showinfo "unmount /tmp/xgmnt/1..."
-	mount /tmp/xgmnt/1
+	umount /tmp/xgmnt/1
 	err_check "unmount grub failed."
 }
 
+
+xg_useoldimg()
+{
+	showinfo "mount to a image.."
+	losetup -P /dev/loop1 $imgfile
+	err_check "setup $imgfile to /dev/loop1 faled."
+
+	showinfo "mounting..."
+	mount /dev/loop1p1 /tmp/xgmnt/1
+	err_check "mount loop1p1 failed."
+
+	#resize cowfiles
+	for i in /tmp/xgmnt/1/xiange/cow-*; 
+	do
+		rm -f $i
+		err_check "remove $i failed."
+		touch $i
+		err_check "re-create $i failed."
+	done
+	
+	showinfo "unmount /tmp/xgmnt/1..."
+	umount /tmp/xgmnt/1
+	err_check "unmount grub failed."
+}
+
+xg_ckddimg()
+{
+	if [ -f $imgfile ]; then
+		showinfo "$imgfile found, use it directly."
+		xg_useoldimg
+	else
+		xg_mkddimg
+	fi
+}
 
 #
 # init here
 #
 
 xg_prepare
-xg_mkddimg
-xg_mksquash
+xg_ckddimg
+xg_cksquash
 xg_mount_squash
 
 
@@ -298,18 +362,22 @@ for i in $oldroot/boot/vmlinuz-*;
 do
 	i=$(basename $i)
 	kernelv=${i#vmlinuz-}
-	showinfo found $i, kerver version: $kernelv
+	showinfo "found $i, kerver version: $kernelv"
 	xg_do_kernel $kernelv
 done
 
 #squshfs.img
 showinfo "copy squashfs image.."
-mv /tmp/xiange-sqroot $newroot
-err_check "copy /tmp/xiange-sqroot to $newroot failed."
+mkdir -p $newroot/xiange
+cp -a /root/xiange-sqroot $newroot/xiange/xiange-sqroot-$XGB_ARCH
+err_check "copy /root/xiange-sqroot to $newroot failed."
 
-#cow.img (1G)
-showinfo "creating cow image.."
-dd if=/dev/zero of=$newroot/cow.out count=$((2*1024*1500))
+#cow.img 
+sizeline=$(df -m /dev/loop1p1 | grep "^/dev")
+size=$(echo $sizeline | cut -d " " -f 4)
+size=$(($size-10))
+showinfo "creating cow image size $size MB.."
+dd if=/dev/zero of=$newroot/xiange/cow-$XGB_ARCH.out count=$((2*1024*$size))
 err_check "create $newroot/cow.out failed."
 
 #unmount newroot

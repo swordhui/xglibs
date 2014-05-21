@@ -96,14 +96,15 @@ if [ "x$rootdev" == "x" ]; then
 	/bin/sh
 fi
 
+xgb_arch=$(uname -m)
 ddmntp=/tmp
 finalmnt=/mnt
-srcfile=$ddmntp/xiange-sqroot
-cowfile=$ddmntp/cow.out
+srcfile=$ddmntp/xiange/xiange-sqroot-$xgb_arch
+cowfile=$ddmntp/xiange/cow-${xgb_arch}.out
 
 
 showOK " OK"
-showinfo "Found $rootdev, booting .."
+showinfo "Found $rootdev, mounting $xgb_arch..."
 mount $rootdev $ddmntp
 if [ "$?" != "0" ]; then
 	showFailed "mount $rootdev to $ddmntp failed, enter failsafe mode"
@@ -144,7 +145,7 @@ fi
 
 #mount cow
 losetup /dev/loop5 "$cowfile"
-err_check "setup cow file $2 to /dev/loop5 faile.d"
+err_check "setup cow file $cowfile to /dev/loop5 failed."
 
 echo "0 $(blockdev --getsize /dev/loop6) snapshot /dev/loop6 /dev/loop5 p 64" | dmsetup create root_fs
 err_check "create root_fs failed."
@@ -152,5 +153,6 @@ err_check "create root_fs failed."
 mount /dev/mapper/root_fs "$finalmnt"
 err_check "mount failed."
 
+showinfo "all done, booting..."
 mount -t devtmpfs none $finalmnt/dev
 exec switch_root -c /dev/console $finalmnt /sbin/init
