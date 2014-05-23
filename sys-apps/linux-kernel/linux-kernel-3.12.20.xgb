@@ -1,0 +1,120 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Linux Kernel"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.kernel.org"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.12.tar.xz \
+	https://www.kernel.org/pub/linux/kernel/v3.x/patch-$V.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+
+
+#unpack
+xgb_unpack()
+{
+	echo "Unpacking ..."
+	tar xf $XGPATH_SOURCE/linux-3.12.tar.xz
+	err_check "[Error] linux_header: check falied."
+
+	cd linux-3.12
+
+	unxz -dc $XGPATH_SOURCE/patch-$V.xz | patch -p1
+	err_check "[Error] patch $V failed"
+}
+
+#build
+xgb_build()
+{
+
+	#copy configure file
+	cp $XGPATH_SCRIPT/configs/config-$XGB_ARCH-$V .config
+	err_check "copy config $XGPATH_SCRIPT/configs/config-$XGB_ARCH-$V failed."
+
+	make $XGPARA_MAKE
+	err_check "[Error] linux_kernel: make falied."
+
+	make $XGPARA_MAKE modules
+	err_check "[Error] linux_kernel: make modules falied."
+
+}
+
+#install
+xgb_install()
+{
+	local instarch
+
+	case "$XGB_ARCH" in
+	mips*)
+		instarch=vmlinuz
+		;;
+	i686)
+		instarch=arch/i386/boot/bzImage
+		;;
+	x86_64)
+		instarch=arch/x86_64/boot/bzImage
+		;;
+	*)
+		instarch=arch/$XGB_ARCH/boot/bzImage
+		;;
+	esac
+		
+
+	#copy image
+	mkdir -p $XGPATH_DEST/boot
+	cp $instarch $XGPATH_DEST/boot/vmlinuz-$V$R
+	err_check "[Error] install kernel image failed"
+
+	cp .config $XGPATH_DEST/boot/config-$V$R
+	err_check "[Error] install kernel config failed"
+
+	#install modules
+	echo ">>> install modules "
+	mkdir -p $XGPATH_DEST/lib/modules
+	make INSTALL_MOD_PATH=$XGPATH_DEST modules_install
+	err_check "[Error] install modules falied."
+
+	#auto-load modules
+	mkdir -p $XGPATH_DEST/etc/modules-load.d/
+	cat > $XGPATH_DEST/etc/modules-load.d/kernel-$V.conf << EOF
+fbcon
+fuse
+lib80211_crypt_tkip
+lib80211_crypt_wep
+lib80211_crypt_ccmp
+loop
+snd-seq
+snd-seq-midi
+snd-seq-oss
+snd-mixer-oss
+EOF
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	depmod $V
+}
+

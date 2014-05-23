@@ -9,8 +9,7 @@ DESCRIPTION="Allows users or groups to run commands as other users"
 HOMEPAGE="http://www.sudo.ws/"
 
 # Point to any required sources; these will be automatically downloaded by
-# gpkg. 
-# $N = package name, such as autoconf, x-org
+# gpkg.  # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
 SRC_URI="http://www.sudo.ws/sudo/dist/sudo-${V}p5.tar.gz"
@@ -76,6 +75,10 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 	err_check "install failed."
 
+	#add group wheel to sudoers
+	sed -i "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g" $XGPATH_DEST/etc/sudoers
+	err_check "add group wheel to sudoers failed."
+
 	#pam
 	mkdir -p $XGPATH_DEST/etc/pam.d
 	cat > $XGPATH_DEST/etc/pam.d/sudo << "EOF"
@@ -96,5 +99,13 @@ session   include     system-session
 # End /etc/pam.d/sudo
 EOF
 	chmod 644 $XGPATH_DEST/etc/pam.d/sudo
+}
+
+#post install
+xgb_postinst()
+{
+	echo "adding group wheel.."
+	groupdel wheel 2>/dev/null
+	groupadd wheel
 }
 

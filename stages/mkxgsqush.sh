@@ -165,10 +165,10 @@ xg_do_kernel()
 
 	#boot.cfg
 	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" \
-		"$initrdf" "Xiange Linux $XGB_ARCH $1"
+		"$initrdf" " " "Xiange Linux $XGB_ARCH $1"
 
 	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" \
-		"$initrdf" "Xiange Linux $XGB_ARCH $1 -- Safemode"
+		"$initrdf" "safemode"  "Xiange Linux $XGB_ARCH $1 -- Safemode"
 
 }
 

@@ -99,9 +99,11 @@ xgb_postinst()
 {
 	echo "running after package installed..."
 	userdel lp
+	userdel lpadmin
 	groupdel lpadmin
-	groupadd -g 19 lpadmin
-	useradd -c "Print Service User" -d /var/spool/cups -g lpadmin -s /bin/false -u 9 lp
+	groupdel lp
+	groupadd -g 19 lp
+	useradd -c "Print Service User" -d /var/spool/cups -g lp -s /bin/false -u 9 lp
 	echo "done"
 }
 

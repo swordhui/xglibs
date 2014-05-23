@@ -83,7 +83,7 @@ xgb_install()
 	err_check "install 2 failed."
 
 	#load fuse as default
-	mkdir -p $XGPATH_DEST/etc/modules-load.d
-    echo "fuse" > $XGPATH_DEST/etc/modules-load.d/fuse.conf
+	#mkdir -p $XGPATH_DEST/etc/modules-load.d
+    #echo "fuse" > $XGPATH_DEST/etc/modules-load.d/fuse.conf
 }
 

@@ -81,14 +81,11 @@ err_check "enable slim failed."
 
 
 showinfo "creating user xiang..."
-useradd -m -G audio,video,tty,cdrom,camera,gpkg xiange
+useradd -m -G audio,video,tty,cdrom,camera,gpkg,wheel xiange
 
-showinfo "please input password for user xiange"
-passwd xiange
+showinfo "setting password for xiange..."
+printf "xiange\nxiange\n" | passwd xiange
 
-
-showinfo "add xiange to sudo.."
-visudo
 
 showinfo "please check OS release information:"
 vi /etc/os-release
