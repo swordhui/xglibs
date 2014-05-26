@@ -1,10 +1,11 @@
 #!/bin/sh
 
 #
-# Xiange Initramfs init file
+# Xiange Initramfs init file for USB device
 #
-#	by Lihui Zhang <swordhuihui@gmail.com>
+#	Copyright (C) Lihui Zhang <swordhuihui@gmail.com>
 #	2014.05.20
+#	License: GPL V2
 #
 #	$1 is squasfs image file, with xiang-root(xg64.img)
 #	$2 is cow.out file, for squashfs writing.
@@ -53,6 +54,15 @@ wait_root()
 		return 0
 	else
 		return 1
+	fi
+}
+
+get_rootfstype()
+{
+	roottype=$(cat /proc/cmdline | grep -o "rootfstype=[^ ]*" | sed "s/rootfstype=//g")
+
+	if [ -n "$roottype" ]; then
+		roottype="-t $roottype"
 	fi
 }
 
@@ -150,7 +160,9 @@ err_check "setup cow file $cowfile to /dev/loop5 failed."
 echo "0 $(blockdev --getsize /dev/loop6) snapshot /dev/loop6 /dev/loop5 p 64" | dmsetup create root_fs
 err_check "create root_fs failed."
 
-mount /dev/mapper/root_fs "$finalmnt"
+get_rootfstype
+
+mount $roottype /dev/mapper/root_fs "$finalmnt"
 err_check "mount failed."
 
 showinfo "all done, booting..."

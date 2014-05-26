@@ -70,3 +70,5 @@ squashfs-tools
 cpio
 rpm2targz
 lvm2
+requests
+bypy

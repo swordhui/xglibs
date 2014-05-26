@@ -1,8 +1,52 @@
 #!/bin/sh
 
+#
+# Xiange Initramfs init file for hard disk
+#
+#	Copyright (C) Lihui Zhang <swordhuihui@gmail.com>
+#	2014.05.20
+#	License: GPL V2
+#
+#	command line: root=UUID="XXXX" rootfstype=ext4 safemode
+#
+
+NORMAL="\\033[0;39m" # Standard console grey
+SUCCESS="\\033[1;32m" # Success is green
+WARNING="\\033[1;33m" # Warnings are yellow
+FAILURE="\\033[1;31m" # Failures are red
+INFO="\\033[1;36m" # Information is light cyan
+BRACKET="\\033[1;34m" # Brackets are blue
+finalmnt=/mnt
+
+#show info in cyan color, $1 is information.
+showinfo()
+{
+	echo -e  $INFO"$1"$NORMAL
+}
+
+#show OK message in green color, $1 is information.
+showOK()
+{
+	echo -e $SUCCESS"$1"$NORMAL
+}
+
+#show OK message in green color, $1 is information.
+showFailed()
+{
+	echo -e $FAILURE"$1"$NORMAL
+}
+
+#check return code. show $1 if error.
+err_check()
+{
+	if [ $? != 0 ]; then
+		showFailed "$1"
+		/bin/sh
+	fi
+}
+
 wait_root()
 {
-	rootid=$(cat /proc/cmdline | grep -o "root=[^ ]*" | sed "s/root=//g")
 	rootdev=$(blkid | sed "s/\"//g" | grep $rootid | grep -o "^[^:]*")
 
 	if [ "x$rootdev" != "x" ]; then
@@ -12,14 +56,34 @@ wait_root()
 	fi
 }
 
-echo "Preparing Xiange system ..."
+get_rootfstype()
+{
+	roottype=$(cat /proc/cmdline | grep -o "rootfstype=[^ ]*" | sed "s/rootfstype=//g")
+
+	if [ -n "$roottype" ]; then
+		roottype="-t $roottype"
+	fi
+}
+
+showinfo "Preparing Xiange system ..."
 mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
+err_check "mount sys failed."
 mount -t proc -o nodev,noexec,nosuid proc /proc
+err_check "mount proc failed."
 mount -t devtmpfs none /dev
+err_check "mount dev failed."
 
+#check safemode
+safemode=$(cat /proc/cmdline | grep "safemode")
+if [ "$?" == "0" ]; then
+	showinfo "running in safemode..."
+	/bin/sh
+fi
 
+rootid=$(cat /proc/cmdline | grep -o "root=[^ ]*" | sed "s/root=//g")
+err_check "get rootid failed."
+showinfo "waiting root $rootid "
 
-printf "waiting root "
 i=0
 while [ "$i" != "60" ];
 do
@@ -36,18 +100,17 @@ done
 
 if [ "x$rootdev" == "x" ]; then
 	echo "!"
-	echo "$rootid is not found, enter failsafe mode."
-	/bin/sh
-fi
-		
-echo "Found $rootdev, booting .."
-mount $rootdev /mnt
-if [ "$?" != "0" ]; then
-	echo "mount $rootdev to /mnt failed, enter failsafe mode"
+	echo ""
+	showFailed "$rootid is not found, enter failsafe mode."
 	/bin/sh
 fi
 
-mount -t devtmpfs none /mnt/dev
-exec switch_root -c /dev/console /mnt /sbin/init
+xgb_arch=$(uname -m)
+get_rootfstype
 
+mount $roottype $rootdev "$finalmnt"
+err_check "mount $rootdev to $finalmnt failed."
 
+showinfo "booting..."
+mount -t devtmpfs none $finalmnt/dev
+exec switch_root -c /dev/console $finalmnt /sbin/init
