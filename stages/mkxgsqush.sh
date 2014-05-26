@@ -11,6 +11,32 @@ FAILURE="\\033[1;31m" # Failures are red
 INFO="\\033[1;36m" # Information is light cyan
 BRACKET="\\033[1;34m" # Brackets are blue
 
+mntroot=/tmp/xgmnt.$$
+oldroot=$mntroot/2
+newroot=$mntroot/1
+
+
+
+xg_cleanup()
+{
+	#unmount newroot
+	showinfo "unmounting $newroot..."
+	umount $newroot
+
+	showinfo "unmounting $oldroot..."
+	umount $oldroot
+
+	losetup -d /dev/loop1
+	losetup -d /dev/loop2
+
+	showinfo "unmounting $mntroot/0.."
+	umount $mntroot/0
+
+	rm -rf $mntroot
+}
+
+
+
 #show info in cyan color, $1 is information.
 showinfo()
 {
@@ -27,13 +53,14 @@ showOK()
 showFailed()
 {
 	echo -e $FAILURE"$1"$NORMAL
+	xg_cleanup
 }
 
 #check return code. show $1 if error.
 err_check()
 {
 	if [ $? != 0 ]; then
-		echo -e $FAILURE"$1"
+		showFailed "$1"
 		exit 1
 	fi
 }
@@ -88,13 +115,22 @@ xg_do_kernel()
 	err_check "copy $oldroot/boot/config-$1 faile.d"
 
 	#get initrams
-	rm -rf /tmp/xgmnt/init
-	mkdir /tmp/xgmnt/init
-	cd /tmp/xgmnt/init
-	err_check "enter /tmp/xgmnt/init failed."
+	rm -rf $mntroot/init
+	mkdir $mntroot/init
+	cd $mntroot/init
+	err_check "enter $mntroot/init failed."
 
-	gunzip -c $oldroot/boot/initramfs-1.0.img.gz | cpio -i 
-	err_check "unzip $oldroot/boot/initramfs-1.0.img.gz failed."
+	local -a initnames
+	local initcnt=0
+	oldinitname=$(ls $oldroot/boot/initramfs-*.img.gz) 
+	for i in $oldinitname
+	do
+		initnames[$initcnt]="$i"
+		initcnt=$(($initcnt+1))
+	done
+		
+	gunzip -c ${initnames[0]} | cpio -i 
+	err_check "unzip initramfs ${initnames[0]} failed."
 
 	XGLIST="/lib/libdevmapper.so.1.02 
 		/lib/libc.so.6
@@ -110,52 +146,52 @@ xg_do_kernel()
 		/lib/modules/$1/kernel/drivers/md/dm-mod.ko"
 		
 	if [ "$XGB_ARCH" == "x86_64" ]; then
-		ln -sv lib /tmp/xgmnt/init/lib64
+		ln -sv lib $mntroot/init/lib64
 		err_check "create lib64 failed."
 	fi
 
-	mkdir -p /tmp/xgmnt/init/root
+	mkdir -p $mntroot/init/root
 	err_check "create root failed."
 
 	#copy file in list
 	for i in $XGLIST;
 	do
 		basen=$(dirname $i)
-		mkdir -p /tmp/xgmnt/init$basen
+		mkdir -p $mntroot/init$basen
 		showinfo "copying $oldroot$i..."
-		cp -a $oldroot$i /tmp/xgmnt/init$basen/
+		cp -a $oldroot$i $mntroot/init$basen/
 		err_check "cp $oldroot$i failed."
 	done
 
 	
 	#init
-	cp /var/xiange/xglibs/stages/init /tmp/xgmnt/init/init
+	cp /var/xiange/xglibs/stages/init $mntroot/init/init
 	err_check "copy init failed."
 
 	#make depfiles
-	mount -t proc none /tmp/xgmnt/init/proc
-	mount -t sysfs none /tmp/xgmnt/init/sys
-	mount --bind /dev /tmp/xgmnt/init/dev
-	chroot /tmp/xgmnt/init /sbin/depmod $1
+	mount -t proc none $mntroot/init/proc
+	mount -t sysfs none $mntroot/init/sys
+	mount --bind /dev $mntroot/init/dev
+	chroot $mntroot/init /sbin/depmod $1
 	err_check "dempode failed."
 
 	#check dmsetup
-	chroot /tmp/xgmnt/init /sbin/dmsetup --help 
+	chroot $mntroot/init /sbin/dmsetup --help 
 	err_check "dempode failed."
 
 	#sleep 1
-	umount /tmp/xgmnt/init/dev
+	umount $mntroot/init/dev
 	err_check "umount dev failed."
-	umount /tmp/xgmnt/init/sys
+	umount $mntroot/init/sys
 	err_check "umount sys failed."
-	umount /tmp/xgmnt/init/proc
+	umount $mntroot/init/proc
 	err_check "umount proc failed."
 
 	#generate new initramfs
 	initrdf=/boot/initramfs-$XGB_ARCH-$1.img
 	find | cpio -o -H newc > $newroot$initrdf
 	err_check "generate $newroot$initrdf."
-	rm -f ${initrdf}.gz
+	rm -f $newroot${initrdf}.gz
 	gzip $newroot$initrdf
 	err_check "compress $newroot$initrdf failed."
 
@@ -165,7 +201,7 @@ xg_do_kernel()
 
 	#boot.cfg
 	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" \
-		"$initrdf" " " "Xiange Linux $XGB_ARCH $1"
+		"$initrdf" "rootfstype=ext4" "Xiange Linux $XGB_ARCH $1"
 
 	xg_mkgrubcfg_item "$XGB_ARCH" "$1" "$devindex" "$newid" "$outputf" \
 		"$initrdf" "safemode"  "Xiange Linux $XGB_ARCH $1 -- Safemode"
@@ -220,9 +256,9 @@ xg_cksquash()
 
 xg_prepare()
 {
-	mkdir -p /tmp/xgmnt/0
-	mkdir -p /tmp/xgmnt/1
-	mkdir -p /tmp/xgmnt/2
+	mkdir -p $mntroot/0
+	mkdir -p $mntroot/1
+	mkdir -p $mntroot/2
 	
 	#load modules
 	modprobe loop
@@ -233,18 +269,18 @@ xg_prepare()
 
 xg_mount_squash()
 {
-	mount /root/xiange-sqroot /tmp/xgmnt/0 -o loop 
-	err_check "mount xiange-sqroot to /tmp/xgmnt/0 failed."
+	mount /root/xiange-sqroot $mntroot/0 -o loop 
+	err_check "mount xiange-sqroot to $mntroot/0 failed."
 	
 	showinfo "mount xiange root.."
-	losetup -P /dev/loop2 /tmp/xgmnt/0/xg64.img
+	losetup -P /dev/loop2 $mntroot/0/xg64.img
 	err_check "setup xg64 to /dev/loop2 faled."
 
 	showinfo "mounting new root..."
-	mount /dev/loop1p1 /tmp/xgmnt/1
+	mount /dev/loop1p1 $mntroot/1
 	err_check "mount loop1p1 failed."
 	
-	mount /dev/loop2p1 /tmp/xgmnt/2
+	mount /dev/loop2p1 $mntroot/2
 	err_check "mount to /mnt/xgmnt/2 faled."
 }
 
@@ -273,15 +309,15 @@ xg_mkddimg()
 	
 	
 	showinfo "mounting..."
-	mount /dev/loop1p1 /tmp/xgmnt/1
+	mount /dev/loop1p1 $mntroot/1
 	err_check "mount loop1p1 failed."
 	
 	showinfo "installing grub2..."
-	grub-install --modules=part_msdos --root-directory=/tmp/xgmnt/1 /dev/loop1
+	grub-install --modules=part_msdos --root-directory=$mntroot/1 /dev/loop1
 	err_check "install grub failed."
 
-	showinfo "unmount /tmp/xgmnt/1..."
-	umount /tmp/xgmnt/1
+	showinfo "unmount $mntroot/1..."
+	umount $mntroot/1
 	err_check "unmount grub failed."
 }
 
@@ -293,11 +329,11 @@ xg_useoldimg()
 	err_check "setup $imgfile to /dev/loop1 faled."
 
 	showinfo "mounting..."
-	mount /dev/loop1p1 /tmp/xgmnt/1
+	mount /dev/loop1p1 $mntroot/1
 	err_check "mount loop1p1 failed."
 
 	#resize cowfiles
-	for i in /tmp/xgmnt/1/xiange/cow-*; 
+	for i in $mntroot/1/xiange/cow-*; 
 	do
 		rm -f $i
 		err_check "remove $i failed."
@@ -305,8 +341,8 @@ xg_useoldimg()
 		err_check "re-create $i failed."
 	done
 	
-	showinfo "unmount /tmp/xgmnt/1..."
-	umount /tmp/xgmnt/1
+	showinfo "unmount $mntroot/1..."
+	umount $mntroot/1
 	err_check "unmount grub failed."
 }
 
@@ -329,9 +365,6 @@ xg_ckddimg
 xg_cksquash
 xg_mount_squash
 
-
-oldroot=/tmp/xgmnt/2
-newroot=/tmp/xgmnt/1
 
 outputf=$newroot/boot/grub/grub.cfg
 mkdir -p /boot/grub
@@ -394,11 +427,11 @@ err_check "remove /dev/loop1 failed."
 losetup -d /dev/loop2
 err_check "remove /dev/loop2 failed."
 
-showinfo "unmounting /tmp/xgmnt/0.."
-umount /tmp/xgmnt/0
-err_check "unmount /tmp/xgmnt/0 failed."
+showinfo "unmounting $mntroot/0.."
+umount $mntroot/0
+err_check "unmount $mntroot/0 failed."
 
-rm -rf /tmp/xgmnt
+rm -rf $mntroot
 
 showOK "done"
 
