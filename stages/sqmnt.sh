@@ -28,6 +28,7 @@ tmpmntdir=$tmpmntroot/ro
 tmprwdir=$tmpmntroot/rw
 infofile=$tmpmntroot/info
 rwfile=${1}.rw.tar.gz
+mntpoint=${2%/}
 
 mkdir -p $tmpmntdir
 err_check "create $tmpmntdir failed."
@@ -45,10 +46,10 @@ err_check "mount squashfs $1 to $tmpmntdir failed."
 
 unionfs -o cow,max_files=32768 \
 	-o allow_other,use_ino,suid,dev,nonempty \
-    $tmprwdir=RW:$tmpmntdir=RO $2
-err_check "mount unionfs to $2 failed."
+    $tmprwdir=RW:$tmpmntdir=RO $mntpoint
+err_check "mount unionfs to $mntpoint failed."
 
-echo "$1:$2:$tmpmntroot:$rwfile" > $infofile
+echo "$1:$mntpoint:$tmpmntroot:$rwfile" > $infofile
 
-showinfo "$2 is ready to use."
+showinfo "$mntpoint is ready to use."
 

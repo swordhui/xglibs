@@ -10,6 +10,7 @@
 
 scriptpath=/var/xiange/xglibs/stages
 . $scriptpath/baseio.sh
+mntpoint=${1%/}
 
 # $1 is path to squashfs
 # $2 is mount point
@@ -22,16 +23,16 @@ fi
 
 cd /tmp/sqauni
 
-showinfo "searching $1..."
+showinfo "searching $mntpoint..."
 
 allfiles=`find -iname "info" 2>/dev/null`
 
 if [ -z "$allfiles" ]; then
-	showFailed "$1 not found."
+	showFailed "$mntpoint not found."
 	exit 2
 fi
 
-info=$(grep "$1:" $allfiles  2>/dev/null)
+info=$(grep "$mntpoint:" $allfiles  2>/dev/null)
 
 docut "$info" ":"
 
