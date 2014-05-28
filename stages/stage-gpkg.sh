@@ -1,5 +1,10 @@
 #!/bin/sh
 
+#
+# CAUTION: DO NOT INCLUDE ANY OTHER FILES!!!!
+# THIS SCRIPT IS STAND ALONG ONLY!!!
+#
+
 #this script can be only called in chroot enviroment after stage0 installed.
 
 # Warning: when switching from a 8bit to a 9bit font,
@@ -35,7 +40,7 @@ showFailed()
 err_check()
 {
 	if [ $? != 0 ]; then
-		echo -e $FAILURE"$1"
+		showFailed "$1"
 		exit 1
 	fi
 }

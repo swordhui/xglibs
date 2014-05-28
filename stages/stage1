@@ -72,3 +72,5 @@ rpm2targz
 lvm2
 requests
 bypy
+sword-helper
+unionfs-fuse
