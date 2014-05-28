@@ -82,7 +82,7 @@ docut()
 		item="${left%%${2}*}"
 		left="${left#*$2}"
 		docut_a[$docut_c]=$item
-		echo "$docut_c = ${docut_a[$docut_c]}"
+		#echo "$docut_c = ${docut_a[$docut_c]}"
 		docut_c=$(($docut_c+1))
 	done
 }
