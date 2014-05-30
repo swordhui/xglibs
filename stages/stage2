@@ -236,6 +236,7 @@ libfm
 desktop-file-utils
 pcmanfm
 xdialog
+gtk-server
 rdesktop
 fvwm-xiange
 wine
