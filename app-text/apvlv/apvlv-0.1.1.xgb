@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Lightweight PDF viewer using Poppler and GTK+ libraries."
+DESCRIPTION="This is a sample skeleton xiange build script file"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://trac.emma-soft.com/epdfview/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://trac.emma-soft.com/epdfview/chrome/site/releases/$N-$V.tar.bz2 \
-http://www.linuxfromscratch.org/patches/blfs/svn/epdfview-0.1.8-fixes-1.patch"
+SRC_URI="https://github.com/downloads/naihe2010/apvlv/apvlv-0.1.f7f7b9c-Source.tar.gz"
 
 
 # Binary package URI.
@@ -22,18 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="poppler gtk2"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -42,16 +48,13 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $(basename $SRC_URI .tar.gz)
+	err_check "enter directory failed."
 
-	patch -Np1 -i $XGPATH_SOURCE/epdfview-0.1.8-fixes-1.patch
-	err_check "patch failed."
+	mkdir build
+	cd build
 
-	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-libintl-prefix=/usr --with-cups "
-
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cmake -DCMAKE_INSTALL_PREFIX=/usr ../
 }
 
 #build
@@ -63,6 +66,13 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -70,22 +80,22 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install $N-$V failed."
+    err_check "install $N-$V failed."
 
- 	#menu entry
+    #menu entry
     local imgconv1=""
-    local imgconv2="/usr/share/epdfview/pixmaps/icon_epdfview-32.png"
+    local imgconv2="/usr/share/doc/apvlv/icons/pdf.png"
     local menu_type=others
-    local menu_name=epdfview
-    local menu_cmd="epdfview"
-    local menu_index=C20epdfview
+    local menu_name=apvlv
+    local menu_cmd="apvlv"
+    local menu_index=C21apvlv
 
     local convpara=""
     local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
 
     declare -A Name
-    Name[en]="epdfview"
-    Name[zh_CN]="PDF查看器"
+    Name[en]="apvlv"
+    Name[zh_CN]="PDF查看器-apvlv"
 
     xgb_mkmenu
 }
