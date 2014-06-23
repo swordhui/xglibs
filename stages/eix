@@ -1,0 +1,103 @@
+#!/bin/sh
+
+#
+# Xiange installation script : gentoo portage parser
+#
+#	Copyright (C) Lihui Zhang <swordhuihui@gmail.com>
+#	2014.05.27
+#	Licence: GPL V2
+#
+#	this script can be only called in chroot enviroment after stage0 installed.
+
+XGPATH_PORTAGE=/usr/portage
+XGFILE_HEAD=.git/HEAD
+XGFILE_LIST=~/.gpkg/portage.lst
+
+scriptpath=/var/xiange/xglibs/stages
+. $scriptpath/baseio.sh
+
+
+xg_update_portage()
+{
+	showinfo "Updating portage list..."
+	mkdir -p $(dirname $XGFILE_LIST)
+	find -L $XGPATH_PORTAGE -iname *.ebuild 2>/dev/null > $XGFILE_LIST
+	err_check "Generate list file failed."
+	sed -i "s@^$XGPATH_PORTAGE@@g" $XGFILE_LIST
+	err_check "patch list file failed."
+}
+
+
+
+if [ "$1" == "" ]; then
+	echo "eix: search gentoo ebuild."
+	echo "usage: eix [package name]"
+	exit 1
+fi
+
+#check if we need update list file
+
+if [ -a $XGFILE_LIST ]; then
+	#found, check time
+	if [ $XGFILE_HEAD -nt $XGFILE_LIST ]; then
+		xg_update_portage
+	else
+		showinfo "list file OK."
+	fi
+else
+	xg_update_portage
+fi
+
+
+
+
+
+showinfo "Searching $1..."
+
+allfiles=$(grep "/$1-" $XGFILE_LIST | sort -r)
+
+xg_check_rst()
+{
+	local cnt=0
+
+	for i in $allfiles;
+	do
+		((cnt++))
+		printf "%-6s %s\n" $cnt $i
+	done
+
+	if [ "$cnt" == "1" ]; then
+		vim $XGPATH_PORTAGE$i
+	fi
+}
+
+if [ -n "$allfiles" ]; then
+	#echo found $allfiles
+	#vim $XGPATH_PORTAGE$allfiles
+	xg_check_rst
+	exit 0
+fi
+
+#not found, search with pattern 2
+allfiles=$(grep "/$1" $XGFILE_LIST | sort -r)
+if [ -n "$allfiles" ]; then
+	#echo found $allfiles
+	#vim $XGPATH_PORTAGE$allfiles
+	xg_check_rst
+	exit 0
+fi
+
+#not found, search with pattern 3
+allfiles=$(grep "$1" $XGFILE_LIST | sort -r)
+if [ -n "$allfiles" ]; then
+	#echo found $allfiles
+	#vim $XGPATH_PORTAGE$allfiles
+	xg_check_rst
+	exit 0
+fi
+
+echo "$1 not found."
+
+
+
+

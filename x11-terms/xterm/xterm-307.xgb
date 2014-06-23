@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="a pidgin plugin for webqq protocol"
+DESCRIPTION="Terminal Emulator for X Windows"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://github.com/xiehuc/pidgin-lwqq"
+HOMEPAGE="http://dickey.his.com/xterm/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://github.com/xiehuc/pidgin-lwqq/archive/pidgin-lwqq-master.zip"
+SRC_URI="ftp://invisible-island.net/xterm/$N-$V.tgz"
 
 
 # Binary package URI.
@@ -21,26 +21,19 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="lwqq"
+RDEPEND="luit"
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	unzip $XGPATH_SOURCE/pidgin-lwqq-master.zip
-	err_check "unzip 1 failed."
+	tar xf $XGPATH_SOURCE/$N-$V$R.tgz
 }
 
 #config
@@ -49,14 +42,18 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd pidgin-lwqq-master 
-	err_check "enter directory failed."
+	cd $N-$V$R
+	
+	sed -i '/v0/,+1s/new:/new:kb=^?:/' termcap 
+	err_check "Pach $N-$V failed."
 
-	mkdir build
-	cd build
+	echo -e '\tkbs=\\177,' >>terminfo 
 
-	cmake -DCMAKE_INSTALL_PREFIX=/usr ../
+	XGB_CONFIG+=" --enable-luit --enable-wide-chars \
+		--with-app-defaults=/usr/share/X11/app-defaults
+		--sysconfdir=/etc --mandir=/usr/man --localstatedir=/var "
 
+	TERMINFO=/usr/lib/terminfo ./configure $XGB_CONFIG
 }
 
 #build
@@ -68,13 +65,6 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
-}
-
 #install
 xgb_install()
 {
@@ -82,5 +72,9 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "Install $N-$V failed."
+
+	make DESTDIR=$XGPATH_DEST install-ti
+	err_check "Install $N-$V failed."
 }
 

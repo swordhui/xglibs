@@ -47,7 +47,7 @@ gettext
 intltool
 gperf
 groff
-xz-utils
+xz
 grub
 less
 gzip

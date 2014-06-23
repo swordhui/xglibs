@@ -122,6 +122,7 @@ echo "<tr> <td>序号</td> <td>图标</td><td>类别</td><td>软件数目</td>  
 #echo "<caption>类别: $classcnt, 软件总数: $softcnt</caption>" >> $index 
 #exit 0
 
+cd /usr/portage
 allclass=`ls 2>/dev/null`
 
 cnt=0
