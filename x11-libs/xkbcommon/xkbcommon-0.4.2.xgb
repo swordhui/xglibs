@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="a library to handle keyboard descriptions"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://xkbcommon.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://github.com/downloads/naihe2010/apvlv/apvlv-master.zip"
+SRC_URI="http://xkbcommon.org/download/libxkbcommon-$V.tar.xz"
 
 
 # Binary package URI.
@@ -39,7 +39,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/libxkbcommon-$V.tar.xz
 }
 
 #config
@@ -48,13 +48,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $(basename $SRC_URI .zip)
+	cd libxkbcommon-$V
 	err_check "enter directory failed."
 
-	mkdir build
-	cd build
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
 
-	cmake -DCMAKE_INSTALL_PREFIX=/usr ../
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -80,23 +81,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-    err_check "install $N-$V failed."
-
-    #menu entry
-    local imgconv1=""
-    local imgconv2="/usr/share/doc/apvlv/icons/pdf.png"
-    local menu_type=others
-    local menu_name=apvlv
-    local menu_cmd="apvlv"
-    local menu_index=C21apvlv
-
-    local convpara=""
-    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
-
-    declare -A Name
-    Name[en]="apvlv"
-    Name[zh_CN]="PDF查看器-apvlv"
-
-    xgb_mkmenu
 }
 

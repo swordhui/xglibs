@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="creating graphical user interfaces for applications"
+DESCRIPTION="X.Org libdrm library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://dri.freedesktop.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnome.org/pub/gnome/sources/gtk+/3.10/gtk+-$V.tar.xz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://dri.freedesktop.org/libdrm/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,25 +22,19 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="at-spi2-atk gdk-pixbuf pango"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -48,12 +43,13 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd gtk+-$V$R
-	#err_check "enter directory failed."
+	cd $N-$V$R
+
+	sed -e "/pthread-stubs/d" -i configure.ac && autoreconf -fiv 
+	err_check "patch $N-$V failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --enable-broadway-backend \
-		--enable-x11-backend  --enable-wayland-backend "
+	XGB_CONFIG+=" --enable-udev --enable-radeon "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -72,7 +68,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make check
 }
 
 #install
@@ -82,24 +78,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "insall $N-$V failed."
-
-	mkdir -p $XGPATH_DEST/etc
- 	touch $XGPATH_DEST/etc/gtk-3.0/settings.ini
-cat > $XGPATH_DEST/etc/gtk-3.0/settings.ini << "EOF"
-[Settings]
-gtk-theme-name = Clearwaita
-gtk-fallback-icon-theme = elementary
-EOF
-}
-
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-
-	gtk-query-immodules-3.0 --update-cache
-	glib-compile-schemas /usr/share/glib-2.0/schemas
-	echo "done"
 }
 
