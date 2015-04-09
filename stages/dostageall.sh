@@ -12,6 +12,12 @@
 scriptpath=/var/xiange/xglibs/stages
 . $scriptpath/baseio.sh
 
+finalstage="$1"
+
+if [ -n "$finalstage" ]; then
+	showinfo "finalstage=$finalstage"
+fi
+
 showinfo "do stage0 things..."
 $scriptpath/dostage0.sh
 err_check "dostage0 failed."
@@ -25,6 +31,10 @@ do
 	showinfo "do stage$i things..."
 	$scriptpath/dostage${i}.sh
 	err_check "dostage$i failed."
+
+	if [ "$finalstage" == "$i" ]; then
+		break
+	fi
 
 	if [ "$i" == "1" ]; then
 		#remove vim because 

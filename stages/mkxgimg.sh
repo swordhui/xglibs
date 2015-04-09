@@ -25,6 +25,39 @@ xg_do_cleanup()
 
 
 imgfile="/root/xg64.img"
+finalstage="X"
+showusage=0
+disksize=8000000000
+version=1.0
+
+while getopts "g:s:v" name  2>/dev/null
+do
+	case "$name" in
+	g)
+		showinfo "size=$OPTARGG"
+		disksize=$(($OPTARG*1000000000))
+		;;
+	s)
+		showinfo "finalstage=$OPTARG"
+		finalstage="$OPTARG"
+		;;
+	v)
+		echo "$version"
+		exit 0
+		;;
+	*)
+		showusage=1
+		;;
+	
+	esac
+done
+
+if [ "$showusage" == "1" ]; then
+	echo "Usage:" 
+	echo -e "\t-g\tImageSizeInGB (default: 8)"
+	echo -e "\t-s\tFinalStage, can be 1,2,3 (default: 3)"
+	exit 1
+fi
 
 #4G
 case "$1" in
@@ -35,7 +68,6 @@ case "$1" in
 	disksize=4000000000
 	;;
 *)
-	disksize=8000000000
 	;;
 esac
 blocks=$(($disksize/512))
@@ -90,7 +122,7 @@ showinfo "installing stage0..."
 gpkg inststage 0 /var/xiange/packages
 err_check "install failed."
 
-gpkg -chroot /mnt/image /var/xiange/xglibs/stages/dostageall.sh
+gpkg -chroot /mnt/image /var/xiange/xglibs/stages/dostageall.sh "$finalstage"
 err_check "chroot 1 failed."
 
 gpkg -unchroot /mnt/image
