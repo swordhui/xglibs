@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# install Xiange to a disk? Can only show disk list now. (Not Ready)
+
 # Warning: when switching from a 8bit to a 9bit font,
 # the linux console will reinterpret the bold (1;) to
 # the top 256 glyphs of the 9bit font. This does

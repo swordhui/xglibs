@@ -15,7 +15,7 @@ HOMEPAGE="http://tiswww.case.edu/php/chet/bash/bashtop.html"
 
 SRC_URI="http://ftp.gnu.org/gnu/bash/$N-$V$R.tar.gz"
 SRC_PATCH="http://ftp.gnu.org/gnu/bash/bash-$V-patches"
-MAX_PATCH=18
+MAX_PATCH=33
 BASE_PATCH="bash43"
 
 

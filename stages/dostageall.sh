@@ -22,6 +22,12 @@ showinfo "do stage0 things..."
 $scriptpath/dostage0.sh
 err_check "dostage0 failed."
 
+
+if [ "$finalstage" == "0" ]; then
+	showinfo "Stop at stage 0 as requested."
+	exit 0
+fi
+
 for i in 1 2 3 
 do
 	showinfo "install stage$i..."

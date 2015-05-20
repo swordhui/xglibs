@@ -17,7 +17,7 @@ SRC_URI="ftp://ftp.gnu.org/gnu/readline/$N-$V.tar.gz"
 
 VIM_PATCH_BASE="readline63"
 VIM_PATCH_MIN=1
-VIM_PATCH_MAX=6
+VIM_PATCH_MAX=8
 VIM_PATCH_URL="ftp://ftp.cwru.edu/pub/bash/readline-$V-patches"
 
 
