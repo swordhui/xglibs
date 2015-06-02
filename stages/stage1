@@ -40,6 +40,8 @@ networkmanager
 alsa-lib
 alsa-utils
 nettle
+libtasn1
+p11-kit
 gnutls
 pv
 strace

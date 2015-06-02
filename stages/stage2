@@ -230,6 +230,7 @@ libidn
 sakura
 polkit-gnome
 xsel
+gcr
 gvfs
 menu-cache
 libfm
