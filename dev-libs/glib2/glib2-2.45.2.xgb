@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="The GLib library of C routines"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.gtk.org/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://ftp.gnome.org/pub/gnome/sources/glib/2.45/glib-$V.tar.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="libffi python pcre"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/glib-$V.tar.xz
+}
+
+#config
+xgb_config()
+{
+	echo "config glib-$V$R..."
+
+	#fist, cd build directory
+	cd glib-$V
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --with-pcre=system --with-python=/usr/bin/python3 "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make check
+	echo "done"
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
+}
+

@@ -6,7 +6,7 @@
 DESCRIPTION="the network swiss army knife"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://nc110.sourceforge.net/"
+HOMEPAGE="http://netcat.sourceforge.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 

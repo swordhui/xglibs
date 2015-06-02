@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="A message bus system, a simple way for applications to talk to each other"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://dbus.freedesktop.org/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://dbus.freedesktop.org/releases/dbus/dbus-$V.tar.gz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="expat"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --sysconfdir=/etc \
+		--libexecdir=/usr/lib/dbus-1.0  \
+		--localstatedir=/var "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+
+	userdel messagebus 2>/dev/null
+	groupdel messagebus 2>/dev/null
+
+	groupadd -g 18 messagebus &&
+	useradd -c "D-BUS Message Daemon User" -d /dev/null \
+	        -u 18 -g messagebus -s /bin/false messagebus
+
+	dbus-uuidgen --ensure
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+	userdel messagebus 2>/dev/null
+	groupdel messagebus 2>/dev/null
+	return 0
+}
+

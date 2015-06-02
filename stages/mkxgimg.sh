@@ -55,7 +55,7 @@ done
 if [ "$showusage" == "1" ]; then
 	echo "Usage:" 
 	echo -e "\t-g\tImageSizeInGB (default: 8)"
-	echo -e "\t-s\tFinalStage, can be 1,2,3 (default: 3)"
+	echo -e "\t-s\tFinalStage, can be 0,1,2,3 (default: 3)"
 	exit 1
 fi
 
@@ -127,6 +127,11 @@ err_check "chroot 1 failed."
 
 gpkg -unchroot /mnt/image
 
+if [ "$finalstage" == "0" ]; then
+	#stop at stage 0
+	showinfo "Stage0 is ready at /mnt/image."
+	exit 0
+fi
 umount /mnt/image/var/xiange/xglibs
 err_check "unmount xglibs failed."
 

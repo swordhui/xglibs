@@ -65,6 +65,7 @@ xgb_check()
 {
 	echo "checking $N-$V$R.."
 	make check
+	echo "done"
 }
 
 #install

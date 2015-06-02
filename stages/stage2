@@ -202,7 +202,7 @@ libetpan
 compface
 shared-mime-info
 claws-mail
-epdfview
+mupdf
 libnice
 pidgin
 libgphoto2
@@ -289,3 +289,4 @@ open-jdk-bin
 gliv
 xarchiver
 gvim
+glmark2

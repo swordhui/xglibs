@@ -78,8 +78,8 @@ xgb_config()
 	err_check "patch 7 failed."
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG --disable-dependency-tracking \
-		--datadir=/usr/share --with-gtk3 --with-zlib --without-pulseaudio \
-		--without-oss
+		--datadir=/usr/share --without-gtk3 --with-zlib --without-pulseaudio \
+		--without-oss 
 	err_check "config 2 failed."
 
 	cd ../unix

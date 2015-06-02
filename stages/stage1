@@ -7,6 +7,7 @@ openssl
 openssh
 git
 wget
+cacerts
 pciutils
 libusb
 usbutils
@@ -33,8 +34,8 @@ nss
 iptables
 js
 polkit
-dbus-glib
 ppp
+libndp
 networkmanager
 alsa-lib
 alsa-utils
