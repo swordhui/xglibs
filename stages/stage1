@@ -79,3 +79,6 @@ sword-helper
 unionfs-fuse
 netcat
 sshfs
+libwebp
+npapi-sdk
+cacert

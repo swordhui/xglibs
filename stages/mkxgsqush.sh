@@ -134,15 +134,17 @@ xg_do_kernel()
 
 	XGLIST="/lib/libdevmapper.so.1.02 
 		/lib/libc.so.6
-		/lib/libc-2.19.so 
+		/lib/libc-2.21.so 
 		/lib/libpthread.so.0 
-		/lib/libpthread-2.19.so 
-		/lib/ld-2.19.so 
+		/lib/libpthread-2.21.so 
+		/lib/ld-2.21.so 
 		/lib/ld-linux-x86-64.so.2 
 		/sbin/dmsetup
 		/lib/modules/$1/kernel/drivers/block/loop.ko
 		/lib/modules/$1/kernel/fs/squashfs/squashfs.ko
+		/lib/modules/$1/kernel/lib/lz4/lz4_decompress.ko
 		/lib/modules/$1/kernel/drivers/md/dm-snapshot.ko
+		/lib/modules/$1/kernel/drivers/md/dm-bufio.ko
 		/lib/modules/$1/kernel/drivers/md/dm-mod.ko"
 		
 	if [ "$XGB_ARCH" == "x86_64" ]; then
@@ -245,10 +247,12 @@ xg_cksquash()
 			#newer, no need recreate.
 			showinfo "xiange-sqroot is newer than xg64.img, pass"
 		else
+			showinfo "xiange-sqroot is older than xg64.img, recreate it"
 			rm -f "/root/xiange-sqroot"
 			xg_mksquash
 		fi
 	else
+		showinfo "xiange-sqroot not found, recreate it"
 		#not found
 		xg_mksquash
 	fi
@@ -280,7 +284,8 @@ xg_mount_squash()
 	mount /dev/loop1p1 $mntroot/1
 	err_check "mount loop1p1 failed."
 	
-	mount /dev/loop2p1 $mntroot/2
+	showinfo "mounting old root..."
+	mount -t ext4 /dev/loop2p1 $mntroot/2 -o ro
 	err_check "mount to /mnt/xgmnt/2 faled."
 }
 
@@ -300,7 +305,7 @@ xg_mkddimg()
 	err_check "setup $imgfile to /dev/loop1 faled."
 	
 	showinfo "create partitions..."
-	cfdisk /dev/loop1
+	printf "o\nn\np\n1\n63\n\na\nw\n" | fdisk -b 512 -c=dos -u=sectors -S 63 /dev/loop1
 	err_check "create partition failed."
 	
 	showinfo "formating..."

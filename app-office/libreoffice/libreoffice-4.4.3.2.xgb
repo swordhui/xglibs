@@ -65,6 +65,7 @@ SRC_LIBS="$SRC_BASE/libreoffice-$V.tar.xz \
 	$SRC_BASE/libwpd-0.10.0.tar.bz2 \
 	$SRC_BASE/libwpg-0.3.0.tar.bz2 \
 	$SRC_BASE/libwps-0.3.1.tar.bz2 \
+	$SRC_BASE/cppunit-1.13.2.tar.gz \
 	$SRC_BASE/OpenCOLLADA-master-6509aa13af.tar.bz2 "
 
 
@@ -205,6 +206,11 @@ xgb_install()
 	err_check "install 3 failed."
 
 	ln -svf /usr/lib/libreoffice/program/soffice $XGPATH_DEST/usr/bin/libreoffice
+	err_check "install 4 failed."
+
+	#remove files in root
+	rm $XGPATH_DEST/gid*
+	err_check "install 5 failed."
 
 	#start menu: base
 	#for i in writer base calc draw impress math main
