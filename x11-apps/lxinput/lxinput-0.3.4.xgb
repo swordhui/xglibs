@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="libraries and utilities for loading kernel modules"
+DESCRIPTION="Configure keyboard and mouse"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://www.kernel.org/pub/linux/utils/kernel/kmod/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-$V.tar.xz"
+SRC_URI="http://downloads.sourceforge.net/lxde/lxinput-$V.tar.xz"
 
 
 # Binary package URI.
@@ -40,7 +39,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -53,12 +52,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="  --sysconfdir=/etc \
-		--bindir=/bin \
-		--with-rootlibdir=/lib \
-		--with-xz \
-		--with-zlib \
-		--disable-manpages"
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -87,19 +81,22 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "make failed"
-
-	mkdir -p $XGPATH_DEST/sbin
-	for target in depmod insmod modinfo modprobe rmmod; do
-  		ln -sv ../bin/kmod $XGPATH_DEST/sbin/$target
-		err_check "inst $target failed"
-	done
-
-	mkdir -p $XGPATH_DEST/bin
-	mkdir -p $XGPATH_DEST/usr/bin
-	ln -sv kmod $XGPATH_DEST/bin/lsmod
-	err_check "inst lsmod failed"
-	ln -sv /bin/kmod $XGPATH_DEST/usr/bin/
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
 
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

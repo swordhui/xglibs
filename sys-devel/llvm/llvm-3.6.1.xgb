@@ -3,18 +3,19 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="libraries and utilities for loading kernel modules"
+DESCRIPTION="a collection of modular and reusable compiler and toolchain technologies."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://www.kernel.org/pub/linux/utils/kernel/kmod/"
+HOMEPAGE="http://llvm.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://www.kernel.org/pub/linux/utils/kernel/kmod/kmod-$V.tar.xz"
+SRC_URI="http://llvm.org/releases/$V/llvm-$V.src.tar.xz \
+http://llvm.org/releases/$V/cfe-$V.src.tar.xz \
+http://llvm.org/releases/$V/compiler-rt-$V.src.tar.xz"
 
 
 # Binary package URI.
@@ -29,18 +30,14 @@ DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-$V.src.tar.xz
+	err_check "uncompress llvm failed."
+
 }
 
 #config
@@ -49,16 +46,30 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N-$V$R.src
 	err_check "enter directory failed."
 
+	tar xf $XGPATH_SOURCE/cfe-$V.src.tar.xz -C tools
+	err_check "uncompress clang failed."
+
+	tar xf $XGPATH_SOURCE/compiler-rt-$V.src.tar.xz -C projects
+	err_check "uncompress compiler-rt failed."
+
+	mv tools/cfe-$V.src tools/clang &&
+	mv projects/compiler-rt-$V.src projects/compiler-rt
+	err_check "rename failed."
+
+	sed -e "s:/docs/llvm:/share/doc/llvm-$V:" \
+		    -i Makefile.config.in &&
+	err_check "patch2 failed."
+
+
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="  --sysconfdir=/etc \
-		--bindir=/bin \
-		--with-rootlibdir=/lib \
-		--with-xz \
-		--with-zlib \
-		--disable-manpages"
+	XGB_CONFIG+=" --sysconfdir=/etc    \
+            --enable-libffi            \
+            --enable-optimized         \
+            --enable-shared            \
+            --disable-assertions "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -87,19 +98,5 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "make failed"
-
-	mkdir -p $XGPATH_DEST/sbin
-	for target in depmod insmod modinfo modprobe rmmod; do
-  		ln -sv ../bin/kmod $XGPATH_DEST/sbin/$target
-		err_check "inst $target failed"
-	done
-
-	mkdir -p $XGPATH_DEST/bin
-	mkdir -p $XGPATH_DEST/usr/bin
-	ln -sv kmod $XGPATH_DEST/bin/lsmod
-	err_check "inst lsmod failed"
-	ln -sv /bin/kmod $XGPATH_DEST/usr/bin/
 }
-
 

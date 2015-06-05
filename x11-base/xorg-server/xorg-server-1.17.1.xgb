@@ -13,7 +13,10 @@ HOMEPAGE="http://xorg.freedesktop.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://xorg.freedesktop.org/releases/individual/xserver/$N-$V.tar.bz2"
+SRC_URI="http://xorg.freedesktop.org/releases/individual/xserver/$N-$V.tar.bz2 \
+	http://www.linuxfromscratch.org/patches/blfs/svn/xorg-server-1.17.1-gcc5_fixes-1.patch \
+	http://www.linuxfromscratch.org/patches/blfs/svn/xorg-server-1.17.1-add_prime_support-1.patch \
+	http://www.linuxfromscratch.org/patches/blfs/svn/xorg-server-1.17.1-fix_modesetting-1.patch "
 
 
 # Binary package URI.
@@ -42,8 +45,18 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
+	patch -Np1 -i $XGPATH_SOURCE/xorg-server-1.17.1-gcc5_fixes-1.patch
+	err_check "patch 1 failed."
+
+	patch -Np1 -i $XGPATH_SOURCE/xorg-server-1.17.1-add_prime_support-1.patch
+	err_check "patch 2 failed."
+
+	patch -Np1 -i $XGPATH_SOURCE/xorg-server-1.17.1-fix_modesetting-1.patch
+	err_check "patch 3 failed."
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var \
+		 --enable-glamor \
 		--with-xkb-output=/var/lib/xkb \
 		--enable-install-setuid --disable-static "
 
@@ -68,6 +81,16 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 	err_check "Install $V-$N failed."
+
+	mkdir -p $XGPATH_DEST/etc/sysconfig
+	mkdir -pv $XGPATH_DEST/etc/X11/xorg.conf.d 
+	err_check "Install 1.1 $V-$N failed."
+	cat >> /etc/sysconfig/createfiles << "EOF"
+/tmp/.ICE-unix dir 1777 root root
+/tmp/.X11-unix dir 1777 root root
+EOF
+	err_check "Install 1.2 $V-$N failed."
+
 
 	#copy resource file
 	mkdir $XGPATH_DEST/root

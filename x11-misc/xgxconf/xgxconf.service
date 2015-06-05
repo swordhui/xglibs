@@ -1,0 +1,17 @@
+[Unit]
+Description=Configure Xorg server for Xiange system
+DefaultDependencies=no
+Wants=local-fs.target
+After=local-fs.target
+Conflicts=shutdown.target
+Before=slim.service
+
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/xiange/xorgcfg.sh
+StandardOutput=syslog
+
+[Install]
+WantedBy=graphical.target
+

@@ -15,9 +15,10 @@ HOMEPAGE="http://www.x.org/wiki/"
 
 SRCURL=" http://ftp.x.org/pub/individual/driver"
 Xproto="xf86-input-evdev-2.9.2.tar.bz2 \
-xf86-input-libinput-0.10.0.tar.bz2 \
 xf86-input-synaptics-1.8.2.tar.bz2 \
+xf86-input-libinput-0.10.0.tar.bz2 \
 xf86-input-vmmouse-13.0.0.tar.bz2 \
+xf86-input-keyboard-1.8.1.tar.bz2 \
 xf86-video-ati-7.5.0.tar.bz2 \
 xf86-video-fbdev-0.4.4.tar.bz2 \
 xf86-video-intel-2.99.917.tar.bz2 \

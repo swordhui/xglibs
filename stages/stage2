@@ -96,7 +96,6 @@ pixman
 libinput
 libevdev
 xorg-server
-glamor-egl
 mtdev
 x11drivers
 libva
@@ -147,6 +146,7 @@ lzo
 libarchive
 tint2
 slim-xiange
+xgxconf
 slim
 lua
 conky

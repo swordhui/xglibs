@@ -44,6 +44,7 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var \
+		 --enable-glamor \
 		--with-xkb-output=/var/lib/xkb \
 		--enable-install-setuid --disable-static "
 
@@ -67,6 +68,16 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "Install $V-$N failed."
+
+	mkdir -p $XGPATH_DEST/etc/sysconfig
+	mkdir -pv $XGPATH_DEST/etc/X11/xorg.conf.d 
+	err_check "Install 1.1 $V-$N failed."
+	cat >> /etc/sysconfig/createfiles << "EOF"
+/tmp/.ICE-unix dir 1777 root root
+/tmp/.X11-unix dir 1777 root root
+EOF
+	err_check "Install 1.2 $V-$N failed."
 	err_check "Install $V-$N failed."
 
 	#copy resource file
