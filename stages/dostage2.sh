@@ -41,6 +41,10 @@ showinfo "updating gnome icons"
 xdg-icon-resource forceupdate --theme gnome
 err_check "update gnome icon failed."
 
+showinfo "updating pixbuf cache..."
+gdk-pixbuf-query-loaders --update-cache
+err_check "update pixbuf cache failed."
+
 showinfo "enable slim.."
 systemctl enable slim
 err_check "enable slim failed."
