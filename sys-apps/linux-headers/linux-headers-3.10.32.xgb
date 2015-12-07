@@ -51,7 +51,7 @@ xgb_build()
 	make mrproper
 	err_check "[Error] linux_header: mrproper falied."
 
-	make headers_check
+	make ARCH=$XGB_ARCH headers_check
 	err_check "[Error] linux_header: check falied."
 
 }
@@ -62,7 +62,7 @@ xgb_install()
 	mkdir -p $XGPATH_DEST/usr
 
 	make   \
-		INSTALL_HDR_PATH=$XGPATH_DEST/usr headers_install
+		INSTALL_HDR_PATH=$XGPATH_DEST/usr ARCH=$XGB_ARCH headers_install
 	err_check "[Error] linux_header: install falied."
 
 	find $XGPATH_DEST/usr/include \( -name .install -o -name ..install.cmd \) -delete

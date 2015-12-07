@@ -69,13 +69,13 @@ xgb_build()
 
 	#creates a dynamic libbz2.so  library and links the Bzip2 
 	#utilities against it
-	make -f Makefile-libbz2_so
+	make XGB_PREFIX=$XGB_PREFIX -f Makefile-libbz2_so
 	echo "make $N-$V$R failed"
 
 	make clean
 	echo "clean $N-$V$R failed"
 
-	make $XGPARA_MAKE
+	make XGB_PREFIX=$XGB_PREFIX $XGPARA_MAKE
 	echo "make $N-$V$R failed"
 }
 

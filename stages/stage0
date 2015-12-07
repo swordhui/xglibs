@@ -16,8 +16,8 @@ pkg-config
 ncurses
 attr
 acl
-libcap
 linux-pam
+libcap
 shadow
 psmisc
 procps-ng

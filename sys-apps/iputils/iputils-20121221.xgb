@@ -60,7 +60,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make USE_CAP=no
+	make USE_CAP=no IPV4_TARGETS="tracepath clockdiff rdisc arping rarpd" IPV6_TARGETS="tracepath6" LDFLAG_GNUTLS="-lgnutls"
 }
 
 #check
@@ -78,9 +78,7 @@ xgb_install()
 	mkdir -p $XGPATH_DEST/bin
 
 	#install everything to $XGPATH_DEST
-	cp ping  $XGPATH_DEST/bin/ipping
-	cp ping6  $XGPATH_DEST/bin/ipping6
-	cp rdisc tracepath tracepath6 clockdiff $XGPATH_DEST/bin
+	cp tracepath clockdiff rdisc arping rarpd tracepath6 $XGPATH_DEST/bin
 }
 
 

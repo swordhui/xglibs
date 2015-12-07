@@ -85,7 +85,8 @@ xgb_config()
 
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --enable-multibyte --with-x --enable-gui=gtk2"
+	XGB_CONFIG+=" --enable-multibyte --with-x --enable-gui=gtk2 \
+		--enable-pythoninterp=yes "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

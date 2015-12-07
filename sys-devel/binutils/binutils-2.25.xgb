@@ -45,7 +45,7 @@ xgb_config()
 	err_check "enter directory build failed"
 
 	#run configure
-	XGB_CONFIG+=" --enable-shared "
+	XGB_CONFIG+=" --enable-shared --enable-gold=yes --enable-lto "
 
 	../$N-$V$R/configure $XGB_CONFIG
 }
