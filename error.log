@@ -1,0 +1,7 @@
+﻿Soft reset
+':maincpu' (0004B6): unmapped program memory read from 80010C & FFFF
+':maincpu' (0004B6): unmapped program memory read from 80010E & FFFF
+':maincpu' (0004BC): unmapped program memory read from 800110 & FFFF
+':maincpu' (0004BC): unmapped program memory read from 800112 & FFFF
+':maincpu' (0004C2): unmapped program memory read from 800114 & FFFF
+':maincpu' (0004C2): unmapped program memory read from 800116 & FFFF

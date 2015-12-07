@@ -1,0 +1,54 @@
+
+how to install xiange:
+
+
+1. update software via gpkg edit 
+2. compile to package, with gpkg -ip
+3. check if all softwares is ready to install for target stage with gpkg ckstage
+4. install image with mkxgimg.sh
+
+	mkxgimg.sh -s 0,1,2,3
+		a) create a 8GB image at /root/xg64.img
+		b) format with ext4
+		c) install grub2
+		d) install all softwares for specified stage
+		e1) update grub config in stage1
+		e2) enable network manager in stage 1
+		e3) enable sshd in stage 1
+		f1) config gtk2, gtk3 in stage 2
+		f2) enable slim, fvwm-xiange in stage 2
+		f3) set default username:password to xiange:xiange
+		g) specify os release tag
+		h) update xglibs with git
+
+		
+6. compress with mkxgsqush.sh
+
+		a) check /root/xg_sqh.img, use it directly if exists (useful for installing 2 archs)
+		b1) create a 2G image file at /root/xg_sqh.img if not availeble
+		b2) format with ext4
+		b3) install grub2
+		c) make sure /root/xg64.img is ready. quit if not available
+		d) check if squash file /root/xiange-sqroot is newer than xg64.img
+		d1) re-create /root/xiange-sqroot if xg64.img is newer.
+		e1) mount /root/xiange-sqroot to 0
+		e2) set xg64.img in xiange-sqroot to /dev/loop2
+		e3) set /root/xg_sqh.img to /dev/loop1
+		e4) mount xg_sqh.img to /mnt/1
+		e5) mount xg64.img to /mnt/2
+		f1) get blkid for root/xg_sqh.img
+		f2) update grub.cfg with blkid
+		f3) check kernels in xg64.img, copy to xg_sqh.img
+		f4) prepare initrams
+		g) copy xiange-sqroot to root/xg_sqh.img
+		h) create cow.img for squashfs writting
+
+5. burn /root/xg_sqh.img to USB for testing (with dd)
+
+6, when kernel start
+
+		a) grub will load specified kernel from xg_sqh.img (ext4)
+		b) kernel load initramfs
+		c) initramfs mount squash fs 
+		d) chroot to xg64 as root device
+

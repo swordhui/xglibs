@@ -1,0 +1,175 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="GNU libc6 (also called glibc2) C library"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.gnu.org/software/libc/libc.html"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://ftp.gnu.org/gnu/glibc/$N-$V$R.tar.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="linux-headers-3.10.32 linux-kernel-3.10.32"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking ..."
+	tar xaf $XGPATH_SOURCE/$N-$V$R.tar.xz
+}
+
+#config
+xgb_config()
+{
+	#cd build directory.
+	cd $N-$V$R
+
+	#fix a potential issue : bash infinite loop. 
+
+	#fix sh problem if other shell installed.
+
+	mkdir ../build
+	cd ../build
+	err_check "[Error] glibc: create build directory failed."
+
+	XGB_CONFIG+=" --enable-kernel=4.0.6 --libexecdir=/usr/lib --enable-obsolete-rpc --with-fp "
+
+	../$N-$V$R/configure $XGB_CONFIG
+
+	err_check "[Error] configure failed."
+}
+
+#build
+xgb_build()
+{
+	#run make in current directory
+	echo "Begin making glibc.."
+	make $XGPARA_MAKE
+}
+
+
+glibc_nsswitch_conf()
+{
+cat > $XGPATH_DEST/etc/nsswitch.conf << "EOF"
+# Begin /etc/nsswitch.conf
+passwd: files
+group: files
+shadow: files
+hosts: files dns myhostname
+networks: files
+protocols: files
+services: files
+ethers: files
+rpc: files
+# End /etc/nsswitch.conf
+EOF
+}
+
+glibc_ld_so_conf()
+{
+cat > $XGPATH_DEST/etc/ld.so.conf << "EOF"
+# Begin /etc/ld.so.conf
+
+/usr/local/lib
+/opt/lib
+
+# End /etc/ld.so.conf
+EOF
+}
+
+
+
+#install
+xgb_install()
+{
+	#install everything to $XGPATH_DEST
+	make install_root=$XGPATH_DEST install
+	err_check "[Error] install glibc failed."
+
+	#add nsswitch.conf / glibc.ld.so
+	glibc_nsswitch_conf
+	glibc_ld_so_conf
+
+	#nscd
+	mkdir -p $XGPATH_DEST/etc
+	cp -v ../glibc-$V/nscd/nscd.conf $XGPATH_DEST/etc/nscd.conf
+	mkdir -pv $XGPATH_DEST/var/cache/nscd
+	err_check "glibc: config nscd failed."
+
+	#nscd service for systemd
+	mkdir -p $XGPATH_DEST/usr/lib/tmpfiles.d
+	mkdir -p $XGPATH_DEST/lib/systemd/system
+	install -v -Dm644 ../glibc-$V/nscd/nscd.tmpfiles $XGPATH_DEST/usr/lib/tmpfiles.d/nscd.conf
+	install -v -Dm644 ../glibc-$V/nscd/nscd.service $XGPATH_DEST/lib/systemd/system/nscd.service
+
+	#config timezone.
+	pushd ../glibc-$V/timezone
+
+	ZONEINFO="$XGPATH_DEST/usr/share/zoneinfo"
+	mkdir -pv $ZONEINFO/{posix,right}
+
+	for tz in etcetera southamerica northamerica europe africa antarctica  \
+			asia australasia backward pacificnew systemv; do
+		zic -L /dev/null   -d $ZONEINFO       -y "sh yearistype.sh" ${tz}
+		err_check "zic failed."
+		zic -L /dev/null   -d $ZONEINFO/posix -y "sh yearistype.sh" ${tz}
+		err_check "zic failed."
+		zic -L leapseconds -d $ZONEINFO/right -y "sh yearistype.sh" ${tz}
+		err_check "zic failed."
+	done
+
+	cp -v zone.tab iso3166.tab $ZONEINFO
+	err_check "cp zone tab failed."
+
+	cp -v --remove-destination $XGPATH_DEST/usr/share/zoneinfo/Asia/Shanghai \
+		$XGPATH_DEST/etc/localtime
+	err_check "glibc: config time zone failed."
+	popd
+
+}
+
+
+
+#post install
+xgb_postinst()
+{
+	#install locale
+    echo "Install locales.."
+    mkdir -pv /usr/lib/locale
+    localedef -i en_US -f ISO-8859-1 en_US
+    localedef -i en_US -f UTF-8 en_US.UTF-8
+    localedef -i zh_CN -f GB2312 zh_CN.GB2312
+    localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
+	return 0
+}
+
+#pre remove
+xgb_prerm()
+{
+	return 0
+}
+
+#post remove
+xgb_postrm()
+{
+	return 0
+}
