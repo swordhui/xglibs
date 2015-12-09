@@ -27,9 +27,9 @@ iana-etc
 m4
 flex
 bison
+readline
 pcre
 grep
-readline
 bash
 bc
 libtool
