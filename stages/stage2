@@ -142,7 +142,6 @@ imlib2
 habak
 xfontsel
 curl
-lzo
 libarchive
 tint2
 slim-xiange
@@ -220,7 +219,6 @@ neon
 swig
 subversion
 error
-libxslt
 gnome-doc-utils
 speech_tools
 festival

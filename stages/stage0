@@ -47,14 +47,14 @@ gettext
 intltool
 gperf
 groff
-xz
+xz-utils
 grub
 less
 gzip
 iproute2
 kmod
 libpipeline
-make
+make-3.82
 patch
 util-linux
 man-db

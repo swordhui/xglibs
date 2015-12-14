@@ -1,0 +1,5 @@
+LDFLAGS="-Wl,-rpath -Wl,/usr/lib -Wl,-rpath-link -Wl,${XGROOT}/usr/lib -L${XGROOT}/lib -L${XGROOT}/usr/lib"
+
+
+rpath: runtime path
+rpath-link: link time path

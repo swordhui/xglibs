@@ -1,5 +1,6 @@
 libffi
 python
+python3
 glib2
 systemd
 dbus
@@ -25,6 +26,7 @@ unrar
 libxml2
 docbook-xsl
 docbook-xml
+libxslt
 libnl
 rfkill
 wpa_supplicant
@@ -33,8 +35,9 @@ nspr
 sqlite
 nss
 iptables
-js-17.0.0
+js17-17.0.0
 js
+libgudev
 polkit
 ppp
 libndp
@@ -71,6 +74,7 @@ testdisk
 p7zip
 ethtool
 libaio
+lzo
 squashfs-tools
 cpio
 rpm2targz
