@@ -1,0 +1,151 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="free implementation of Windows(tm) on Unix"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.winehq.org/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://downloads.sourceforge.net/project/wine/Source/wine-$V.tar.bz2"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="libgphoto2 mpg123 libjpeg-turbo libpng libtiff"
+
+# Build time depend
+DEPEND="${RDEPEND} imagemagick"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		XGB_CONFIG+=" --enable-win64 "
+		echo "win64 enabled."
+	fi
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
+
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		ln -sv wine64 $XGPATH_DEST/usr/bin/wine
+		err_check "install 2 failed."
+	fi
+
+	#winemine
+
+	imgconv1=""
+    imgconv2=/usr/share/pixmaps/winemine.png
+    menu_type=wine
+    menu_name=winemine
+    menu_cmd=winemine
+    menu_index=C20winemine
+
+    mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
+	convert programs/winemine/winemine.ico $XGPATH_DEST$imgconv2
+	err_check "install 3 failed."
+	cp $XGPATH_DEST/usr/share/pixmaps/winemine{-8,}.png
+	rm $XGPATH_DEST/usr/share/pixmaps/winemine-*
+
+ 	local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="WineMine"
+    Name[zh_CN]="虚拟扫雷"
+	xgb_mkmenu
+
+   
+	#winefile
+
+	imgconv1=""
+    imgconv2=/usr/share/pixmaps/winefile.png
+    menu_type=wine
+    menu_name=winefile
+    menu_cmd=winefile
+    menu_index=C21winefile
+
+    mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
+	convert programs/winefile/winefile.ico $XGPATH_DEST$imgconv2
+	err_check "install 5 failed."
+	cp $XGPATH_DEST/usr/share/pixmaps/winefile{-8,}.png
+	rm $XGPATH_DEST/usr/share/pixmaps/winefile-*
+
+ 	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="WineFile"
+    Name[zh_CN]="虚拟文件浏览器"
+	xgb_mkmenu
+
+
+	#regedit
+	imgconv1=""
+    imgconv2=/usr/share/pixmaps/regedit.png
+    menu_type=wine
+    menu_name=regedit
+    menu_cmd=regedit
+    menu_index=C22regedit
+
+    mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
+	convert programs/regedit/regedit.ico $XGPATH_DEST$imgconv2
+	err_check "install 7 failed."
+	cp $XGPATH_DEST/usr/share/pixmaps/regedit{-8,}.png
+	rm $XGPATH_DEST/usr/share/pixmaps/regedit-*
+
+ 	convpara=""
+    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="Wine_regedit"
+    Name[zh_CN]="虚拟注册表"
+	xgb_mkmenu
+}
+

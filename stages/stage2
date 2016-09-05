@@ -48,6 +48,7 @@ libdrm
 elfutils
 libvdpau
 llvm
+libpthread-stubs
 mesa
 xbitmaps
 bdftopcf
@@ -93,6 +94,7 @@ font-util
 x11fonts
 xkeyboard-config
 pixman
+libwacom
 libinput
 libevdev
 xorg-server
@@ -158,6 +160,7 @@ at-spi2-core
 at-spi2-atk
 xkbcommon
 wayland
+wayland-protocols
 libepoxy
 gtk3
 libnotify
@@ -175,11 +178,16 @@ iso-codes
 libgpg-error
 libgcrypt
 libsecret
+libmbim
+libqmi
+modemmanager
+jansson
 network-manager-applet
 xdg-utils
 xlockmore
 presage
 babl
+json-glib
 gegl
 libexif
 libwmf
@@ -187,6 +195,9 @@ poppler
 poppler-data
 imagemagick
 links
+gexiv2
+json-c
+libmypaint
 gimp
 dosfstools
 yasm
@@ -244,6 +255,7 @@ gtk-server
 rdesktop
 fvwm-xiange
 wine
+pangox-compat
 gtkglext
 lua-5.1.4
 celestia

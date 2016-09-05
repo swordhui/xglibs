@@ -69,7 +69,7 @@ xgb_unpack()
 xgb_config()
 {
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --libdir=/lib --disable-static "
+	XGB_CONFIG+=" --libdir=/lib --disable-static --with-curses "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

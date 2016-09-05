@@ -45,6 +45,9 @@ xgb_config()
 	cd $N-$V$R
 	err_check "cd failed."
 
+	patch -p1 < $XGPATH_SCRIPT/gtkglext-1.2.0.patch
+	err_check "patch failed."
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --disable-static --with-gdktarget=x11 "
 

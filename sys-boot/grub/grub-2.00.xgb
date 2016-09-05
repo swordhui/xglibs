@@ -49,7 +49,7 @@ xgb_config()
 
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --sbindir=/sbin --disable-werror --disable-grub-emu-usb --disable-efiemu "
+	XGB_CONFIG+=" --sysconfdir=/etc --sbindir=/sbin --disable-werror --disable-grub-emu-usb --disable-efiemu --disable-grub-mkfont "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

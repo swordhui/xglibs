@@ -1,0 +1,203 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Drivers for Xorg X11"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.x.org/wiki/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRCURL=" http://ftp.x.org/pub/individual/driver"
+Xproto="xf86-input-evdev-2.10.3.tar.bz2 \
+xf86-input-libinput-0.19.0.tar.bz2 \
+xf86-input-synaptics-1.8.99.1.tar.bz2 \
+xf86-input-vmmouse-13.1.0.tar.bz2 \
+xf86-video-ati-7.7.0.tar.bz2 \
+xf86-video-fbdev-0.4.4.tar.bz2 \
+xf86-video-intel-2.99.917.tar.bz2 \
+xf86-video-nouveau-1.0.12.tar.bz2 \
+xf86-video-vmware-13.1.0.tar.bz2 "
+
+
+
+SRC_URI=""
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	local i
+
+	for i in $Xproto
+	do
+		SRC_URI+="$SRCURL/$i "
+	done
+
+
+	XGPATH_SOURCE=$XGPATH_SOURCE_RAW/x11drivers
+}
+
+#unpack
+xgb_unpack()
+{
+	local i
+
+	for i in $Xproto
+	do
+		tar xf $XGPATH_SOURCE/$i
+		err_check "unpack $i failed."
+	done
+}
+
+#config
+xgb_config()
+{
+	local i
+	local name
+
+	echo "config $N-$V$R..."
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var "
+
+	for i in $Xproto
+	do
+		name=${i%.tar.bz2}
+		pushd $name
+
+		echo ""
+		echo ">>> config $name ..."
+		echo ""
+
+		case "$i" in
+		xf86-input-vmmouse-*)
+			err_check "patch vmmouse failed."
+
+			sed -i -e '/__i386__/a iopl(3);' tools/vmmouse_detect.c
+			err_check "patch vmmouse 2 failed."
+			XGB_CONFIG+=" --without-hal-fdi-dir --without-hal-callouts-dir \
+				--with-udev-rules-dir=/lib/udev/rules.d "
+			./configure $XGB_CONFIG
+			;;
+
+
+		xf86-video-intel-*)
+			echo "***** intel driver *****"
+
+			#patch
+			patch -p1 < $XGPATH_SCRIPT/intel-2.99.917.patch
+			err_check "patch intel driver failed."
+
+			XGB_CONFIG+="--enable-kms-only  --enable-uxa"
+			./configure $XGB_CONFIG
+			;;
+
+		xf86-video-sis-*)
+			./configure $XGB_CONFIG
+			;;
+
+		xf86-video-tdfx-*)
+			sed -i -e "/mibstore.h/d" -e "/miInitializeBackingStore/d" src/tdfx_driver.c
+			err_check "patch intel driver failed."
+			./configure $XGB_CONFIG
+			;;
+
+		xf86-video-vmware-*)
+			./configure $XGB_CONFIG
+			;;
+
+
+		*)
+			echo "***** default settings : $i *****"
+			./configure $XGB_CONFIG
+			;;
+		esac
+		err_check "config $name failed."
+		popd
+	done
+}
+
+#build
+xgb_build()
+{
+	local i
+	local name
+
+	echo "build $N-$V$R..."
+
+	for i in $Xproto
+	do
+		name=${i%.tar.bz2}
+		pushd $name
+		make $XGPARA_MAKE
+		err_check "make $name failed."
+		popd
+	done
+}
+
+#install
+xgb_install()
+{
+	local i
+	local name
+
+	echo "install $N-$V$R..."
+
+	for i in $Xproto
+	do
+		name=${i%.tar.bz2}
+		pushd $name
+		make DESTDIR=$XGPATH_DEST install
+		err_check "install $name failed."
+		popd
+	done
+
+	#configure files
+	mkdir -p $XGPATH_DEST/etc/X11/xorg.conf.d/samples
+	cat > $XGPATH_DEST/etc/X11/xorg.conf.d/samples/20-ati.conf.sample << "EOF"
+Section "Device"
+	Identifier "radeon"
+	Driver "ati"
+	Option "AccelMethod" "glamor"
+EndSection
+EOF
+	err_check "install 1 failed."
+
+	touch
+	cat > $XGPATH_DEST/etc/X11/xorg.conf.d/samples/20-intel.conf.sample << "EOF"
+Section "Device"
+	Identifier "Intel Graphics"
+	Driver "intel"
+	Option "AccelMethod" "uxa"
+EndSection
+EOF
+	err_check "install 2 failed."
+
+	cat > $XGPATH_DEST/etc/X11/xorg.conf.d/samples/20-nvidia.conf.sample << "EOF"
+Section "Device"
+	Identifier "nvidia"
+	Driver "nouveau"
+	Option "AccelMethod" "glamor"
+EndSection
+EOF
+	err_check "install 3 failed."
+}
+

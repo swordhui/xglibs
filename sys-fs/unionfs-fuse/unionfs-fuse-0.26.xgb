@@ -6,14 +6,14 @@
 DESCRIPTION="a fuse based unionfs filesystem implementation"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://podgorny.cz/moin/UnionFsFuse"
+HOMEPAGE="https://github.com/rpodgorny/unionfs-fuse"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://podgorny.cz/unionfs-fuse/releases/unionfs-fuse-0.26.tar.xz"
+SRC_URI="https://github.com/rpodgorny/unionfs-fuse/archive/v1.0.tar.gz"
 
 
 

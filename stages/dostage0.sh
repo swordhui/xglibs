@@ -27,6 +27,19 @@ err_check "locale gb failed."
 localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
 err_check "locale gb.utf8 failed."
 
+if [ -f /etc/passwd ]; then
+	echo "passwd found, skip."
+else
+	cp /etc/samples/passwd.sample /etc/passwd
+	err_check "copy /etc/samples/passwd.sample failed."
+fi
+
+if [ -f /etc/group ]; then
+	echo "group found, skip."
+else
+	cp /etc/samples/group.sample /etc/group
+	err_check "copy /etc/samples/group.sample failed."
+fi
 
 showinfo "create password..."
 pwconv

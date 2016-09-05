@@ -52,3 +52,59 @@ how to install xiange:
 		c) initramfs mount squash fs 
 		d) chroot to xg64 as root device
 
+
+
+-----------------------------------------------
+Install Xiange Image to USB disk
+-----------------------------------------------
+
+please check ~/work/xiange/fvwm-xiange/src/libexec/xginstall.sh
+
+"./xginstall.sh USB" to install to USB without format
+
+select xg_sqh.img then wait copy done.
+
+-----------------------------------------------
+How to update Xiange Image
+-----------------------------------------------
+
+1. check /root/xg64.img , should be 8 GB. 
+2. loop it: losetup -P /dev/loop0 xg64.img 
+3. mount to /mnt/image: mount /dev/loop0p1 /mnt/image
+4. link xglibs, sources, and packages to /mnt/image/var/xiange
+	
+	rm -rf  /mnt/image/var/xiange/xglibs/*
+	mount --bind /var/xiange/xglibs /mnt/image/var/xiange/xglibs
+
+	mount --bind /var/xiange/sources /mnt/image/var/xiange/sources 
+
+	mount --bind /mnt/bak/sword/xiange/packages-x86_64-common /mnt/image/var/xiange/packages 
+
+5. set XGROOT:
+
+	export XGROOT=/mnt/image
+
+6.	remove native in CFLAGS for common platform:
+
+	gpkg -info > $XGROOT//etc/xgparas
+	vi $XGROOT//etc/xgparas
+
+	gpkg -info
+
+
+
+7. update select packages with gpkg -ip
+	or: re-compile all packages:
+
+	gpkg stage1
+	gpkg stage2
+	gpkg stage3
+	gpkg stage4
+
+
+roll back:
+
+	1. update /etc/xgpara with native?
+	2. roll back /var/xiange/xglibs
+
+

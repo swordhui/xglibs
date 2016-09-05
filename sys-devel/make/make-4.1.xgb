@@ -48,7 +48,7 @@ xgb_config()
 
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --without-guile "
+	XGB_CONFIG+=" --without-guile "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

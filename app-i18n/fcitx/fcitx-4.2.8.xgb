@@ -45,6 +45,8 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
+	sed -i s@http://fcitx.googlecode.com/files@https://download.fcitx-im.org/data@g src/module/pinyin-enhance/data/CMakeLists.txt
+
 	mkdir build
 	cd build
 

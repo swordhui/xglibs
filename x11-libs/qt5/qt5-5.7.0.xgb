@@ -1,0 +1,232 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="This is a sample skeleton xiange build script file"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://foo.bar.com/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://download.qt.io/archive/qt/5.7/$V/single/qt-everywhere-opensource-src-$V.tar.xz \
+http://www.linuxfromscratch.org/patches/blfs/svn/qt-5.7.0-qtwebengine_glibc224-1.patch "
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/qt-everywhere-opensource-src-$V.tar.xz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd qt-everywhere-opensource-src-$V
+	err_check "enter directory failed."
+
+	patch -Np1 -i $XGPATH_SOURCE/qt-5.7.0-qtwebengine_glibc224-1.patch
+	err_check "patch failed."
+
+
+	#sed -i 's/GMutexLocker locker/WebCore::&/' \
+   #qtwebkit/Source/WebCore/platform/graphics/gstreamer/WebKitWebSourceGStreamer.cpp
+	#err_check "patch failed."
+
+	export CXXFLAGS=" $CXXFLAGS  -fno-delete-null-pointer-checks "
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG="	-prefix         /usr               \
+		-sysconfdir     /etc/xdg           \
+		-bindir         /usr/bin           \
+		-headerdir      /usr/include/qt5   \
+		-archdatadir    /usr/lib/qt5       \
+		-datadir        /usr/share/qt5     \
+		-docdir         /usr/share/doc/qt5 \
+		-translationdir /usr/share/qt5/translations \
+		-examplesdir    /usr/share/doc/qt5/examples \
+		-confirm-license   \
+		-opensource        \
+		-dbus-linked       \
+		-openssl-linked    \
+		-system-sqlite     \
+		-system-harfbuzz 	\
+		-nomake examples    \
+		-no-rpath           \
+		-opengl				\
+		-no-nis            \
+		-skip qtwebengine \
+		-optimized-qmake "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	find . -name "*.pc" -exec perl -pi -e "s, -L$PWD/?\S+,,g" {} \;
+	err_check "install 1 failed."
+
+	#install everything to $XGPATH_DEST
+	make INSTALL_ROOT=$XGPATH_DEST install
+	err_check "Install failed."
+
+	sed -e "s:$PWD/qtbase:/usr/lib/qt5:g" \
+	 -i $XGPATH_DEST/usr/lib/qt5/mkspecs/modules/qt_lib_bootstrap_private.pri
+	err_check "install 2 failed."
+
+	find $XGPATH_DEST/usr/lib/lib{qgsttools_p,Qt5*}.prl -exec sed -i -r \
+		'/^QMAKE_PRL_BUILD_DIR/d;s/(QMAKE_PRL_LIBS =).*/\1/' {} \;
+	err_check "install 3 failed."
+
+	install -v -dm755 $XGPATH_DEST/usr/share/pixmaps/
+	err_check "install 4 failed."
+
+	install -v -Dm644 qttools/src/assistant/assistant/images/assistant-128.png \
+		$XGPATH_DEST/usr/share/pixmaps/assistant-qt5.png
+	err_check "install 5 failed."
+
+	#at-assistant
+	imgconv1=/usr/share/pixmaps/assistant-qt5.png
+	imgconv2=/usr/share/pixmaps/assistant-qt5-32.png
+	menu_type=others
+	menu_name=qt5-assistant
+	menu_cmd=assistant
+	menu_index=C80assitant
+
+	convpara=""
+	menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+	declare -A Name
+	Name[en]="QT5-Assistant"
+	Name[zh_CN]="QT助手"
+
+	xgb_mkmenu
+
+
+	install -v -Dm644 qttools/src/designer/src/designer/images/designer.png \
+		$XGPATH_DEST/usr/share/pixmaps/designer-qt5.png
+	err_check "install 6 failed."
+
+	imgconv1=/usr/share/pixmaps/designer-qt5.png
+	imgconv2=/usr/share/pixmaps/designer-qt5-32.png
+	menu_type=others
+	menu_name=qt5-designer
+	menu_cmd=designer
+	menu_index=C81qtdesigner
+
+	convpara=""
+	menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+	declare -A Name
+	Name[en]="QT5-Designer"
+	Name[zh_CN]="QT设计师"
+	xgb_mkmenu
+
+
+
+	install -v -Dm644 qttools/src/linguist/linguist/images/icons/linguist-128-32.png \
+		$XGPATH_DEST/usr/share/pixmaps/linguist-qt5.png
+	err_check "install 7 failed."
+
+	imgconv1=/usr/share/pixmaps/linguist-qt5.png
+	imgconv2=/usr/share/pixmaps/linguist-qt5-32.png
+	menu_type=others
+	menu_name=qt5-linguist
+	menu_cmd=linguist
+	menu_index=C82linguist
+
+	convpara=""
+	menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+	declare -A Name
+	Name[en]="QT5-linguist"
+	Name[zh_CN]="QT语言家"
+	xgb_mkmenu
+
+
+
+	install -v -Dm644 qttools/src/qdbus/qdbusviewer/images/qdbusviewer-128.png \
+		$XGPATH_DEST/usr/share/pixmaps/qdbusviewer-qt5.png
+	err_check "install 8 failed."
+
+	imgconv1=/usr/share/pixmaps/qdbusviewer-qt5.png
+	imgconv2=/usr/share/pixmaps/qdbusviewer-qt5-32.png
+	menu_type=others
+	menu_name=qt5-qdbusviewer
+	menu_cmd=qdbusviewer
+	menu_index=C83qdbusviewer
+
+	convpara=""
+	menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+	declare -A Name
+	Name[en]="QT5-Dbusviewer"
+	Name[zh_CN]="QT5-Dbus查看器"
+	xgb_mkmenu
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}
