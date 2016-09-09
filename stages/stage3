@@ -9,10 +9,15 @@ archive-zip
 iperf
 gdb
 sdl-ttf
+qt5
 sdlmame
 googleearth
 qemu-kvm
 bochs
+boost
+mysql
+php
+libatomic_ops
+bdw-gc
 guile
 geda-gaf
-libreoffice

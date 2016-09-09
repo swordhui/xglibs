@@ -89,3 +89,5 @@ libwebp
 npapi-sdk
 cacerts
 parted
+smartmontools
+iputils

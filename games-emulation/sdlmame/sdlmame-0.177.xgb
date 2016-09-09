@@ -86,8 +86,8 @@ xgb_install()
 	cp -r hash $XGPATH_DEST/opt/mame/
 	err_check "sdlmame: install 4 failed."
 
-	cp -r web $XGPATH_DEST/opt/mame/
-	err_check "sdlmame: install 5 failed."
+	#cp -r web $XGPATH_DEST/opt/mame/
+	#err_check "sdlmame: install 5 failed."
 
 	cp -r hlsl $XGPATH_DEST/opt/mame/
 	err_check "sdlmame: install 7 failed."
@@ -393,7 +393,7 @@ gl_lib                    auto
 EOF
 
 	#icons
-	convert src/osd/windows/mame.ico /tmp/mame.png
+	convert scripts/resources/windows/mame/mame.ico /tmp/mame.png
 	err_check "sdlmame: install 11 failed."
 	cp /tmp/mame-2.png $XGPATH_DEST/opt/mame/mame32.png
 	err_check "sdlmame: install 12 failed."
