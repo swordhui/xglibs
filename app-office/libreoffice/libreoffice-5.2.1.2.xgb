@@ -17,7 +17,51 @@ SRC_BASE="http://download.documentfoundation.org/libreoffice/src/5.2.1"
 SRC_LIBS="$SRC_BASE/libreoffice-$V.tar.xz \
 	$SRC_BASE/libreoffice-help-$V.tar.xz \
 	$SRC_BASE/libreoffice-translations-$V.tar.xz \
-	$SRC_BASE/libreoffice-dictionaries-$V.tar.xz " 
+	$SRC_BASE/libreoffice-dictionaries-$V.tar.xz \
+	$SRC_BASE/libgltf-0.0.2.tar.bz2	\
+	$SRC_BASE/libwps-0.4.3.tar.bz2	\
+	$SRC_BASE/libwpg-0.3.1.tar.bz2	\
+	$SRC_BASE/libwpd-0.10.1.tar.bz2	\
+	$SRC_BASE/libvisio-0.1.5.tar.bz2	\
+	$SRC_BASE/0168229624cfac409e766913506961a8-ucpp-1.3.2.tar.gz	\
+	$SRC_BASE/librevenge-0.0.4.tar.bz2	\
+	$SRC_BASE/libpagemaker-0.0.3.tar.bz2	\
+	$SRC_BASE/liborcus-0.11.2.tar.gz	\
+	$SRC_BASE/OpenCOLLADA-master-6509aa13af.tar.bz2	\
+	$SRC_BASE/libodfgen-0.1.6.tar.bz2	\
+	$SRC_BASE/a8c2c5b8f09e7ede322d5c602ff6a4b6-mythes-1.2.4.tar.gz	\
+	$SRC_BASE/libmwaw-0.3.7.tar.bz2	\
+	$SRC_BASE/libmspub-0.1.2.tar.bz2	\
+	$SRC_BASE/edc4d741888bc0d38e32dbaa17149596-source-sans-pro-2.010R-ro-1.065R-it.tar.gz	\
+	$SRC_BASE/0279a21fab6f245e85a6f85fea54f511-source-code-font-1.009.tar.gz	\
+	$SRC_BASE/c3c1a8ba7452950636e871d25020ce0d-pt-serif-font-1.0000W.tar.gz	\
+	$SRC_BASE/7a15edea7d415ac5150ea403e27401fd-open-sans-font-ttf-1.10.tar.gz	\
+	$SRC_BASE/e7a384790b13c29113e22e596ade9687-LinLibertineG-20120116.zip	\
+	$SRC_BASE/5c781723a0d9ed6188960defba8e91cf-liberation-fonts-ttf-2.00.1.tar.gz	\
+	$SRC_BASE/134d8262145fc793c6af494dcace3e71-liberation-fonts-ttf-1.07.4.tar.gz	\
+	$SRC_BASE/35efabc239af896dfb79be7ebdd6e6b9-gentiumbasic-fonts-1.10.zip	\
+	$SRC_BASE/d8b5214d35bcd2bfcb2cffa7795b351d-dejavu-fonts-ttf-2.35.zip	\
+	$SRC_BASE/c74b7223abe75949b4af367942d96c7a-crosextrafonts-carlito-20130920.tar.gz	\
+	$SRC_BASE/368f114c078f94214a308a74c7e991bc-crosextrafonts-20130214.tar.gz	\
+	$SRC_BASE/mdds-1.2.0.tar.bz2	\
+	$SRC_BASE/26b3e95ddf3d9c077c480ea45874b3b8-lp_solve_5.5.tar.gz	\
+	$SRC_BASE/ce12af00283eb90d9281956524250d6e-xmlsec1-1.2.20.tar.gz	\
+	$SRC_BASE/aa899eff126216dafe721149fbdb511b-liblangtag-0.5.8.tar.bz2	\
+	$SRC_BASE/language-subtag-registry-2016-07-19.tar.bz2	\
+	$SRC_BASE/10d61fbaa6a06348823651b1bd7940fe-libexttextcat-3.4.4.tar.bz2	\
+	$SRC_BASE/5ade6ae2a99bc1e9e57031ca88d36dad-hyphen-2.8.8.tar.gz	\
+	$SRC_BASE/bae83fa5dc7f081768daace6e199adc3-glm-0.9.4.6-libreoffice.zip	\
+	$SRC_BASE/3941e9cab2f4f9d8faee3e8d57ae7664-glew-1.12.0.zip	\
+	$SRC_BASE/libfreehand-0.1.1.tar.bz2	\
+	$SRC_BASE/libetonyek-0.1.6.tar.bz2	\
+	$SRC_BASE/libe-book-0.1.2.tar.bz2	\
+	$SRC_BASE/cppunit-1.13.2.tar.gz	\
+	$SRC_BASE/4b87018f7fff1d054939d19920b751a0-collada2gltf-master-cb1d97788a.tar.bz2	\
+	$SRC_BASE/CoinMP-1.7.6.tgz	\
+	$SRC_BASE/libcmis-0.5.1.tar.gz	\
+	$SRC_BASE/libcdr-0.1.2.tar.bz2	\
+	$SRC_BASE/libabw-0.1.1.tar.bz2 "	
+
 
 SRC_URI="$SRC_BASE/libreoffice-$V.tar.xz \
 	$SRC_LIBS "

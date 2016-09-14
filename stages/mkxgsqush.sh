@@ -11,7 +11,7 @@ FAILURE="\\033[1;31m" # Failures are red
 INFO="\\033[1;36m" # Information is light cyan
 BRACKET="\\033[1;34m" # Brackets are blue
 
-mntroot=/tmp/xgmnt.$$
+mntroot=/tmp/xgmnt
 oldroot=$mntroot/2
 newroot=$mntroot/1
 
@@ -132,12 +132,12 @@ xg_do_kernel()
 	gunzip -c ${initnames[0]} | cpio -i 
 	err_check "unzip initramfs ${initnames[0]} failed."
 
-	XGLIST="/lib/libdevmapper.so.1.02 
-		/lib/libc.so.6
-		/lib/libc-2.21.so 
+	XGLIST="/lib/libdevmapper.so.*
+		/lib/libc.so.*
+		/lib/libc-*.so 
 		/lib/libpthread.so.0 
-		/lib/libpthread-2.21.so 
-		/lib/ld-2.21.so 
+		/lib/libpthread-*.so 
+		/lib/ld-*.so 
 		/lib/ld-linux-x86-64.so.2 
 		/sbin/dmsetup
 		/lib/modules/$1/kernel/drivers/block/loop.ko
@@ -273,11 +273,21 @@ xg_prepare()
 
 xg_mount_squash()
 {
+	showinfo "mount sqroot to $mntroot/0.."
 	mount /root/xiange-sqroot $mntroot/0 -o loop 
 	err_check "mount xiange-sqroot to $mntroot/0 failed."
+
+	if [ -f $mntroot/0/xg64.img ]; then
+		showinfo "xg64.img found."
+		ls -lh $mntroot/0/xg64.img
+	else
+		showFailed "xg64.img found."
+	fi
 	
-	showinfo "mount xiange root.."
+	showinfo "mount xiange root to $mntroot/0/xg64.img"
+	losetup -d /dev/loop2
 	losetup -P /dev/loop2 $mntroot/0/xg64.img
+	echo "result=$?"
 	err_check "setup xg64 to /dev/loop2 faled."
 
 	showinfo "mounting new root..."
@@ -293,7 +303,7 @@ imgfile="/root/xg_sqh.img"
 
 xg_mkddimg()
 {
-	disksize=2000000000
+	disksize=2500000000
 	blocks=$(($disksize/512))
 	
 	showinfo "create image file $imgfile, size $(($disksize/1000000000)) GB.."
@@ -411,9 +421,17 @@ cp -a /root/xiange-sqroot $newroot/xiange/xiange-sqroot-$XGB_ARCH
 err_check "copy /root/xiange-sqroot to $newroot failed."
 
 #cow.img 
-sizeline=$(df -m /dev/loop1p1 | grep "^/dev")
+showinfo "calculating cow size..."
+sizeline=$(df -m /dev/loop1p1 | grep "/dev")
+echo "$sizeline"
 size=$(echo $sizeline | cut -d " " -f 4)
-size=$(($size-10))
+showinfo "Total: $size MB"
+
+if [ $size -lt 10 ]; then
+	showFailed "size is too small: $size"
+else
+	size=$(($size-10))
+fi
 showinfo "creating cow image size $size MB.."
 dd if=/dev/zero of=$newroot/xiange/cow-$XGB_ARCH.out count=$((2*1024*$size))
 err_check "create $newroot/cow.out failed."
