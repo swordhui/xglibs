@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Wireless Tools for Linux"
+DESCRIPTION="Extended attributes tools"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html"
+HOMEPAGE="http://savannah.nongnu.org/projects/attr"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,8 +14,8 @@ HOMEPAGE="http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools.$V.tar.gz \
-http://www.linuxfromscratch.org/patches/blfs/svn/wireless_tools-29-fix_iwlist_scanning-1.patch"
+#SRC_URI="http://download.savannah.gnu.org/releases/attr/attr-$V.src.tar.gz"
+SRC_URI="http://ftp.oregonstate.edu/pub/lfs/lfs-packages/8.3/attr-$V.tar.gz"
 
 
 # Binary package URI.
@@ -29,12 +29,19 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/wireless_tools.$V.tar.gz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
@@ -42,17 +49,15 @@ xgb_config()
 {
 	echo "config $N-$V$R..."
 
-	#fist, cd build directory
-	cd wireless_tools.$V
-
-	patch -Np1 -i $XGPATH_SOURCE/wireless_tools-29-fix_iwlist_scanning-1.patch
-	
+	#fist, cd build directory cd $N-$V$R
+	cd $N-$V
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --enable-shared --libexecdir=/usr/lib --bindir=/bin "
 
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -64,13 +69,36 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	mkdir -p $XGPATH_DEST/usr
-	make PREFIX=$XGPATH_DEST/usr install
+	make DESTDIR=$XGPATH_DEST install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

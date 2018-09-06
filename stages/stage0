@@ -54,11 +54,15 @@ gzip
 iproute2
 kmod
 libpipeline
-make-3.82
+make
 patch
 util-linux
 man-db
 tar
 texinfo
+python
+python3
+ninja
+meson
 vim
 gpkg

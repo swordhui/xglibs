@@ -1,6 +1,4 @@
 libffi
-python
-python3
 glib2
 systemd
 dbus
@@ -87,7 +85,6 @@ netcat
 sshfs
 libwebp
 npapi-sdk
-cacerts
 parted
 smartmontools
 iputils

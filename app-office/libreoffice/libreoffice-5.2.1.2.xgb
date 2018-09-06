@@ -130,7 +130,7 @@ xgb_config()
              --without-gssapi           \
              --with-myspell-dicts        \
              --with-alloc=system         \
-             --without-java              \ 
+             --without-java \
              --without-system-dicts      \
              --disable-dconf             \
              --disable-odk               \

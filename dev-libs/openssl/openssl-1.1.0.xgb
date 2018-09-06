@@ -3,19 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Wireless Tools for Linux"
+DESCRIPTION="Toolkit for SSL v2/v3 and TLS v1"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html"
+HOMEPAGE="http://www.openssl.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools.$V.tar.gz \
-http://www.linuxfromscratch.org/patches/blfs/svn/wireless_tools-29-fix_iwlist_scanning-1.patch"
+SRC_URI="http://www.openssl.org/source/$N-1.1.0i.tar.gz"
 
 
 # Binary package URI.
@@ -34,7 +32,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/wireless_tools.$V.tar.gz
+	tar xf $XGPATH_SOURCE/$N-1.1.0i.tar.gz
 }
 
 #config
@@ -43,16 +41,20 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd wireless_tools.$V
+	cd $N-1.1.0i
 
-	patch -Np1 -i $XGPATH_SOURCE/wireless_tools-29-fix_iwlist_scanning-1.patch
-	
+	#patch -Np1 -i $XGPATH_SOURCE/openssl-1.0.2a-fix_parallel_build-2.patch
+	#err_check "patch 1 failed."
+
+
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --openssldir=/etc/ssl \
+			--libdir=lib shared  \
+			zlib-dynamic "
 
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./config $XGB_CONFIG
 }
 
 #build
@@ -64,13 +66,30 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	make test
+}
+
 #install
 xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
+	#disable static lib
+	sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
+	err_check "Install 1 $N-$V failed."
+
 	#install everything to $XGPATH_DEST
-	mkdir -p $XGPATH_DEST/usr
-	make PREFIX=$XGPATH_DEST/usr install
+	make DESTDIR=$XGPATH_DEST MANDIR=/usr/share/man install
+	err_check "Install 2 $N-$V failed."
+
+	#copy certs.
+	cp -v -r certs /etc/ssl
+
+	install -v -d -m755 $XGPATH_DEST/usr/share/doc/$N-$V
+    cp -v -r doc/* 	$XGPATH_DEST/usr/share/doc/$N-$V
 }
 

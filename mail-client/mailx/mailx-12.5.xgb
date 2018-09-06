@@ -3,7 +3,7 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="A command-line Mail User Agent derived from Berkeley Mail"
 
 # Homepage, not used by Portage directly but handy for developer reference
 HOMEPAGE="http://foo.bar.com/"
@@ -14,9 +14,8 @@ HOMEPAGE="http://foo.bar.com/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://downloads.sourceforge.net/project/smartmontools/smartmontools/6.5/smartmontools-6.5.tar.gz"
-
-
+SRC_URI="http://ftp.debian.org/debian/pool/main/h/heirloom-mailx/heirloom-mailx_12.5.orig.tar.gz \
+	http://www.linuxfromscratch.org/patches/blfs/svn/heirloom-mailx-12.5-fixes-1.patch "
 
 
 # Binary package URI.
@@ -42,7 +41,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/heirloom-mailx_$V.orig.tar.gz
 }
 
 #config
@@ -51,14 +50,17 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd heirloom-mailx-$V
 	err_check "enter directory failed."
 
+	patch -Np1 -i $XGPATH_SOURCE/heirloom-mailx-12.5-fixes-1.patch
+	err_check "patch  failed."
+
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	#./configure $XGB_CONFIG
 }
 
 #build
@@ -67,7 +69,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	make SENDMAIL=/usr/sbin/sendmail -j1
 }
 
 #check
@@ -83,7 +85,21 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	#make DESTDIR=$XGPATH_DEST install
+	make PREFIX=/usr UCBINSTALL=/usr/bin/install DESTDIR=$XGPATH_DEST install 
+	err_check "install failed"
+
+	ln -v -sf mailx $XGPATH_DEST/usr/bin/mail 
+	err_check "install 1 failed"
+
+	ln -v -sf mailx $XGPATH_DEST/usr/bin/nail 
+	err_check "install 2 failed"
+
+	install -v -m755 -d $XGPATH_DEST/usr/share/doc/heirloom-mailx-12.5
+	err_check "install 3 failed"
+
+	install -v -m644 README $XGPATH_DEST/usr/share/doc/heirloom-mailx-12.5
+	err_check "install 4 failed"
 }
 
 #post install
