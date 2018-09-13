@@ -36,8 +36,12 @@ nss
 iptables
 js
 libgudev
+icu
 polkit
 libndp
+curl
+jansson
+modemmanager
 networkmanager
 alsa-lib
 alsa-utils

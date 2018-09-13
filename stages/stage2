@@ -142,7 +142,6 @@ giflib
 imlib2
 habak
 xfontsel
-curl
 libarchive
 tint2
 slim-xiange
@@ -179,8 +178,6 @@ libgcrypt
 libsecret
 libmbim
 libqmi
-modemmanager
-jansson
 network-manager-applet
 xdg-utils
 xlockmore
