@@ -1,6 +1,7 @@
 libffi
 glib2
 systemd
+elfutils
 dbus
 openssl
 openssh
@@ -33,15 +34,14 @@ nspr
 sqlite
 nss
 iptables
-js17-17.0.0
 js
 libgudev
 polkit
-ppp
 libndp
 networkmanager
 alsa-lib
 alsa-utils
+alsa-plugins
 nettle
 libtasn1
 p11-kit
@@ -78,10 +78,10 @@ cpio
 rpm2targz
 lvm2
 requests
-bypy
 sword-helper
 unionfs-fuse
 netcat
+fuse3
 sshfs
 libwebp
 npapi-sdk

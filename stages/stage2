@@ -45,7 +45,6 @@ xcb-util-keysyms
 xcb-util-renderutil
 xcb-util-wm
 libdrm
-elfutils
 libvdpau
 llvm
 libpthread-stubs

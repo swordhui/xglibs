@@ -47,6 +47,12 @@ xgb_config()
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc "
 
+	sed -i '/ top.do_check ==/s/top.do_check/*&/' modules/filter/tex.cpp 
+	err_check "patch1 failed"
+
+	sed -i '/word ==/s/word/*&/'                  prog/check_funs.cpp
+	err_check "patch2 failed"
+
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
 }

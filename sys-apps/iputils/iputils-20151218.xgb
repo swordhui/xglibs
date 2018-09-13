@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GNU Parted manipulates partition tables"
+DESCRIPTION="set of small useful utilities for Linux networking"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gnu.org/software/parted"
+HOMEPAGE="http://www.linuxfoundation.org/collaborate/workgroups/networking/iputils"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnu.org/gnu/parted/parted-$V.tar.xz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://www.skbuff.net/iputils/iputils-s${V}.tar.bz2"
 
 
 # Binary package URI.
@@ -28,12 +29,13 @@ DEPEND="${RDEPEND}"
 
 
 
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-s$V.tar.bz2
 }
 
 #config
@@ -42,19 +44,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-	#err_check "enter directory failed."
-
-	#patch for gcc-2.28
-
-	sed -i "/#include <ctype.h>/a#include <sys/sysmacros.h>" libparted/arch/linux.c
-
+	cd $N-s$V$R
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="--disable-static "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	#./configure $XGB_CONFIG
 }
 
 #build
@@ -63,7 +60,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	make USE_CAP=no IPV4_TARGETS="tracepath clockdiff rdisc arping rarpd" IPV6_TARGETS="tracepath6" LDFLAG_GNUTLS="-lgnutls"
 }
 
 #check
@@ -78,7 +75,10 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
+	mkdir -p $XGPATH_DEST/bin
+
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	cp tracepath clockdiff rdisc arping rarpd tracepath6 $XGPATH_DEST/bin
 }
+
 

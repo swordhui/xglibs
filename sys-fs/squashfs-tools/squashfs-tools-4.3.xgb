@@ -53,6 +53,13 @@ xgb_config()
 	cd squashfs$V/squashfs-tools
 	err_check "enter directory failed."
 
+	#patch for glibc 2.8
+	sed -i "/#include <ctype.h>/a#include <sys/sysmacros.h>" mksquashfs.c 
+	err_check "patch failed"
+
+	sed -i "/#include <ctype.h>/a#include <sys/sysmacros.h>" unsquashfs.c 
+	err_check "patch 2 failed"
+
 }
 
 #build

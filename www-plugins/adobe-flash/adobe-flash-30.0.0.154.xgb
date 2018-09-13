@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Free Unix Spectrum Emulator by Philip Kendall"
+DESCRIPTION="Adobe Flash Player"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://fuse-emulator.sourceforge.net/"
+HOMEPAGE="http://www.adobe.com/go/kb406791"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://github.com/libfuse/libfuse/releases/download/fuse-$V/fuse-$V.tar.xz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://fpdownload.macromedia.com/get/flashplayer/pdc/$V/flash_player_npapi_linux.i386.tar.gz"
 
 
 # Binary package URI.
@@ -28,12 +29,21 @@ DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		SRC_URI="http://fpdownload.macromedia.com/get/flashplayer/pdc/$V/flash_player_npapi_linux.x86_64.tar.gz"
+	fi
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -42,17 +52,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-	err_check "enter directory failed."
-
-	mkdir build
-	cd build
+	#cd $N-$V$R
+	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	meson --prefix=/usr ..
+	#./configure $XGB_CONFIG
 }
 
 #build
@@ -61,7 +68,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	ninja
+	#make $XGPARA_MAKE
 }
 
 #check
@@ -76,16 +83,16 @@ xgb_install()
 {
 	echo "install to $XGPATH_DEST"
 
+	cp -r usr $XGPATH_DEST/
+	err_check "cp 1 failed."
+
+	mkdir -p $XGPATH_DEST/usr/lib/mozilla/plugins
+	err_check "mkdir failed."
+
+	cp libflashplayer.so $XGPATH_DEST/usr/lib/mozilla/plugins
+	err_check "cp 2 failed."
+
 	#install everything to $XGPATH_DEST
-	DESTDIR=$XGPATH_DEST ninja install
-	err_check "install failed."
-
-	mkdir -p $XGPATH_DEST/etc/rc.d
-	err_check "create dir failed."
-
-
-	mv $XGPATH_DEST/etc/init.d $XGPATH_DEST/etc/rc.d
-	err_check "create dir failed."
-
+	#make DESTDIR=$XGPATH_DEST install
 }
 

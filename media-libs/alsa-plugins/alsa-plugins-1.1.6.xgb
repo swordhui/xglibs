@@ -3,17 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GNU Parted manipulates partition tables"
+DESCRIPTION="Advanced Linux Sound Architecture Library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gnu.org/software/parted"
+HOMEPAGE=" http://www.alsa-project.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnu.org/gnu/parted/parted-$V.tar.xz"
+SRC_URI="ftp://ftp.alsa-project.org/pub/plugins/$N-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="alsa-lib"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -33,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -43,15 +43,9 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	#err_check "enter directory failed."
-
-	#patch for gcc-2.28
-
-	sed -i "/#include <ctype.h>/a#include <sys/sysmacros.h>" libparted/arch/linux.c
-
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="--disable-static "
+	#XGB_CONFIG+=" --enable-static "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -64,13 +58,6 @@ xgb_build()
 
 	#run make in current directory
 	make $XGPARA_MAKE
-}
-
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
 }
 
 #install

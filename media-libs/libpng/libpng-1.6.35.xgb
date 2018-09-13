@@ -3,17 +3,19 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GNU Parted manipulates partition tables"
+DESCRIPTION="Portable Network Graphics library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.gnu.org/software/parted"
+HOMEPAGE="http://www.libpng.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://ftp.gnu.org/gnu/parted/parted-$V.tar.xz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://downloads.sourceforge.net/libpng/libpng-$V.tar.xz \
+	https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.35-apng.patch.gz"
 
 
 # Binary package URI.
@@ -27,13 +29,21 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
 	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	err_check "unpack $N-$V failed."
+
+	#fist, cd build directory
+	cd $N-$V$R
+	err_check "unpack $N-$V failed."
+
+	#patch
+	gzip -cd $XGPATH_SOURCE/libpng-1.6.35-apng.patch.gz | patch -p1
+	err_check "patch $N-$V failed."
 }
 
 #config
@@ -41,20 +51,11 @@ xgb_config()
 {
 	echo "config $N-$V$R..."
 
-	#fist, cd build directory
-	cd $N-$V$R
-	#err_check "enter directory failed."
-
-	#patch for gcc-2.28
-
-	sed -i "/#include <ctype.h>/a#include <sys/sysmacros.h>" libparted/arch/linux.c
-
-
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="--disable-static "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	LIBS=-lpthread ./configure $XGB_CONFIG
 }
 
 #build
@@ -70,7 +71,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make check
 }
 
 #install
