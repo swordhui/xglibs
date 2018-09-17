@@ -173,8 +173,6 @@ libcanberra
 notification-daemon
 libwnck
 iso-codes
-libgpg-error
-libgcrypt
 libsecret
 libmbim
 libqmi

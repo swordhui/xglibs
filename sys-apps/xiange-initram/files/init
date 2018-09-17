@@ -80,7 +80,7 @@ if [ "$?" == "0" ]; then
 	/bin/sh
 fi
 
-rootid=$(cat /proc/cmdline | grep -o "root=[^ ]*" | sed "s/root=//g")
+rootid=$(cat /proc/cmdline | grep -o "root=[^ ]*" | tail -n 1 | sed "s/root=//g")
 err_check "get rootid failed."
 showinfo "waiting root $rootid "
 

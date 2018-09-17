@@ -1,12 +1,15 @@
 libffi
 glib2
+libgcrypt
+iptables
+libidn
+libgpg-error
 systemd
 elfutils
 dbus
 openssl
 openssh
 git
-libidn
 wget
 cacerts
 pciutils
@@ -33,7 +36,6 @@ dbus-glib
 nspr
 sqlite
 nss
-iptables
 js
 libgudev
 icu
