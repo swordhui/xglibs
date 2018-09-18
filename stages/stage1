@@ -17,6 +17,7 @@ libusb
 usbutils
 wireless-tools
 dhcpcd
+dhcp
 which
 zip
 unzip
