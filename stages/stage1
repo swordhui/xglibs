@@ -4,6 +4,7 @@ libgcrypt
 iptables
 libidn
 libgpg-error
+libunistring
 systemd
 elfutils
 dbus
