@@ -3,7 +3,7 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="X11 driver and SDK for Wacom and Wacom-like tablets."
 
 # Homepage, not used by Portage directly but handy for developer reference
 HOMEPAGE="http://foo.bar.com/"
@@ -14,7 +14,7 @@ HOMEPAGE="http://foo.bar.com/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://www.freedesktop.org/software/ModemManager/ModemManager-$V.tar.xz"
+SRC_URI="https://downloads.sourceforge.net/linuxwacom/xf86-input-wacom-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libmbim libqmi"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -40,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/ModemManager-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -49,11 +49,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd ModemManager-$V$R
+	cd $N-$V$R
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="--sysconfdir=/etc --localstatedir=/var --enable-more-warnings=no --disable-static "
+	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var --disable-static \
+			--with-udev-rules-dir=/lib/udev/rules.d \
+            --with-systemd-unit-dir=/lib/systemd/system"
+
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

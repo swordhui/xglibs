@@ -45,8 +45,11 @@ xgb_config()
 	cd NetworkManager-$V$R
 	err_check "enter directory failed."
 
+	sed -i 's/1,12,2/1,12.2/' libnm-core/nm-version.h
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --localstatedir=/var \
+		--with-libnm-glib \
 	 	--with-session-tracking=systemd  --disable-ppp --with-dhcpcd=/sbin/dhcpcd" 
 
 	#Third, call configure with $XGB_CONFIG

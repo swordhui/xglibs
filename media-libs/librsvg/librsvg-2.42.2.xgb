@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="Scalable Vector Graphics (SVG) rendering library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://librsvg.sourceforge.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://www.freedesktop.org/software/ModemManager/ModemManager-$V.tar.xz"
+SRC_URI="http://ftp.gnome.org/pub/GNOME/sources/librsvg/2.42/$N-$V.tar.xz"
 
 
 # Binary package URI.
@@ -22,25 +21,17 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libmbim libqmi"
+RDEPEND="gdk-pixbuf libcroco pango"
 
 # Build time depend
 DEPEND="${RDEPEND}"
-
-
-
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/ModemManager-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -49,11 +40,11 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd ModemManager-$V$R
-	err_check "enter directory failed."
+	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+="--sysconfdir=/etc --localstatedir=/var --enable-more-warnings=no --disable-static "
+	XGB_CONFIG+=" --sysconfdir=/etc --disable-mozilla-plugin --disable-static \
+		--disable-introspection "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -72,7 +63,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	#make check
+	make check
 }
 
 #install
@@ -84,20 +75,3 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-}
-
-#pre remove
-xgb_prerm()
-{
-	echo "running before package delete..."
-}
-
-#post remove
-xgb_postrm()
-{
-	echo "running after package delete..."
-}

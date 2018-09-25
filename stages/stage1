@@ -45,6 +45,8 @@ polkit
 libndp
 curl
 jansson
+libmbim
+libqmi
 modemmanager
 networkmanager
 alsa-lib
