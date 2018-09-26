@@ -139,6 +139,7 @@ libtiff
 jasper
 lcms
 libmng
+openjpeg
 gdk-pixbuf
 hicolor-icon-theme
 xml-simple
@@ -207,6 +208,7 @@ links
 gexiv2
 json-c
 libmypaint
+mypaint-brushes
 gimp
 yasm
 libevent
@@ -215,8 +217,8 @@ nasm
 flac
 libdv
 speex
+speexdsp
 taglib
-gst-ffmpeg
 firefox
 libetpan
 compface

@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="This is a sample skeleton xiange build script file"
+DESCRIPTION="An open-source JPEG 2000 codec written in C"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://www.openjpeg.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/presage/presage-$V.tar.gz"
+SRC_URI="https://github.com/uclouvain/$N/archive/v$V/openjpeg-$V.tar.gz"
 
 
 # Binary package URI.
@@ -22,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="sqlite"
+RDEPEND="lcms libpng libtiff"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -33,7 +32,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
 }
 
 #config
@@ -42,18 +41,17 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-	err_check "enter directory failed."
+	cd $N-$V
+	err_check "cd failed."
 
-	#patch for new gcc
-	sed -i "s/const int/const char/" src/lib/core/iso8859_1.h
-	err_check "patch failed"
+	mkdir build
+	cd build
+	err_check "cd build failed."
 
-	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --disable-static "
+	XGB_CONFIG=" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr "
 
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+
+	cmake $XGB_CONFIG ..
 }
 
 #build
@@ -65,12 +63,6 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	make check
-}
 
 #install
 xgb_install()
