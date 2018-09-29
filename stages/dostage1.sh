@@ -115,6 +115,13 @@ showinfo "enable smartd manager.."
 systemctl enable smartd
 err_check "enable sshd failed"
 
+showinfo "creating users..."
+useradd man
+useradd systemd-network
+useradd systemd-resolve
+groupadd kvm
+groupadd input
+
 
 showOK "all done. ready for stage2"
 showinfo "If you want install stage2, please remove vim with gpkg -D vim."
