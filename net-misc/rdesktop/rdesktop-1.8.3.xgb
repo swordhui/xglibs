@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GL extensions for Gtk+ 2.0"
+DESCRIPTION="A Remote Desktop Protocol Client"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://gtkglext.sourceforge.net/"
+HOMEPAGE="http://rdesktop.sourceforge.net/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$V/$N-$V.tar.gz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$V/rdesktop-$V.tar.gz"
 
 
 # Binary package URI.
@@ -21,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="openssl"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -43,17 +44,11 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	err_check "cd failed."
-
-	patch -p1 < $XGPATH_SCRIPT/gtkglext-1.2.0.patch
-	err_check "patch failed."
-
-
-	sed -i "s/\bindex\b/s_index/g" gdk/gdkglshapes.c
-	err_check "patch 2 failed."
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static --with-gdktarget=x11 "
+	XGB_CONFIG+=" --with-x --with-openssl=/usr --with-sound=alsa --with-ipv6 --disable-credssp \
+		--disable-smartcard "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -72,7 +67,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check
+	#make check
 }
 
 #install

@@ -6,7 +6,7 @@
 DESCRIPTION="sakura is a terminal emulator based on GTK and VTE"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.pleyades.net/david/sakura.php"
+HOMEPAGE="https://launchpad.net/sakura"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 

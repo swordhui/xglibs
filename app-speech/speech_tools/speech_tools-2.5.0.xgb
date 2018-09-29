@@ -1,0 +1,131 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Speech tools for Festival Text to Speech engine"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.cstr.ed.ac.uk/projects/speech_tools/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SITE_URI="http://festvox.org/packed/festival/$V"
+
+SRC_URI="http://festvox.org/packed/festival/2.5/speech_tools-$V-release.tar.gz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/`basename $SRC_URI`
+}
+
+#config
+xgb_config()
+{
+	#fist, cd build directory
+	cd speech_tools
+
+	./configure $XGB_CONFIG
+	err_check "config failed"
+
+	#enable shared 
+	sed -i "s/^#SHARED/SHARED/g" config/config
+	err_check "enable shared failed"
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	echo Make CC=$CC, CXX=$CXX
+	make 
+
+}
+
+#install
+xgb_install()
+{
+	local destfile
+	local S
+	local file
+
+	echo "install to $XGPATH_DEST"
+
+	S=$(pwd)
+
+	#lib files
+	mkdir -p $XGPATH_DEST/usr/lib
+	cp -a lib/*.so* $XGPATH_DEST/usr/lib
+	err_check "install $N-$V failed."
+
+	cp -a lib/*.a $XGPATH_DEST/usr/lib
+	err_check "install $N-$V failed."
+
+	#install binarys
+	mkdir -p $XGPATH_DEST/usr/bin
+	cd bin
+	for file in *; 
+	do
+		[ "${file}" = "Makefile" ] && continue
+		cp -a ${file} $XGPATH_DEST/usr/bin
+		err_check "install $N-$V failed."
+
+		dstfile="/usr/bin/${file}"
+
+		sed -i \
+		"s:${S}/testsuite/data:/usr/share/speech_tools/testsuite:g" \
+			${XGPATH_DEST}$dstfile
+
+		sed -i "s:${S}/main:/usr/lib/speech_tools:g"\
+			${XGPATH_DEST}$dstfile
+
+		sed -i "s:${S}/lib:/usr/lib:g" \
+			${XGPATH_DEST}$dstfile
+	done
+	cd ..
+
+	mkdir -p $XGPATH_DEST/usr/lib/speech_tools
+	for file in `find main -perm 755 -type f`; do
+		cp -a $file $XGPATH_DEST/usr/lib/speech_tools
+		err_check "install $N-$V failed."
+	done
+
+	#share files.
+	mkdir -p  $XGPATH_DEST/usr/share/speech_tools/lib
+	cp -r config $XGPATH_DEST/usr/share/speech_tools
+	err_check "install $N-$V failed."
+	cp -r lib/siod $XGPATH_DEST/usr/share/speech_tools/lib
+	err_check "install $N-$V failed."
+
+
+
+	#include
+	mkdir -p $XGPATH_DEST/usr/include/$N
+	cp -a include/* $XGPATH_DEST/usr/include/$N
+	err_check "install $N-$V failed."
+
+	mv $XGPATH_DEST/usr/bin/{dp,speech-dp}
+	err_check "install $N-$V failed."
+}
+

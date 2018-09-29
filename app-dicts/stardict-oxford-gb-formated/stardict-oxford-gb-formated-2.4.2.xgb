@@ -13,7 +13,7 @@ HOMEPAGE="http://foo.bar.com/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://prdownloads.sourceforge.net/stardict/$N-$V.tar.bz2"
+SRC_URI="http://download.huzheng.org/zh_CN/stardict-oald-cn-2.4.2.tar.bz2"
 
 
 # Binary package URI.
@@ -46,7 +46,7 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	mkdir -p $XGPATH_DEST/usr/share/stardict/dic
-	tar xf $XGPATH_SOURCE/$N-$V.tar.bz2 -C $XGPATH_DEST/usr/share/stardict/dic
+	tar xf $XGPATH_SOURCE/stardict-oald-cn-$V.tar.bz2 -C $XGPATH_DEST/usr/share/stardict/dic
 }
 
 

@@ -45,7 +45,7 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-${V}p1
 
-	patch -Np1 -i $XGPATH_SOURCE/openssh-7.8p1-openssl-1.1.0-1.patch
+	#patch -Np1 -i $XGPATH_SOURCE/openssh-7.8p1-openssl-1.1.0-1.patch
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc/ssh \

@@ -13,10 +13,7 @@ HOMEPAGE="http://www.snes9x.com/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://snes9x-gtk.googlecode.com/files/snes9x-$V-src.tar.bz2 \
-http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/games-emulation/snes9x/files/snes9x-1.53-build.patch \
-http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/games-emulation/snes9x/files/snes9x-1.53-cross-compile.patch "
-
+SRC_URI="https://sites.google.com/site/bearoso/snes9x/snes9x-1.56.2.tar.gz"
 
 
 # Binary package URI.
@@ -37,7 +34,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V-src.tar.bz2
+	tar xf $XGPATH_SOURCE/$N-$V.tar.gz
 	err_check "unpack $N-$V failed."
 
 }
@@ -48,38 +45,24 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R-src
+	cd $N-$V$R
 	err_check "cd failed."
 
-	 sed -i -e '/pedantic/d' {gtk,unix}/configure.ac
-	err_check "patch 1 failed."
-	 sed -i -e '75i#define OF(x) x' unzip/{un,}zip.h 
-	err_check "patch 2 failed."
-	 sed -i -e '22i#define OF(x) x' unzip/ioapi.h 
-	err_check "patch 3 failed."
-
-	patch -p1 -i $XGPATH_SOURCE/snes9x-1.53-build.patch
-	err_check "patch 4 failed."
-
-	patch -p1 -i $XGPATH_SOURCE/snes9x-1.53-cross-compile.patch
-	err_check "patch 5 failed."
-
 	cd unix
-	autoreconf
 	err_check "patch 6 failed."
-	LDFLAGS+=" -Wl,-z,noexecstack "
 
 
-	LDFLAGS=$LDFLAGS ./configure $XGB_CONFIG 
+	./configure $XGB_CONFIG 
 	err_check "config 1 failed."
 
 	cd ../gtk
-	autoreconf
+	./autogen.sh
 	err_check "patch 7 failed."
+
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG --disable-dependency-tracking \
-		--datadir=/usr/share --without-gtk3 --with-zlib --without-pulseaudio \
-		--without-oss 
+
+	XGB_CONFIG+=" --datadir=/usr/share --with-zlib --without-system-zip "
+	./configure $XGB_CONFIG 	 
 	err_check "config 2 failed."
 
 	cd ../unix

@@ -13,8 +13,8 @@ HOMEPAGE="http://www.openssl.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://www.openssl.org/source/$N-1.0.2a.tar.gz \
-http://www.linuxfromscratch.org/patches/blfs/svn/openssl-1.0.2a-fix_parallel_build-2.patch"
+SRC_URI="http://www.openssl.org/source/$N-1.0.2p.tar.gz \
+	http://www.linuxfromscratch.org/patches/blfs/svn/openssl-1.0.2p-compat_versioned_symbols-1.patch"
 
 
 # Binary package URI.
@@ -33,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-1.0.2a.tar.gz
+	tar xf $XGPATH_SOURCE/$N-1.0.2p.tar.gz
 }
 
 #config
@@ -42,9 +42,9 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-1.0.2a
+	cd $N-1.0.2p
 
-	patch -Np1 -i $XGPATH_SOURCE/openssl-1.0.2a-fix_parallel_build-2.patch
+	patch -Np1 -i $XGPATH_SOURCE/openssl-1.0.2p-compat_versioned_symbols-1.patch
 	err_check "patch 1 failed."
 
 
@@ -52,6 +52,7 @@ xgb_config()
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --openssldir=/etc/ssl \
 			--libdir=lib shared  \
+			shared \
 			zlib-dynamic "
 
 	#Third, call configure with $XGB_CONFIG
@@ -64,7 +65,8 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	make depend
+	make -j1
 }
 
 #check
@@ -81,7 +83,6 @@ xgb_install()
 
 	#disable static lib
 	sed -i 's# libcrypto.a##;s# libssl.a##' Makefile
-	err_check "Install 1 $N-$V failed."
 
 	#install everything to $XGPATH_DEST
 	make INSTALL_PREFIX=$XGPATH_DEST MANDIR=/usr/share/man install

@@ -225,7 +225,6 @@ compface
 shared-mime-info
 claws-mail
 mupdf
-libnice
 pidgin
 libgphoto2
 libexif-gtk
@@ -235,9 +234,9 @@ apr
 apr-util
 neon
 swig
+apache
 subversion
 error
-gnome-doc-utils
 speech_tools
 festival
 stardict
@@ -245,12 +244,14 @@ stardict-oxford-gb-formated
 fcitx
 popt
 samba
-apache
 pure-ftpd
+pcre2
 vte
 sakura
 xsel
 gcr
+libmtp
+openldap
 gvfs
 menu-cache
 libfm
@@ -265,9 +266,11 @@ pangox-compat
 gtkglext
 lua-5.1.4
 celestia
-sdl
-sdl-image
+sdl2
+sdl2-image
 sdl-mixer
+openal
+sfml
 etr
 snes9x
 ftgl
@@ -275,8 +278,6 @@ chromium
 libpcap
 wireshark
 lxtask
-lwqq
-pidgin-lwqq
 libass
 x264
 libsndfile
@@ -292,11 +293,12 @@ faac
 faad2
 mplayer-skin-clearlook
 mplayer
-openjpeg
 opus
 fdk-aac
+x265
 ffmpeg
 wxGTK
+libfilezilla
 filezilla
 libburn
 libisofs
@@ -313,5 +315,4 @@ gvim
 glmark2
 libgee
 systemd-ui
-openldap
 libplist

@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GL extensions for Gtk+ 2.0"
+DESCRIPTION="encoding video streams into the H.265/HEVC format"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://gtkglext.sourceforge.net/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://downloads.sourceforge.net/project/$N/$N/$V/$N-$V.tar.gz"
+#SRC_URI="https://bitbucket.org/multicoreware/x265/downloads/x265_$V.tar.gz"
+SRC_URI="http://ftp.oregonstate.edu/pub/blfs/8.3/x/x265_2.8.tar.gz"
 
 
 # Binary package URI.
@@ -24,16 +25,22 @@ BIN_URI=""
 RDEPEND=""
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} nasm cmake"
 
 
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/x265_$V.tar.gz
 }
 
 #config
@@ -42,21 +49,17 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-	err_check "cd failed."
+	cd x265_$V
+	err_check "enter directory failed."
 
-	patch -p1 < $XGPATH_SCRIPT/gtkglext-1.2.0.patch
-	err_check "patch failed."
-
-
-	sed -i "s/\bindex\b/s_index/g" gdk/gdkglshapes.c
-	err_check "patch 2 failed."
+	mkdir build
+	cd build
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static --with-gdktarget=x11 "
+	XGB_CONFIG="-DCMAKE_INSTALL_PREFIX=/usr"
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cmake $XGB_CONFIG ../source
 }
 
 #build
@@ -72,7 +75,7 @@ xgb_build()
 xgb_check()
 {
 	echo "checking $N-$V$R.."
-	make check
+	#make check
 }
 
 #install
@@ -82,5 +85,26 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed"
+
+	#remove static lib
+	rm -vf $XGPATH_DEST/usr/lib/libx265.a
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}
