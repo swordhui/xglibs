@@ -101,3 +101,5 @@ iputils
 dosfstools
 efivar
 efibootmgr
+libuv
+cmake

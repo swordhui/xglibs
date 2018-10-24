@@ -121,6 +121,7 @@ useradd systemd-network
 useradd systemd-resolve
 groupadd kvm
 groupadd input
+showinfo "making certs..."
 
 
 showOK "all done. ready for stage2"
