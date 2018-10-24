@@ -1,0 +1,431 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Multiple Arcade Machine Emulator (SDL)"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://mamedev.org/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="https://github.com/mamedev/mame/releases/download/mame0202/mame0202s.zip"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="expat sdl zlib flac libjpeg-turbo"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	mkdir zip
+	cd zip
+	unzip $XGPATH_SOURCE/mame0202s.zip
+	err_check "uncompress failed."
+	unzip mame.zip
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE NO_USE_QTDEBUG=1 BUILD_EXPAT=0 BUILD_ZLIB=0 BUILD_FLAC=0 BUILD_JPEGLIB=0 
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	local progname="mame"
+	echo "install to $XGPATH_DEST"
+
+	if [ "$XGB_ARCH" == "x86_64" ]; then
+		progname="mame64"
+	fi
+
+	#install everything to $XGPATH_DEST
+	mkdir -p $XGPATH_DEST/opt/mame/roms
+	err_check "sdlmame: install 1 failed."
+
+	cp $progname $XGPATH_DEST/opt/mame
+	err_check "sdlmame: install 2 failed."
+
+	cp -r artwork $XGPATH_DEST/opt/mame/
+	err_check "sdlmame: install 3 failed."
+
+	cp -r hash $XGPATH_DEST/opt/mame/
+	err_check "sdlmame: install 4 failed."
+
+	#cp -r web $XGPATH_DEST/opt/mame/
+	#err_check "sdlmame: install 5 failed."
+
+	cp -r hlsl $XGPATH_DEST/opt/mame/
+	err_check "sdlmame: install 7 failed."
+
+	cp -r docs $XGPATH_DEST/opt/mame/
+	err_check "sdlmame: install 8 failed."
+
+	cp -r keymaps $XGPATH_DEST/opt/mame/
+	err_check "sdlmame: install 9 failed."
+
+	echo "Plase put zip format rom files to /opt/mame/roms." > $XGPATH_DEST/opt/mame/README
+	err_check "sdlmame: install 10 failed."
+
+	#ini file
+	cat > $XGPATH_DEST/opt/mame/mame.ini << EOF
+#
+# CORE CONFIGURATION OPTIONS
+#
+readconfig                0
+writeconfig               0
+
+#
+# CORE SEARCH PATH OPTIONS
+#
+rompath                   /opt/mame/roms
+hashpath                  /opt/mame/hash
+samplepath                /opt/mame/samples
+artpath                   /opt/mame/artwork
+ctrlrpath                 /opt/mame/ctrlr
+inipath                   /opt/mame;.;ini
+fontpath                  /opt/mame/font
+cheatpath                 /opt/mame/cheat
+crosshairpath             /opt/mame/crosshair
+
+#
+# CORE OUTPUT DIRECTORY OPTIONS
+#
+cfg_directory             $HOME/.mame/cfg
+nvram_directory           $HOME/.mame/nvram
+memcard_directory         $HOME/.mame/memcard
+input_directory           $HOME/.mame/inp
+state_directory           $HOME/.mame/sta
+snapshot_directory        $HOME/.mame/snap
+diff_directory            $HOME/.mame/diff
+comment_directory         $HOME/.mame/comments
+
+#
+# CORE STATE/PLAYBACK OPTIONS
+#
+state                     
+autosave                  0
+playback                  
+record                    
+mngwrite                  
+aviwrite                  
+wavwrite                  
+snapname                  %g/%i
+snapsize                  auto
+snapview                  internal
+statename                 %g
+burnin                    0
+
+#
+# CORE PERFORMANCE OPTIONS
+#
+autoframeskip             0
+frameskip                 0
+seconds_to_run            0
+throttle                  1
+sleep                     1
+speed                     1.0
+refreshspeed              0
+
+#
+# CORE ROTATION OPTIONS
+#
+rotate                    1
+ror                       0
+rol                       0
+autoror                   0
+autorol                   0
+flipx                     0
+flipy                     0
+
+#
+# CORE ARTWORK OPTIONS
+#
+artwork_crop              0
+use_backdrops             1
+use_overlays              1
+use_bezels                1
+use_cpanels               1
+use_marquees              1
+
+#
+# CORE SCREEN OPTIONS
+#
+brightness                1.0
+contrast                  1.0
+gamma                     1.0
+pause_brightness          0.65
+effect                    none
+
+#
+# CORE VECTOR OPTIONS
+#
+antialias                 1
+beam                      1.0
+flicker                   0
+
+#
+# CORE SOUND OPTIONS
+#
+sound                     1
+samplerate                48000
+samples                   1
+volume                    0
+
+#
+# CORE INPUT OPTIONS
+#
+coin_lockout              1
+ctrlr                     
+mouse                     0
+joystick                  1
+lightgun                  0
+multikeyboard             0
+multimouse                0
+steadykey                 0
+ui_active                 0
+offscreen_reload          0
+joystick_map              auto
+joystick_deadzone         0.3
+joystick_saturation       0.85
+natural                   0
+joystick_contradictory    0
+coin_impulse              0
+
+#
+# CORE INPUT AUTOMATIC ENABLE OPTIONS
+#
+paddle_device             keyboard
+adstick_device            keyboard
+pedal_device              keyboard
+dial_device               keyboard
+trackball_device          keyboard
+lightgun_device           keyboard
+positional_device         keyboard
+mouse_device              mouse
+
+#
+# CORE DEBUGGING OPTIONS
+#
+log                       0
+verbose                   0
+update_in_pause           0
+debug                     0
+debugscript               
+debug_internal            0
+
+#
+# CORE MISC OPTIONS
+#
+drc                       1
+drc_use_c                 0
+bios                      
+cheat                     0
+skip_gameinfo             0
+uifont                    default
+ramsize                   
+confirm_quit              0
+ui_mouse                  0
+autoboot_command          
+autoboot_delay            2
+autoboot_script           
+http                      0
+http_port                 8080
+http_path                 web
+
+#
+# DEBUGGING OPTIONS
+#
+oslog                     0
+watchdog                  0
+
+#
+# PERFORMANCE OPTIONS
+#
+multithreading            1
+numprocessors             auto
+sdlvideofps               1
+bench                     0
+
+#
+# VIDEO OPTIONS
+#
+video                     opengl
+numscreens                1
+window                    0
+maximize                  1
+keepaspect                1
+unevenstretch             1
+centerh                   1
+centerv                   1
+waitvsync                 1
+syncrefresh               1
+scalemode                 none
+
+#
+# OpenGL-SPECIFIC OPTIONS
+#
+filter                    1
+prescale                  1
+gl_forcepow2texture       0
+gl_notexturerect          0
+gl_vbo                    1
+gl_pbo                    1
+gl_glsl                   0
+gl_glsl_filter            1
+glsl_shader_mame0         none
+glsl_shader_mame1         none
+glsl_shader_mame2         none
+glsl_shader_mame3         none
+glsl_shader_mame4         none
+glsl_shader_mame5         none
+glsl_shader_mame6         none
+glsl_shader_mame7         none
+glsl_shader_mame8         none
+glsl_shader_mame9         none
+glsl_shader_screen0       none
+glsl_shader_screen1       none
+glsl_shader_screen2       none
+glsl_shader_screen3       none
+glsl_shader_screen4       none
+glsl_shader_screen5       none
+glsl_shader_screen6       none
+glsl_shader_screen7       none
+glsl_shader_screen8       none
+glsl_shader_screen9       none
+
+#
+# PER-WINDOW VIDEO OPTIONS
+#
+screen                    auto
+aspect                    auto
+resolution                auto
+view                      auto
+screen0                   auto
+aspect0                   auto
+resolution0               auto
+view0                     auto
+screen1                   auto
+aspect1                   auto
+resolution1               auto
+view1                     auto
+screen2                   auto
+aspect2                   auto
+resolution2               auto
+view2                     auto
+screen3                   auto
+aspect3                   auto
+resolution3               auto
+view3                     auto
+
+#
+# FULL SCREEN OPTIONS
+#
+switchres                 0
+useallheads               0
+
+#
+# SOUND OPTIONS
+#
+audio_latency             2
+
+#
+# SDL KEYBOARD MAPPING
+#
+keymap                    0
+keymap_file               keymap.dat
+uimodekey                 SCRLOCK
+
+#
+# SDL JOYSTICK MAPPING
+#
+joy_idx1                  auto
+joy_idx2                  auto
+joy_idx3                  auto
+joy_idx4                  auto
+joy_idx5                  auto
+joy_idx6                  auto
+joy_idx7                  auto
+joy_idx8                  auto
+sixaxis                   1
+
+#
+# SDL LOWLEVEL DRIVER OPTIONS
+#
+videodriver               auto
+audiodriver               auto
+gl_lib                    auto
+
+EOF
+
+	#icons
+	convert scripts/resources/windows/mame/mame.ico /tmp/mame.png
+	err_check "sdlmame: install 11 failed."
+	cp /tmp/mame-2.png $XGPATH_DEST/opt/mame/mame32.png
+	err_check "sdlmame: install 12 failed."
+
+	#start
+    local imgconv1=
+    local imgconv2=/opt/mame/mame32.png
+    local menu_type=games
+    local menu_name="Mame"
+    local menu_cmd="/opt/mame/$progname -inipath /opt/mame"
+    local menu_index=C20mame
+
+    local convpara=""
+    local menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
+
+    declare -A Name
+    Name[en]="sdlmame"
+    Name[zh_CN]="街机模拟器sdlmame"
+
+    xgb_mkmenu
+	err_check "quick start failed."
+
+	#load snd modules
+    mkdir -p $XGPATH_DEST/etc/modules-load.d
+    echo "snd_seq" > $XGPATH_DEST/etc/modules-load.d/snd_seq.conf
+
+}
+
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+	modprobe snd_seq
+}
+

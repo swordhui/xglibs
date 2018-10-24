@@ -96,9 +96,9 @@ xgb_install()
 
 	rm -v $XGPATH_DEST/lib/lib{readline,history}.so
 	err_check "rm libreadline.so failed."
-	ln -sfv ../../lib/libreadline.so.6 $XGPATH_DEST/usr/lib/libreadline.so
+	ln -sfv ../../lib/libreadline.so.7 $XGPATH_DEST/usr/lib/libreadline.so
 	err_check "ln libreadline.so failed."
-	ln -sfv ../../lib/libhistory.so.6 $XGPATH_DEST/usr/lib/libhistory.so
+	ln -sfv ../../lib/libhistory.so.7 $XGPATH_DEST/usr/lib/libhistory.so
 	err_check "ln libreadline.so failed."
 
 	#docs
