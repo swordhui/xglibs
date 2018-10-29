@@ -47,7 +47,7 @@ err_check()
 }
 
 
-efi_inst_version=0.1
+efi_inst_version=0.2
 efi_inst_usage="
 efi_inst $SUCCESS$efi_inst_version$NORMAL, usage:\n
 	$INFO\t-v            	$NORMAL\t\tshow current version\n
@@ -77,6 +77,7 @@ gpkg_inst_efi()
 	image="$2"
 
 	partuuid=$(blkid $efi_boot | grep -o PARTUUID=".*")
+	partuuid=$(echo $partuuid | sed "s/\"//g")
 	echo $partuuid
 
 	if [ x"$partuuid" == "x" ]; then 
