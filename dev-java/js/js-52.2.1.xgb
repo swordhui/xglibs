@@ -51,6 +51,8 @@ xgb_config()
 	cd mozjs-${V}gnome1/js/src
 	err_check "enter directory failed."
 
+	export SHELL=/bin/bash
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+="--with-intl-api --with-system-zlib --enable-readline --enable-threadsafe \
 		--with-system-icu --enable-threadsafe --with-system-nspr "

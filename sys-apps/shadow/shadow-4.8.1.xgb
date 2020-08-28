@@ -1,0 +1,312 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Utilities to deal with user accounts"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://pkg-shadow.alioth.debian.org/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="https://github.com/shadow-maint/shadow/releases/download/$V/shadow-$V.tar.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND="linux-pam"
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+
+	err_check "unpack $N failed."
+	#fist, cd build directory
+	cd $N-$V$R
+
+	#Disable the installation of the groups program and its man 
+	#pages, as coreutils provides a better versio
+	sed -i 's/groups$(EXEEXT) //' src/Makefile.in
+	err_check "patch $N failed."
+
+	find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
+	err_check "patch $N failed."
+
+	find man -name Makefile.in -exec sed -i 's/getspnam\.3 / /' {} \;
+	find man -name Makefile.in -exec sed -i 's/passwd\.5 / /'   {} \;
+
+	#use the more secure MD5 method of password encryption
+	#change the obsolete /var/spool/mail location
+	sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
+	       -e 's@/var/spool/mail@/var/mail@' etc/login.defs
+	err_check "patch $N failed."
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --sysconfdir=/etc --with-libpam "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
+	err_check "install $N failed."
+
+	mkdir -p $XGPATH_DEST/bin
+	mv -v $XGPATH_DEST/usr/bin/passwd $XGPATH_DEST/bin
+	err_check "install 2 $N failed."
+
+	#remove nologin, because util-linux have one.
+	rm  $XGPATH_DEST/sbin/nologin
+	rm  $XGPATH_DEST/usr/share/man/man8/nologin*
+
+	#do not create mail
+	sed -i 's/yes/no/' $XGPATH_DEST/etc/default/useradd
+	err_check "install 3 $N failed."
+
+	#comment login features which will be done in pam
+
+	for FUNCTION in FAIL_DELAY FAILLOG_ENAB \
+                LASTLOG_ENAB \
+                MAIL_CHECK_ENAB \
+                OBSCURE_CHECKS_ENAB \
+                PORTTIME_CHECKS_ENAB \
+                QUOTAS_ENAB \
+                CONSOLE MOTD_FILE \
+                FTMP_FILE NOLOGINS_FILE \
+                ENV_HZ PASS_MIN_LEN \
+                SU_WHEEL_ONLY \
+                CRACKLIB_DICTPATH \
+                PASS_CHANGE_TRIES \
+                PASS_ALWAYS_WARN \
+                CHFN_AUTH ENCRYPT_METHOD \
+                ENVIRON_FILE
+	do
+    	sed -i "s/^${FUNCTION}/# &/" $XGPATH_DEST/etc/login.defs
+	done
+
+	mkdir -p $XGPATH_DEST/etc/pam.d
+
+	cat > $XGPATH_DEST/etc/pam.d/system-account << "EOF"
+# Begin /etc/pam.d/system-account
+
+account   required    pam_unix.so
+
+# End /etc/pam.d/system-account
+EOF
+	err_check "install 4 $N failed."
+
+
+
+	cat > $XGPATH_DEST/etc/pam.d/system-auth << "EOF"
+# Begin /etc/pam.d/system-auth
+
+auth      required    pam_unix.so
+
+# End /etc/pam.d/system-auth
+EOF
+	err_check "install 5 $N failed."
+
+	cat > $XGPATH_DEST/etc/pam.d/system-password << "EOF"
+# Begin /etc/pam.d/system-password
+
+# use sha512 hash for encryption, use shadow, and try to use any previously
+# defined authentication token (chosen password) set by any prior module
+password  required    pam_unix.so       sha512 shadow try_first_pass
+
+# End /etc/pam.d/system-password
+EOF
+	err_check "install 6 $N failed."
+
+
+
+	cat > $XGPATH_DEST/etc/pam.d/system-session << "EOF"
+# Begin /etc/pam.d/system-session
+
+session		required		pam_unix.so
+session		optional		pam_systemd.so
+
+# End /etc/pam.d/system-session
+EOF
+	err_check "install 7 $N failed."
+
+
+cat > $XGPATH_DEST/etc/pam.d/login << "EOF"
+# Begin /etc/pam.d/login
+
+# Set failure delay before next prompt to 3 seconds
+auth      optional    pam_faildelay.so  delay=3000000
+
+# Check to make sure that the user is allowed to login
+auth      requisite   pam_nologin.so
+
+# Check to make sure that root is allowed to login
+# Disabled by default. You will need to create /etc/securetty
+# file for this module to function. See man 5 securetty.
+#auth      required    pam_securetty.so
+
+# Additional group memberships - disabled by default
+#auth      optional    pam_group.so
+
+# include the default auth settings
+auth      include     system-auth
+
+# check access for the user
+account   required    pam_access.so
+
+# include the default account settings
+account   include     system-account
+
+# Set default environment variables for the user
+session   required    pam_env.so
+
+# Set resource limits for the user
+session   required    pam_limits.so
+
+# Display date of last login - Disabled by default
+#session   optional    pam_lastlog.so
+
+# Display the message of the day - Disabled by default
+#session   optional    pam_motd.so
+
+# Check user's mail - Disabled by default
+#session   optional    pam_mail.so      standard quiet
+
+# include the default session and password settings
+session   include     system-session
+password  include     system-password
+
+# End /etc/pam.d/login
+EOF
+	err_check "install 8 $N failed."
+
+	cat > $XGPATH_DEST/etc/pam.d/passwd << "EOF"
+# Begin /etc/pam.d/passwd
+
+password  include     system-password
+
+# End /etc/pam.d/passwd
+EOF
+	err_check "install 9 $N failed."
+
+	cat > $XGPATH_DEST/etc/pam.d/su << "EOF"
+# Begin /etc/pam.d/su
+
+# always allow root
+auth      sufficient  pam_rootok.so
+auth      include     system-auth
+
+# include the default account settings
+account   include     system-account
+
+# Set default environment variables for the service user
+session   required    pam_env.so
+
+# include system session defaults
+session   include     system-session
+
+# End /etc/pam.d/su
+EOF
+	err_check "install 10 $N failed."
+
+
+	cat > $XGPATH_DEST/etc/pam.d/chage << "EOF"
+#Begin /etc/pam.d/chage
+
+# always allow root
+auth      sufficient  pam_rootok.so
+
+# include system defaults for auth account and session
+auth      include     system-auth
+account   include     system-account
+session   include     system-session
+
+# Always permit for authentication updates
+password  required    pam_permit.so
+
+# End /etc/pam.d/chage
+EOF
+	err_check "install 11 $N failed."
+
+
+	for PROGRAM in chfn chgpasswd chpasswd chsh groupadd groupdel \
+         groupmems groupmod newusers useradd userdel usermod
+	do
+    	install -v -m644 $XGPATH_DEST/etc/pam.d/chage $XGPATH_DEST/etc/pam.d/${PROGRAM}
+		err_check "install pam file of $PROGRAM failed."
+    	sed -i "s/chage/$PROGRAM/" $XGPATH_DEST/etc/pam.d/${PROGRAM}
+		err_check "patch pam file of $PROGRAM failed."
+	done
+
+	cat > $XGPATH_DEST/etc/pam.d/other << "EOF"
+# Begin /etc/pam.d/other
+
+auth        required        pam_warn.so
+auth        required        pam_deny.so
+account     required        pam_warn.so
+account     required        pam_deny.so
+password    required        pam_warn.so
+password    required        pam_deny.so
+session     required        pam_warn.so
+session     required        pam_deny.so
+
+# End /etc/pam.d/other
+EOF
+	err_check "install 12 failed."
+
+	#remove useless file
+	#rm $XGPATH_DEST/etc/login.access
+	#rm $XGPATH_DEST/etc/limits
+}
+
+#post install
+xgb_postinst()
+{
+	if [ -z "$XGROOT" ]; then
+		echo "enable shadow password.."
+		pwconv
+
+		echo "enable shadow group password.."
+		grpconv
+	else
+		echo "XGROOT=$XGROOT"
+		echo "Please run pwconv and grpconv in chroot enviroment."
+	fi
+}
+

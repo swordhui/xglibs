@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="A RFC 2131 compliant DHCP client"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://roy.marples.name/projects/dhcpcd/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://roy.marples.name/downloads/dhcpcd/dhcpcd-$V.tar.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+
+	#second, add package specified config params to XGB_CONFIG
+	XGB_CONFIG+=" --sysconfdir=/etc --libexecdir=/lib/dhcpcd \
+		--dbdir=/var/lib/dhcpcd --privsepuser=dhcpcd "
+
+	#Third, call configure with $XGB_CONFIG
+	./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	make $XGPARA_MAKE
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	make DESTDIR=$XGPATH_DEST install
+	err_check "install $N-$V failed."
+
+	install  -v -m700 -d $XGPATH_DEST/var/lib/dhcpcd
+
+	#move to /sbin
+	mv $XGPATH_DEST/usr/sbin $XGPATH_DEST/
+}
+
+
+xgb_postinst()
+{
+	echo "create users for dhcpcd..."
+
+	groupadd -g 52 dhcpcd        &&
+	useradd  -c 'dhcpcd PrivSep' \
+		-d /var/lib/dhcpcd  \
+		-g dhcpcd           \
+		-s /bin/false     \
+		-u 52 dhcpcd &&
+		chown    -v dhcpcd:dhcpcd /var/lib/dhcpcd
+}
+

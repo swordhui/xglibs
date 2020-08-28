@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="Linux header files for glibc/eglibc"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.kernel.org"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+
+BASE_VER=5.7
+PATCH_VER=11
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://www.kernel.org/pub/linux/kernel/v5.x/linux-$BASE_VER.tar.xz \
+	https://www.kernel.org/pub/linux/kernel/v5.x/patch-$V.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+xgb_init()
+{
+	XGPATH_SOURCE=$XGPATH_SOURCE_RAW/linux-kernel-$BASE_VER
+}
+
+
+
+
+#unpack
+xgb_unpack()
+{
+	echo "Unpacking ..."
+	tar xf $XGPATH_SOURCE/linux-$BASE_VER.tar.xz
+	err_check "[Error] linux_header: check falied."
+
+	cd linux-$BASE_VER
+
+	unxz -dc $XGPATH_SOURCE/patch-$V.xz | patch -p1
+	err_check "[Error] patch $V failed"
+}
+
+#build
+xgb_build()
+{
+	make mrproper
+	err_check "[Error] linux_header: mrproper falied."
+
+	make ARCH=$XGB_ARCH headers_check
+	err_check "[Error] linux_header: check falied."
+}
+
+#install
+xgb_install()
+{
+	mkdir -p $XGPATH_DEST/usr
+
+	make   \
+		INSTALL_HDR_PATH=$XGPATH_DEST/usr ARCH=$XGB_ARCH headers_install
+	err_check "[Error] linux_header: install falied."
+
+	find $XGPATH_DEST/usr/include \( -name .install -o -name ..install.cmd \) -delete
+	echo "done"
+
+}
+
+

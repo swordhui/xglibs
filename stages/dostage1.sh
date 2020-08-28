@@ -122,6 +122,21 @@ useradd systemd-resolve
 groupadd kvm
 groupadd input
 showinfo "making certs..."
+make-ca -g
+
+systemctl enable update-pciids.timer
+systemctl enable update-usbids.timer
+
+#dhcpcd
+groupadd -g 52 dhcpcd        &&
+useradd  -c 'dhcpcd PrivSep' \
+         -d /var/lib/dhcpcd  \
+         -g dhcpcd           \
+         -s /bin/false     \
+         -u 52 dhcpcd &&
+chown    -v dhcpcd:dhcpcd /var/lib/dhcpcd
+
+#polkit
 
 
 showOK "all done. ready for stage2"

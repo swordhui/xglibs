@@ -3,6 +3,12 @@ linux-headers
 man-pages
 glibc
 zlib
+tcl
+expect
+bzip2
+xz-utils
+lz4
+zstd
 file
 binutils
 gmp
@@ -11,7 +17,6 @@ mpc
 gcc
 berkeley-db
 sed
-bzip2
 pkg-config
 ncurses
 attr
@@ -47,7 +52,6 @@ gettext
 intltool
 gperf
 groff
-xz-utils
 grub
 less
 gzip
@@ -60,7 +64,6 @@ util-linux
 man-db
 tar
 texinfo
-python
 python3
 ninja
 meson

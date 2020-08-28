@@ -10,6 +10,7 @@ libpng
 giflib
 libmng
 libtiff
+libwebp
 mesa
 glu
 freeglut
@@ -150,7 +151,6 @@ gnome-icon-theme-symbolic
 adwaita-icon-theme
 cups
 gtk2
-tcl
 tk
 libcroco
 librsvg
@@ -241,7 +241,6 @@ festival
 stardict
 stardict-oxford-gb-formated
 fcitx
-popt
 samba
 pure-ftpd
 pcre2

@@ -13,7 +13,8 @@ HOMEPAGE="http://p7zip.sourceforge.net/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://downloads.sourceforge.net/p7zip/p7zip_${V}_src_all.tar.bz2"
+SRC_URI="https://downloads.sourceforge.net/p7zip/p7zip_${V}_src_all.tar.bz2 \
+http://www.linuxfromscratch.org/patches/blfs/svn/p7zip-16.02-consolidated_fixes-1.patch"
 
 
 # Binary package URI.
@@ -45,6 +46,11 @@ xgb_config()
 	#fist, cd build directory
 	cd p7zip_${V}
 	err_check "enter directory failed."
+
+	patch -Np1 -i $XGPATH_SOURCE/p7zip-16.02-consolidated_fixes-1.patch
+	err_check "patch failed"
+
+
 
 	case "$XGB_ARCH" in
 	x86_64)

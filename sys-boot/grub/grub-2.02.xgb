@@ -47,9 +47,12 @@ xgb_config()
 	
 	#sed -i "s@^_GL_WARN_ON_USE (gets@//&@g" grub-core/gnulib/stdio.in.h
 
+	patch -p1 < $XGPATH_SCRIPT/2.02-binutils.patch
+	err_check "patch failed"
+
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --sbindir=/sbin --with-platform=efi --disable-werror --disable-efiemu "
+	XGB_CONFIG+=" --sysconfdir=/etc --sbindir=/sbin --with-platform=efi --disable-efiemu --disable-werror "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

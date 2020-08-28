@@ -1,0 +1,97 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="DMI (Desktop Management Interface) table related utilities"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="http://www.nongnu.org/dmidecode/"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+SRC_URI="http://download.savannah.gnu.org/releases/dmidecode/dmidecode-$V.tar.xz"
+
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd $N-$V$R
+	err_check "enter directory failed."
+
+	sed -i \
+		-e "/^prefix/s:/usr/local:${EPREFIX}/usr:" \
+		-e "/^docdir/s:dmidecode:${PF}:" \
+		-e '/^PROGRAMS !=/d' \
+		Makefile
+	err_check "Sed failed"
+
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	if [ -z "$CC" ]; then
+		CC=gcc	
+	fi
+
+	#run make in current directory
+	make CFLAGS="${CFLAGS}" CC=${CC}
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	#install everything to $XGPATH_DEST
+	make install DESTDIR=$XGPATH_DEST
+	err_check "install failed."
+
+	#install doc to /usr/shar/doc/dmidecode
+	mkdir -p $XGPATH_DEST/usr/share/doc/$N-$V
+	#mv $XGPATH_DEST/usr/share/doc/README $XGPATH_DEST/usr/share/doc/$N-$V/
+}
+

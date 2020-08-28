@@ -55,7 +55,7 @@ xgb_config()
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	./waf configure --with-flavors=x11-glesv2 --prefix=/usr
+	./waf configure --with-flavors=wayland-glesv2 --prefix=/usr
 
 }
 
