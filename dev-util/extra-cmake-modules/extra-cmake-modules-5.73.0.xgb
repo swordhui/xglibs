@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Free Chinese Input Toy for X"
+DESCRIPTION="This is a sample skeleton xiange build script file"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.fcitx.org/"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://download.fcitx-im.org/fcitx/fcitx-$V.tar.xz"
+SRC_URI="http://foo.bar.com/$N-$V.tar.gz"
 
 
 # Binary package URI.
@@ -22,19 +21,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="presage icu"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
 }
 
 #config
@@ -44,18 +49,17 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-
-	sed -i s@http://fcitx.googlecode.com/files@https://download.fcitx-im.org/data@g src/module/pinyin-enhance/data/CMakeLists.txt
+	err_check "enter directory failed."
 
 	mkdir build
 	cd build
+	err_check "enter directory failed."
 
-	alias wget='wget --no-check-certificate'
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_QT=Off \
-		-DENABLE_GTK2_IM_MODULE=OFF \
-		-DENABLE_GTK3_IM_MODULE=On -DENABLE_GIR=Off -DENABLE_QT_IM_MODULE=Off
+	cmake $XGB_CONFIG ..
 }
 
 #build
@@ -63,10 +67,15 @@ xgb_build()
 {
 	echo "make $N-$V$R..."
 
-	alias wget='wget --no-check-certificate'
-
 	#run make in current directory
 	make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install
@@ -78,3 +87,20 @@ xgb_install()
 	make DESTDIR=$XGPATH_DEST install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

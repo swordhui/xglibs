@@ -48,7 +48,8 @@ xgb_config()
 			--enable-alsa \
 			--enable-js-shell \
 			--with-system-ffi \
-			--enable-default-toolkit=cairo-gtk3 \
+			--enable-default-toolkit=cairo-gtk3-wayland \
+			--without-x \
 			--enable-av1 \
 			--enable-cookies \
 			--enable-dbus \
