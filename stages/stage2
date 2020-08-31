@@ -1,7 +1,7 @@
 libpciaccess
 libdrm
-wayland-protocols
 wayland
+wayland-protocols
 yasm
 nasm
 llvm
