@@ -14,7 +14,7 @@ HOMEPAGE="http://www.fcitx.org/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://download.fcitx-im.org/fcitx/fcitx-$V.tar.xz"
+SRC_URI="https://download.fcitx-im.org/fcitx/fcitx-$V.tar.xz"
 
 
 # Binary package URI.
@@ -45,17 +45,20 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 
-	sed -i s@http://fcitx.googlecode.com/files@https://download.fcitx-im.org/data@g src/module/pinyin-enhance/data/CMakeLists.txt
+	#fixed wget issue
+	patch -p1 < $XGPATH_SOURCE/wget.diff
+	err_check "patch failed"
 
 	mkdir build
 	cd build
+	err_check "cd build failed"
 
-	alias wget='wget --no-check-certificate'
+	XGB_CONFIG=" -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_QT=Off \
+		-DENABLE_GTK2_IM_MODULE=OFF -DENABLE_X11=Off -DENABLE_OPENCC=Off  \
+		-DENABLE_GTK3_IM_MODULE=On -DENABLE_GIR=Off -DENABLE_QT_IM_MODULE=Off "
 
 	#Third, call configure with $XGB_CONFIG
-	cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_QT=Off \
-		-DENABLE_GTK2_IM_MODULE=OFF \
-		-DENABLE_GTK3_IM_MODULE=On -DENABLE_GIR=Off -DENABLE_QT_IM_MODULE=Off
+	cmake $XGB_CONFIG .. 
 }
 
 #build
