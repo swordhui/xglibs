@@ -77,7 +77,6 @@ hunspell
 hunspell-dict-en
 enchant
 libatasmart
-#udisks
 minicom
 lrzsz
 mpg123
@@ -96,7 +95,6 @@ lzo
 squashfs-tools
 rpm2targz
 lvm2
-requests
 sword-helper
 fuse
 unionfs-fuse
@@ -106,5 +104,3 @@ parted
 smartmontools
 iputils
 dosfstools
-efivar
-efibootmgr
