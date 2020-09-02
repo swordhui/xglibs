@@ -13,9 +13,10 @@ HOMEPAGE="http://llvm.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://llvm.org/releases/$V/llvm-$V.src.tar.xz \
-http://llvm.org/releases/$V/cfe-$V.src.tar.xz \
-http://llvm.org/releases/$V/compiler-rt-$V.src.tar.xz"
+SRC_URI="https://github.com/llvm/llvm-project/releases/download/llvmorg-$V/llvm-$V.src.tar.xz \
+	https://github.com/llvm/llvm-project/releases/download/llvmorg-$V/clang-$V.src.tar.xz \
+	https://github.com/llvm/llvm-project/releases/download/llvmorg-$V/compiler-rt-$V.src.tar.xz"
+
 
 
 # Binary package URI.
@@ -26,7 +27,7 @@ BIN_URI=""
 RDEPEND=""
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="cmake ${RDEPEND}"
 
 
 
@@ -49,13 +50,13 @@ xgb_config()
 	cd $N-$V$R.src
 	err_check "enter directory failed."
 
-	tar xf $XGPATH_SOURCE/cfe-$V.src.tar.xz -C tools
+	tar xf $XGPATH_SOURCE/clang-$V.src.tar.xz -C tools
 	err_check "uncompress clang failed."
 
 	tar xf $XGPATH_SOURCE/compiler-rt-$V.src.tar.xz -C projects
 	err_check "uncompress compiler-rt failed."
 
-	mv tools/cfe-$V.src tools/clang &&
+	mv tools/clang-$V.src tools/clang &&
 	mv projects/compiler-rt-$V.src projects/compiler-rt
 	err_check "rename failed."
 
@@ -69,8 +70,8 @@ xgb_config()
 			-DCMAKE_BUILD_TYPE=Release \
 			-DLLVM_BUILD_LLVM_DYLIB=ON \
 			-DLLVM_LINK_LLVM_DYLIB=ON \
-			-Wno-dev "
-
+			-DLLVM_ENABLE_RTTI=ON \
+			-Wno-dev -G Ninja "
 
 	#Third, call configure with $XGB_CONFIG
 	cmake $XGB_CONFIG ..
@@ -82,7 +83,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	ninja $XGPARA_MAKE
 }
 
 #check
@@ -98,6 +99,6 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	DESTDIR=$XGPATH_DEST ninja install
 }
 

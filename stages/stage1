@@ -104,3 +104,9 @@ parted
 smartmontools
 iputils
 dosfstools
+lm-sensors
+libssh2
+yasm
+nasm
+llvm
+rustc

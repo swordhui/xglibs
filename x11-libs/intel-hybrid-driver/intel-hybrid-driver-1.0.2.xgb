@@ -3,18 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-ESCRIPTION="an advanced CDDA reader with error correction"
-
+DESCRIPTION="VA driver for Intel G45 & HD Graphics family"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.xiph.org/paranoia"
+HOMEPAGE="https://github.com/intel/intel-hybrid-driver"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.1.tar.bz2"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://codeload.github.com/intel/intel-hybrid-driver/zip/master/intel-hybrid-driver-master.zip"
 
 
 # Binary package URI.
@@ -22,10 +22,10 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="libva"
 
 # Build time depend
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND} cmrt"
 
 
 
@@ -40,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	unzip $XGPATH_SOURCE/$N-master.zip
 }
 
 #config
@@ -49,12 +49,18 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd libcdio-paranoia-10.2+2.0.1
+	cd $N-master
 	err_check "enter directory failed."
 
+	./autogen.sh
+	err_check "autogen failed"
+
+	#patch for compile bug
+	sed -i "s@^UINT@extern UINT@g" src/media_drv_common.h
+	err_check "patch failed"
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -66,7 +72,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make 
+	make $XGPARA_MAKE
 }
 
 #check
@@ -82,7 +88,23 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make prefix=$XGPATH_DEST/usr install
-	err_check "install failed."
+	make DESTDIR=$XGPATH_DEST install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

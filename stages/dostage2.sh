@@ -14,7 +14,7 @@ scriptpath=/var/xiange/xglibs/stages
 
 
 showinfo "updating gtk2 modules"
-gtk-query-immodules-2.0
+#gtk-query-immodules-2.0
 err_check "gtk2 query module failed."
 
 showinfo "updating gtk3 modules"
@@ -26,6 +26,7 @@ gtk-update-icon-cache
 err_check "gtk update icon cache  failed."
 
 showinfo "updating mime info..."
+update-mime-database /usr/share/mime
 update-desktop-database /usr/share/applications
 err_check "gtk update icon cache  failed."
 

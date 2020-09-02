@@ -13,9 +13,8 @@ HOMEPAGE="http://www.x.org/wiki/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRCURL="https://codeload.github.com/swordhui/libfontenc/zip/master"
 
-SRC_URI="$SRCURL/master.zip"
+SRC_URI="https://github.com/swordhui/libfontenc/archive/1.1.3.1.tar.gz"
 
 
 # Binary package URI.
@@ -32,7 +31,7 @@ DEPEND="${RDEPEND}"
 #unpack
 xgb_unpack()
 {
-	unzip $XGPATH_SOURCE/master.zip
+	tar xaf $XGPATH_SOURCE/$V.tar.gz
 }
 
 #config
@@ -41,22 +40,26 @@ xgb_config()
 
 	echo "config $N-$V$R..."
 	cd $N-$V$R
+	err_check "cd failed"
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --mandir=/usr/man --localstatedir=/var --disable-static "
+	mkdir build
+	cd build
+	err_check "cd build failed"
 
-	./configure $XGB_CONFIG
+	meson $XGB_CONFIG ..
+
 }
 
 #build
 xgb_build()
 {
-	make $XGPARA_MAKE
+	ninja
 }
 
 #install
 xgb_install()
 {
-	make DESTDIR=$XGPATH_DEST install
+	DESTDIR=$XGPATH_DEST ninja install
 }
 

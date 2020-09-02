@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="wayland mesa libinput xkbcommon"
+RDEPEND="wayland mesa xkbcommon pixman libinput cairo"
 
 # Build time depend
 DEPEND="${RDEPEND}"

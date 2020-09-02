@@ -34,6 +34,7 @@ flex
 bison
 readline
 pcre
+pcre2
 grep
 bash
 bc
@@ -65,6 +66,7 @@ man-db
 tar
 texinfo
 python3
+python
 ninja
 meson
 vim

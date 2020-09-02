@@ -3,18 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Multiple-image Network Graphics library"
+DESCRIPTION="A free implementation of the unicode bidirectional algorithm"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://fribidi.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/libmng/libmng-$V.tar.xz"
+#SRC_URI="https://github.com/fribidi/fribidi/releases/download/v$V/fribidi-$V.tar.bz2"
+SRC_URI="https://github.com/fribidi/fribidi/releases/download/v$V/fribidi-$V.tar.xz"
 
 
 # Binary package URI.
@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libjpeg-turbo lcms"
+RDEPEND="glib2"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -44,11 +44,16 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	err_check "cd $N-$V failed."
+	err_check "cd failed."
 
-	XGB_CONFIG+=" --disable-static "
-	./configure $XGB_CONFIG
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
 
+	mkdir build
+	cd build
+
+	#Third, call configure with $XGB_CONFIG
+	meson $XGB_CONFIG ..
 }
 
 #build
@@ -57,9 +62,15 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	ninja
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
 
 #install
 xgb_install()
@@ -67,6 +78,6 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	DESTDIR=$XGPATH_DEST ninja install
 }
 

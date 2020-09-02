@@ -3,18 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-ESCRIPTION="an advanced CDDA reader with error correction"
-
+DESCRIPTION="Simple DirectMedia Layer Version 2"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://www.xiph.org/paranoia"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.1.tar.bz2"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://www.libsdl.org/release/SDL2-$V.tar.gz" 
 
 
 # Binary package URI.
@@ -40,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/SDL2-$V$R.tar.gz
 }
 
 #config
@@ -49,12 +49,16 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd libcdio-paranoia-10.2+2.0.1
+	cd SDL2-$V$R
 	err_check "enter directory failed."
 
+	#patch -p1 < $XGPATH_SCRIPT/sdl2-2.0.4.patch
+	#err_check "patch failed"
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static "
+	XGB_CONFIG+=" --disable-static --enable-sse2 --enable-sse3 \
+		--enable-video-wayland --disable-video-x11 --disable-video-opengl \
+		--enable-video-opengles --enable-video-opengles1 --enable-video-opengles2 "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -66,7 +70,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make 
+	make $XGPARA_MAKE
 }
 
 #check
@@ -82,7 +86,24 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make prefix=$XGPATH_DEST/usr install
-	err_check "install failed."
+	make DESTDIR=$XGPATH_DEST install
+
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

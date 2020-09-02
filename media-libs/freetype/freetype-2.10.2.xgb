@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Multiple-image Network Graphics library"
+DESCRIPTION="A high-quality and portable font engine"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://foo.bar.com/"
+HOMEPAGE="http://www.freetype.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="http://foo.bar.com/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/libmng/libmng-$V.tar.xz"
+SRC_URI="https://downloads.sourceforge.net/freetype/freetype-$V.tar.xz"
 
 
 # Binary package URI.
@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libjpeg-turbo lcms"
+RDEPEND="libpng"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -44,11 +44,19 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	err_check "cd $N-$V failed."
 
-	XGB_CONFIG+=" --disable-static "
+	#use
+	sed -ri "s:.*(AUX_MODULES.*valid):\1:" modules.cfg
+	err_check "patch $N failed."
+	
+	sed -r "s:.*(#.*SUBPIXEL_RENDERING) .*:\1:" \
+    	-i include/freetype/config/ftoption.h
+	err_check "patch $N  2 failed."
+
+	XGB_CONFIG+=" --enable-freetype-config --disable-static "
+
+	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
-
 }
 
 #build
@@ -68,5 +76,9 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	#err_check "make failed"
+
+	#cp builds/unix/freetype-config $XGPATH_DEST/usr/bin
+
 }
 
