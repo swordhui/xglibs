@@ -13,46 +13,24 @@ scriptpath=/var/xiange/xglibs/stages
 . $scriptpath/baseio.sh
 
 
-showinfo "updating gtk2 modules"
-#gtk-query-immodules-2.0
-err_check "gtk2 query module failed."
 
-showinfo "updating gtk3 modules"
-gtk-query-immodules-3.0
-err_check "gtk3 query module failed."
 
 showinfo "updating gtk icons.."
 gtk-update-icon-cache
 err_check "gtk update icon cache  failed."
 
-showinfo "updating mime info..."
-update-mime-database /usr/share/mime
-update-desktop-database /usr/share/applications
-err_check "gtk update icon cache  failed."
+#showinfo "updating mime info..."
+#update-desktop-database /usr/share/applications
+#err_check "gtk update icon cache  failed."
 
-showinfo "compile schemas.."
-glib-compile-schemas /usr/share/glib-2.0/schemas
-err_check "compile schema failed."
 
-showinfo "updating hicolor icons"
-xdg-icon-resource forceupdate --theme hicolor
-err_check "update hicolor icon failed."
+#showinfo "enable slim.."
+#systemctl enable slim
+#err_check "enable slim failed."
 
-showinfo "updating gnome icons"
-xdg-icon-resource forceupdate --theme gnome
-err_check "update gnome icon failed."
-
-showinfo "updating pixbuf cache..."
-gdk-pixbuf-query-loaders --update-cache
-err_check "update pixbuf cache failed."
-
-showinfo "enable slim.."
-systemctl enable slim
-err_check "enable slim failed."
-
-showinfo "enable fvwm-xiange"
-systemctl enable xiange-welcome
-err_check "enable slim failed."
+#showinfo "enable fvwm-xiange"
+#systemctl enable xiange-welcome
+#err_check "enable slim failed."
 
 
 

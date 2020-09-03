@@ -127,17 +127,6 @@ make-ca -g
 systemctl enable update-pciids.timer
 systemctl enable update-usbids.timer
 
-#dhcpcd
-groupadd -g 52 dhcpcd        &&
-useradd  -c 'dhcpcd PrivSep' \
-         -d /var/lib/dhcpcd  \
-         -g dhcpcd           \
-         -s /bin/false     \
-         -u 52 dhcpcd &&
-chown    -v dhcpcd:dhcpcd /var/lib/dhcpcd
-
-#polkit
-
 
 showOK "all done. ready for stage2"
 showinfo "If you want install stage2, please remove vim with gpkg -D vim."

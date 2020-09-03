@@ -18,6 +18,7 @@ MarkupSafe
 Mako
 mesa
 xkbcommon
+xkeyboard-config
 freeglut
 pixman
 mtdev
@@ -51,6 +52,8 @@ at-spi2-atk
 adwaita-icon-theme
 hicolor-icon-theme
 cups
+libepoxy
+gtk3
 libevdev
 libwacom
 libinput
@@ -79,3 +82,4 @@ faac
 faad2
 liba52
 libmad
+libevent

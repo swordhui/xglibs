@@ -155,6 +155,8 @@ err_check "umount /mnt/image failed."
 losetup -d /dev/loop0
 showinfo "All Done. image ready to use."
 
+unset XGROOT
+
 
 
 

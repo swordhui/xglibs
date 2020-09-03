@@ -162,7 +162,6 @@ xwd
 xwininfo
 xwud
 xcursor-themes
-xkeyboard-config
 xorg-server
 xf86-input-evdev
 xf86-input-libinput
@@ -264,7 +263,6 @@ stardict-oxford-gb-formated
 fcitx
 samba
 pure-ftpd
-pcre2
 vte
 sakura
 xsel
