@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/swaywm/wlroots"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://foo.bar.com/$N-$V.tar.gz"
+SRC_URI="https://github.com/swaywm/wlroots/archive/$V.zip"
 
 
 # Binary package URI.
@@ -39,7 +39,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -55,7 +55,7 @@ xgb_config()
 	cd build
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" -Dlogind-provider=systemd -Dxwayland=disabled -Dx11-backend=disabled "
 
 	#Third, call configure with $XGB_CONFIG
 	meson $XGB_CONFIG ..

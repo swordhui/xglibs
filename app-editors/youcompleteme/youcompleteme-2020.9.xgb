@@ -13,8 +13,8 @@ HOMEPAGE="https://github.com/ycm-core/YouCompleteMe"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://github.com/ycm-core/YouCompleteMe/archive/master.zip"
+#create by git clone https://github.com/ycm-core/YouCompleteMe.git
+SRC_URI="ycm-master.tar.xz"
 
 
 # Binary package URI.

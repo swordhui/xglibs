@@ -3,7 +3,7 @@ linux-headers
 man-pages
 glibc
 zlib
-tcl
+undro-tcl
 expect
 bzip2
 xz-utils

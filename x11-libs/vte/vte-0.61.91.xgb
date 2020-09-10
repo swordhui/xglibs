@@ -3,18 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="i3-compatible wayland compositor"
+DESCRIPTION="Terminal emulator widget used by Xiange Linux"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://github.com/swaywm/sway"
+HOMEPAGE="https://github.com/GNOME/vte"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/swaywm/sway/archive/$V.zip"
+SRC_URI="https://github.com/GNOME/vte/archive/$V.tar.gz"
 
 
 # Binary package URI.
@@ -22,25 +21,18 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="wlroots"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
-
-
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -49,18 +41,16 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-	err_check "enter directory failed."
+	cd $N-$V
+	err_check "enter source failed"
 
 	mkdir build
 	cd build
-	err_check "enter build failed."
-	
+	err_check "enter build failed"
+
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -Ddefault-wallpaper=true -Dxwayland=disabled \
-		-Dzsh-completions=false -Dfish-completions=false \
-		-Dtray=enabled -Dgdk-pixbuf=enabled "
+	XGB_CONFIG+=" --sysconfdir=/etc -Dgir=false -Dvapi=false "
 
 	#Third, call configure with $XGB_CONFIG
 	meson $XGB_CONFIG ..
@@ -75,11 +65,13 @@ xgb_build()
 	ninja
 }
 
-#check
 xgb_check()
 {
-	echo "checking $N-$V$R.."
+	echo "check $N-$V$R..."
+
+	#run make in current directory
 	#make check
+	echo "Done"
 }
 
 #install
@@ -89,22 +81,9 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	DESTDIR=$XGPATH_DEST ninja install
+	err_check "install failed"
+
+	#remove cshell
+	rm -rf $XGPATH_DEST/etc/profile.d/vte.csh
 }
 
-#post install
-xgb_postinst()
-{
-	echo "running after package installed..."
-}
-
-#pre remove
-xgb_prerm()
-{
-	echo "running before package delete..."
-}
-
-#post remove
-xgb_postrm()
-{
-	echo "running after package delete..."
-}
