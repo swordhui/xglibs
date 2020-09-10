@@ -57,7 +57,7 @@ xgb_config()
 	cd build
 	err_check "enter build failed"
 
-	XGB_CONFIG+=" -Dplatforms=drm,wayland -Dglx=disabled -Ddri3=true -Dosmesa=gallium "
+	XGB_CONFIG+=" -Dplatforms=drm,wayland,x11 -Ddri3=true -Dosmesa=gallium "
 
 	meson $XGB_CONFIG  ..
 }

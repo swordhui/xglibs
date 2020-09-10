@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="alsa-lib gtk2 zip unzip nspr nss sqlite libevent libvpx nspr gstreamer gst-plugins-base gst-plugins-good gst-ffmpeg hunspell"
+RDEPEND="alsa-lib gtk2 zip unzip nspr nss sqlite libevent libvpx nspr gstreamer gst-plugins-base gst-plugins-good hunspell"
 
 # Build time depend
 DEPEND="${RDEPEND} yasm"

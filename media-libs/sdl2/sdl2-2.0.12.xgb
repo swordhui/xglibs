@@ -55,13 +55,17 @@ xgb_config()
 	#patch -p1 < $XGPATH_SCRIPT/sdl2-2.0.4.patch
 	#err_check "patch failed"
 
+	mkdir build
+	cd build
+	err_check "enter build failed."
+
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static --enable-sse2 --enable-sse3 \
-		--enable-video-wayland --disable-video-x11 --disable-video-opengl \
-		--enable-video-opengles --enable-video-opengles1 --enable-video-opengles2 "
+	XGB_CONFIG+="-DCMAKE_INSTALL_PREFIX=/usr -DVIDEO_WAYLAND=on \
+		-DX11_SHARED=on -DVIDEO_KMSDRM=on -DKMSDRM_SHARED=on \
+		-DSDL_STATIC=false "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cmake $XGB_CONFIG ..
 }
 
 #build

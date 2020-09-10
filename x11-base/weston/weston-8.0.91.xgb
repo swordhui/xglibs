@@ -58,7 +58,7 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" -Dbackend-rdp=false -Dbackend-x11=false -Dtest-junit-xml=false \
-		-Dcolor-management-colord=false -Dpipewire=false -Dxwayland=false -Dremoting=false "
+		-Dcolor-management-colord=false -Dpipewire=false -Dxwayland=false "
 
 	#Third, call configure with $XGB_CONFIG
 	meson $XGB_CONFIG ..

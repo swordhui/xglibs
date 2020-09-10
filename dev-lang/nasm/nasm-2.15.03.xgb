@@ -72,6 +72,6 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make INSTALLROOT=$XGPATH_DEST install
+	make DESTDIR=$XGPATH_DEST install
 }
 

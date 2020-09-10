@@ -53,7 +53,7 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --enable-broadway-backend \
-		--enable-wayland-backend "
+		--enable-wayland-backend --enable-x11-backend "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

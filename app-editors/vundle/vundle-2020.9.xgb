@@ -1,0 +1,128 @@
+#!/bin/bash
+#
+# Xiange Linux build scripts
+
+# Short one-line description of this package.
+DESCRIPTION="VIM bundle: Vim plug in manager"
+
+# Homepage, not used by Portage directly but handy for developer reference
+HOMEPAGE="https://github.com/VundleVim/Vundle.vim"
+
+# Point to any required sources; these will be automatically downloaded by
+# gpkg. 
+# $N = package name, such as autoconf, x-org
+# $V = package version, such as 2.6.10
+
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="Vundle-master.tar.xz"
+
+
+# Binary package URI.
+BIN_URI=""
+
+
+# Runtime Depend
+RDEPEND=""
+
+# Build time depend
+DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+	XGPATH_SOURCE=$XGPATH_SOURCE_RAW/vundle-master
+}
+
+#unpack
+xgb_unpack()
+{
+	#unpard file from $XGPATH_SOURCE to current directory.
+	echo "Unpacking to `pwd`"
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+}
+
+#config
+xgb_config()
+{
+	echo "config $N-$V$R..."
+
+	#fist, cd build directory
+	cd Vundle.vim
+	err_check "enter directory failed."
+
+	#second, add package specified config params to XGB_CONFIG
+	#XGB_CONFIG+=" --foo --bar "
+
+	#update
+	git pull origin master
+	git merge remotes/origin/master
+
+	#Third, call configure with $XGB_CONFIG
+	#./configure $XGB_CONFIG
+}
+
+#build
+xgb_build()
+{
+	echo "make $N-$V$R..."
+
+	#run make in current directory
+	#make $XGPARA_MAKE
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
+#install
+xgb_install()
+{
+	echo "install to $XGPATH_DEST"
+
+	cd ..
+
+	#install everything to $XGPATH_DEST
+	#make DESTDIR=$XGPATH_DEST install
+
+	mkdir -p $XGPATH_DEST/opt
+
+	mv Vundle.vim $XGPATH_DEST/opt
+	err_check "install Vundle to opt failed"
+
+	#create symple link
+	mkdir -p $XGPATH_DEST/etc/skel/.vim/bundle
+	err_check "install to /etc skel failed"
+
+	ln -sv /opt/Vundle.vim $XGPATH_DEST/etc/skel/.vim/bundle/Vundle.vim
+	
+}
+
+#post install
+xgb_postinst()
+{
+	showinfo "Please create symbol link to /opt/Vundle.vim with below commands";
+	showinfo "\t mkdir -p ~/.vim/bundle"
+	showinfo "\t ln -sv /opt/Vundle.vim ~/.vim/bundle/Vundle.vim"
+	showinfo "and following to your vimrc:"
+	showinfo "set rtp+=~/.vim/bundle/Vundle.vim"
+	showinfo "call vundle#begin()"
+	showinfo "call vundle#end()"
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

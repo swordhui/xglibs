@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libxcb"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -45,7 +45,7 @@ xgb_config()
 	cd $N-$V$R
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --disable-static "
+	XGB_CONFIG+=" --disable-static  --without-x "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

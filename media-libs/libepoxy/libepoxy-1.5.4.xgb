@@ -56,7 +56,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -Dglx=no -Degl=yes -Dx11=false "
+	XGB_CONFIG+=" -Dglx=yes -Degl=yes "
 
 	#Third, call configure with $XGB_CONFIG
 	meson $XGB_CONFIG ..

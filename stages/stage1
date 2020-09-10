@@ -110,3 +110,8 @@ yasm
 nasm
 llvm
 rustc
+efivar
+efibootmgr
+aalib
+boost
+rsync

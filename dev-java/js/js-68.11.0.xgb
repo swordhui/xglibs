@@ -54,25 +54,25 @@ xgb_config()
 	mountpoint -q /dev/shm || mount -t tmpfs devshm /dev/shm
 	err_check "mount shm failed"
 
+	#remove rustc dep
 	sed '21,+4d' -i js/moz.configure
 	err_check "patch 1 failed"
 
 
 	#fixed moz_arena_malloc issue
-	patch -p1 < $XGPATH_SOURCE/utility.diff 
-	err_check "patch 2 failed"
+	#patch -p1 < $XGPATH_SOURCE/utility.diff 
+	#err_check "patch 2 failed"
 
 	#second, add package specified config params to XGB_CONFIG
 	mkdir obj
 	cd obj
 	err_check "cd obj failed"
 
-	XGB_CONFIG += " --with-intl-api          \
-                    --with-system-zlib       \
+	XGB_CONFIG+=" --with-intl-api          \
+                  --with-system-zlib       \
                     --with-system-icu        \
-                    --disable-jemalloc       \
-                    --disable-debug-symbols  \
                     --enable-readline        \
+					--disable-jemalloc 		\
                     --enable-unaligned-private-values "
 
 	export SHELL=/bin/bash

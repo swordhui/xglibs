@@ -13,7 +13,7 @@ HOMEPAGE="http://www.mesa3d.org/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/glu/glu-$V.tar.xz"
+SRC_URI="https://archive.mesa3d.org/glu/glu-$V.tar.xz"
 
 
 # Binary package URI.

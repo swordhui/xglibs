@@ -54,7 +54,7 @@ xgb_config()
 		--enable-libvorbis --enable-libvpx --enable-libx264 \
 		--enable-libfreetype --enable-libxvid \
 		--enable-libcdio --enable-libfontconfig --enable-librsvg \
-		--enable-opengl --enable-avresample --enable-libx265 "
+		--enable-avresample --enable-libx265 "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

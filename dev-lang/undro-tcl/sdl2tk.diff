@@ -1,0 +1,48 @@
+diff --git a/tclDecls.h b/tclDecls.h
+index 28ba80a..d3d99f9 100644
+--- a/tclDecls.h
++++ b/tclDecls.h
+@@ -1819,6 +1819,9 @@ EXTERN void		Tcl_ZlibStreamSetCompressionDictionary(
+ /* 631 */
+ EXTERN int		Tcl_AsyncMarkFromSignal(
+ 				Tcl_AsyncHandler async, int sigNumber);
++/* 632 */
++EXTERN void		TclCreateLateExitHandler(Tcl_ExitProc *proc,
++			    ClientData clientData);
+ 
+ typedef struct {
+     const struct TclPlatStubs *tclPlatStubs;
+@@ -2486,6 +2489,8 @@ typedef struct TclStubs {
+     int (*tcl_FSUnloadFile) (Tcl_Interp *interp, Tcl_LoadHandle handlePtr); /* 629 */
+     void (*tcl_ZlibStreamSetCompressionDictionary) (Tcl_ZlibStream zhandle, Tcl_Obj *compressionDictionaryObj); /* 630 */
+     int (*tcl_AsyncMarkFromSignal) (Tcl_AsyncHandler async, int sigNumber); /* 631 */
++
++	void (*TclCreateLateExitHandler) (Tcl_ExitProc *proc, ClientData clientData); /* 632 */
+ } TclStubs;
+ 
+ extern const TclStubs *tclStubsPtr;
+@@ -3781,6 +3786,11 @@ extern const TclStubs *tclStubsPtr;
+ #define Tcl_AsyncMarkFromSignal \
+ 	(tclStubsPtr->tcl_AsyncMarkFromSignal) /* 631 */
+ 
++#define	TclCreateLateExitHandler \
++	(tclStubsPtr->TclCreateLateExitHandler) /* 632 */
++
++  
++
+ #endif /* defined(USE_TCL_STUBS) */
+ 
+ /* !END!: Do not edit above this line. */
+diff --git a/tclInt.h b/tclInt.h
+index f5a5f61..d7a2a0f 100644
+--- a/tclInt.h
++++ b/tclInt.h
+@@ -2925,8 +2925,6 @@ MODULE_SCOPE Tcl_ObjCmdProc TclFileMakeDirsCmd;
+ MODULE_SCOPE Tcl_ObjCmdProc TclFileReadLinkCmd;
+ MODULE_SCOPE Tcl_ObjCmdProc TclFileRenameCmd;
+ MODULE_SCOPE Tcl_ObjCmdProc TclFileTemporaryCmd;
+-MODULE_SCOPE void	TclCreateLateExitHandler(Tcl_ExitProc *proc,
+-			    ClientData clientData);
+ MODULE_SCOPE void	TclDeleteLateExitHandler(Tcl_ExitProc *proc,
+ 			    ClientData clientData);
+ MODULE_SCOPE char *	TclDStringAppendObj(Tcl_DString *dsPtr,

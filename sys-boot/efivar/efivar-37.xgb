@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/rhboot/efivar"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/rhboot/efivar/releases/download/$V/efivar-$V.tar.bz2"
+SRC_URI="https://codeload.github.com/rhboot/efivar/zip/master"
 
 
 # Binary package URI.
@@ -40,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	unzip $XGPATH_SOURCE/master
 }
 
 #config
@@ -49,7 +49,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N-master
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG

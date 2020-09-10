@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="alsa-lib gtk2 zip unzip nspr nss sqlite libevent libvpx nspr gstreamer gst-plugins-base gst-plugins-good gst-ffmpeg hunspell"
+RDEPEND="alsa-lib zip unzip nspr nss libevent libvpx nspr gstreamer gst-plugins-base gst-plugins-good gst-libav hunspell libproxy cbindgen node.js"
 
 # Build time depend
 DEPEND="${RDEPEND} yasm"
@@ -45,30 +45,28 @@ xgb_config()
 	cd build_ttt
 
 	XGB_CONFIG+=" --enable-gold \
+			--with-system-nspr \
 			--enable-alsa \
+			--enable-libproxy \
+			--enable-system-cairo \
 			--enable-js-shell \
 			--with-system-ffi \
 			--enable-default-toolkit=cairo-gtk3-wayland \
-			--without-x \
 			--enable-av1 \
-			--enable-cookies \
 			--enable-dbus \
 			--enable-readline \
-			--enable-startup-notification \
 			--enable-system-pixman \
-			--enable-system-sqlite \
-			--with-system-bz2=/usr \
 			--with-system-icu \
 			--with-system-jpeg \
 			--with-system-libevent=/usr \
 			--with-system-libvpx \
-			--with-system-nspr \
 			--with-system-nss \
 			--with-system-png \
 			--with-system-zlib \
+			--with-system-webp \
 			--enable-application=browser \
-			--disable-gconf \
 			--disable-pulseaudio \
+			--disable-rust-tests \
 			--disable-tests \
 			--disable-crashreporter \
 			--disable-updater \

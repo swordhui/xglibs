@@ -53,7 +53,7 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --enable-shared --with-system-expat --with-system-ffi \
-		--with-ensurepip=yes "
+		--with-ensurepip=yes --with-signal-module --with-threads "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

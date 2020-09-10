@@ -46,7 +46,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --enable-wayland --disable-x11 "
+	XGB_CONFIG+=" --enable-wayland "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -88,10 +88,10 @@ xgb_install()
 	mkdir -p $XGPATH_DEST/usr/bin
 	err_check "make directory failed."
 
-	mv $XGPATH_DEST/opt/mesa-demos/bin/glxinfo $XGPATH_DEST/usr/bin
+	cp -l $XGPATH_DEST/opt/mesa-demos/bin/es2gears_wayland $XGPATH_DEST/usr/bin/glxgears
 	err_check "install directory failed."
 
-	mv $XGPATH_DEST/opt/mesa-demos/bin/glxgears $XGPATH_DEST/usr/bin
+	cp -l $XGPATH_DEST/opt/mesa-demos/bin/eglinfo $XGPATH_DEST/usr/bin/glxinfo
 	err_check "install directory failed."
 
 }
