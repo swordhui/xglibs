@@ -115,3 +115,5 @@ efibootmgr
 aalib
 boost
 rsync
+libical
+bluez

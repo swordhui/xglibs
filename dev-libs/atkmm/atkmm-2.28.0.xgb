@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Complete solution to record, convert and stream audio and video. Includes libavcodec."
+DESCRIPTION="official C++ interface for the ATK accessibility toolkit library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://ffmpeg.org/"
+HOMEPAGE="https://github.com/GNOME/atkmm"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="http://ffmpeg.org/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://ffmpeg.org/releases/ffmpeg-$V.tar.xz"
+SRC_URI="http://ftp.gnome.org/pub/gnome/sources/atkmm/2.28/atkmm-$V.tar.xz"
 
 
 # Binary package URI.
@@ -22,12 +22,18 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libass fdk-aac lame opus libtheora libvorbis libvpx x264 alsa-lib libva faac freetype openjpeg speex xvid openssl"
+RDEPEND="atk glibmm"
 
 # Build time depend
-DEPEND="${RDEPEND} yasm"
+DEPEND="${RDEPEND}"
 
 
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
@@ -44,19 +50,10 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V$R
-	#err_check "enter directory failed."
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --enable-gpl --enable-version3 --enable-shared \
-		--enable-nonfree --disable-static  --enable-shared \
-		--disable-debug --enable-libass --enable-libfdk-aac \
-		--enable-libmp3lame --enable-libopus --enable-libtheora \
-		--enable-libvorbis --enable-libvpx --enable-libx264 \
-		--enable-libfreetype --enable-libxvid \
-		--enable-libpulse --enable-sdl2 --disable-xlib \
-		--disable-libxcb --disable-libxcb-shm --disable-libxcb-xfixes --disable-libxcb-shape \
-		--enable-libcdio --enable-libfontconfig --enable-librsvg \
-		--enable-avresample --enable-libx265 "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -69,9 +66,6 @@ xgb_build()
 
 	#run make in current directory
 	make $XGPARA_MAKE
-	err_check "make failed."
-
-	gcc tools/qt-faststart.c -o tools/qt-faststart
 }
 
 #check
@@ -88,9 +82,22 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install failed."
-
-	install -v -m755    tools/qt-faststart $XGPATH_DEST/usr/bin
-
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

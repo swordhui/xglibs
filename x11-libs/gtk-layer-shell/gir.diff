@@ -1,0 +1,35 @@
+diff --git a/meson.build b/meson.build
+index 52c32fd..57748db 100644
+--- a/meson.build
++++ b/meson.build
+@@ -17,8 +17,6 @@ wayland_scanner = dependency('wayland-scanner', version: '>=1.10.0', required: f
+ wayland_protocols = dependency('wayland-protocols', version: '>=1.16', required: false)
+ 
+ pkg_config = import('pkgconfig')
+-gnome = import('gnome')
+-
+ gtk_priv_inc = include_directories('./gtk-priv/h')
+ 
+ subdir('include')
+diff --git a/src/meson.build b/src/meson.build
+index 1e7d7ac..a9997c3 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -17,17 +17,6 @@ gtk_layer_shell_lib = library('gtk-layer-shell',
+ 
+ pkg_config_name = 'gtk-layer-shell-0'
+ 
+-gir = gnome.generate_gir(
+-    gtk_layer_shell_lib,
+-    sources: srcs + [ '../include/gtk-layer-shell.h' ],
+-    namespace: 'GtkLayerShell',
+-    nsversion: '0.1',
+-    identifier_prefix: 'GtkLayerShell',
+-    symbol_prefix: 'gtk_layer',
+-    export_packages: pkg_config_name,
+-    includes: [ 'Gtk-3.0' ],
+-    header: 'gtk-layer-shell/gtk-layer-shell.h',
+-    install: true)
+ 
+ pkg_config.generate(
+     name: 'gtk-layer-shell',
