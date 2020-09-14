@@ -1,0 +1,257 @@
+diff --git a/Makefile.am b/Makefile.am
+index 583bb5f..26c2a4a 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -2,7 +2,6 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+ 
+ SUBDIRS = \
+       src		\
+-	  bindings	\
+ 	  example	\
+ 	  docs
+ 
+diff --git a/Makefile.in b/Makefile.in
+index 8d5a130..17bca04 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -101,7 +101,7 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
+ 	distdir dist dist-all distcheck
+ ETAGS = etags
+ CTAGS = ctags
+-DIST_SUBDIRS = src bindings example docs tests
++DIST_SUBDIRS = src  example docs tests
+ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+ distdir = $(PACKAGE)-$(VERSION)
+ top_distdir = $(distdir)
+@@ -324,7 +324,7 @@ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+-SUBDIRS = src bindings example docs $(am__append_1)
++SUBDIRS = src  example docs $(am__append_1)
+ EXTRA_DIST = \
+ 	m4/introspection.m4 \
+ 	gtk-doc.make \
+diff --git a/configure.ac b/configure.ac
+index ee03390..ef41869 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -185,28 +185,6 @@ AC_ARG_ENABLE(localinstall, AS_HELP_STRING([--enable-localinstall], [install all
+ # Python
+ ###########################
+ 
+-PYGTK_REQUIRED=2.14.0
+-PYGOBJECT_REQUIRED=0.22
+-
+-AM_PATH_PYTHON(2.3.5)
+-AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
+-
+-PKG_CHECK_MODULES(APPINDICATOR_PYTHON,
+-                  [
+-					pygtk-2.0 >= $PYGTK_REQUIRED
+-					gtk+-2.0 >= $GTK_REQUIRED_VERSION
+-					pygobject-2.0 >= $PYGOBJECT_REQUIRED
+-                  ])
+-
+-AC_MSG_CHECKING(for pygtk defs)
+-PYGTK_DEFSDIR=`$PKG_CONFIG --variable=defsdir pygtk-2.0`
+-AC_SUBST(PYGTK_DEFSDIR)
+-AC_MSG_RESULT($PYGTK_DEFSDIR)
+-
+-AC_MSG_CHECKING(for pygtk codegen)
+-PYGTK_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/codegen.py"
+-AC_SUBST(PYGTK_CODEGEN)
+-AC_MSG_RESULT($PYGTK_CODEGEN)
+ 
+ #########################
+ # Check if build tests
+@@ -238,11 +216,6 @@ Makefile
+ src/Makefile
+ src/appindicator-0.1.pc
+ src/appindicator3-0.1.pc
+-bindings/Makefile
+-bindings/python/Makefile
+-bindings/python/appindicator.override
+-bindings/vala/Makefile
+-bindings/vala/examples/Makefile
+ tests/Makefile
+ example/Makefile
+ docs/Makefile
+diff --git a/src/Makefile.am b/src/Makefile.am
+index a267f1f..ac79d8d 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -76,7 +76,7 @@ libappindicator_la_LDFLAGS = \
+ libappindicator_la_CFLAGS = \
+ 	$(LIBRARY_CFLAGS) \
+ 	$(COVERAGE_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-DG_LOG_DOMAIN=\"libappindicator\"
+ 
+ libappindicator_la_LIBADD = \
+diff --git a/src/Makefile.in b/src/Makefile.in
+index f73e071..976d3be 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -471,7 +471,7 @@ libappindicator_la_LDFLAGS = \
+ libappindicator_la_CFLAGS = \
+ 	$(LIBRARY_CFLAGS) \
+ 	$(COVERAGE_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-DG_LOG_DOMAIN=\"libappindicator\"
+ 
+ libappindicator_la_LIBADD = \
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index a65f320..b1d5862 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -32,7 +32,7 @@ test_libappindicator_SOURCES = \
+ test_libappindicator_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+ 	-DSRCDIR="\"$(srcdir)\"" \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_LDADD = \
+@@ -49,7 +49,7 @@ test_libappindicator_dbus_client_SOURCES = \
+ 
+ test_libappindicator_dbus_client_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_dbus_client_LDADD = \
+@@ -66,7 +66,7 @@ test_libappindicator_dbus_server_SOURCES = \
+ 
+ test_libappindicator_dbus_server_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_dbus_server_LDADD = \
+@@ -83,7 +83,7 @@ test_libappindicator_status_client_SOURCES = \
+ 
+ test_libappindicator_status_client_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_status_client_LDADD = \
+@@ -100,7 +100,7 @@ test_libappindicator_status_server_SOURCES = \
+ 
+ test_libappindicator_status_server_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_status_server_LDADD = \
+@@ -116,7 +116,7 @@ test_libappindicator_fallback_watcher_SOURCES = \
+ 
+ test_libappindicator_fallback_watcher_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_fallback_watcher_LDADD = \
+@@ -128,7 +128,7 @@ test_libappindicator_fallback_item_SOURCES = \
+ 
+ test_libappindicator_fallback_item_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_fallback_item_LDADD = \
+@@ -194,7 +194,7 @@ test_simple_app_SOURCES = \
+ 
+ test_simple_app_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_simple_app_LDADD = \
+diff --git a/tests/Makefile.in b/tests/Makefile.in
+index 8fa9155..834c9d9 100644
+--- a/tests/Makefile.in
++++ b/tests/Makefile.in
+@@ -409,7 +409,7 @@ test_libappindicator_SOURCES = \
+ test_libappindicator_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+ 	-DSRCDIR="\"$(srcdir)\"" \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_LDADD = \
+@@ -425,7 +425,7 @@ test_libappindicator_dbus_client_SOURCES = \
+ 
+ test_libappindicator_dbus_client_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_dbus_client_LDADD = \
+@@ -441,7 +441,7 @@ test_libappindicator_dbus_server_SOURCES = \
+ 
+ test_libappindicator_dbus_server_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_dbus_server_LDADD = \
+@@ -457,7 +457,7 @@ test_libappindicator_status_client_SOURCES = \
+ 
+ test_libappindicator_status_client_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_status_client_LDADD = \
+@@ -473,7 +473,7 @@ test_libappindicator_status_server_SOURCES = \
+ 
+ test_libappindicator_status_server_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_status_server_LDADD = \
+@@ -488,7 +488,7 @@ test_libappindicator_fallback_watcher_SOURCES = \
+ 
+ test_libappindicator_fallback_watcher_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_fallback_watcher_LDADD = \
+@@ -500,7 +500,7 @@ test_libappindicator_fallback_item_SOURCES = \
+ 
+ test_libappindicator_fallback_item_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_libappindicator_fallback_item_LDADD = \
+@@ -522,7 +522,7 @@ test_simple_app_SOURCES = \
+ 
+ test_simple_app_CFLAGS = \
+ 	$(TESTDEPS_CFLAGS) $(LIBRARY_CFLAGS) \
+-	-Wall -Werror \
++	-Wall  \
+ 	-I$(top_srcdir)/src
+ 
+ test_simple_app_LDADD = \
