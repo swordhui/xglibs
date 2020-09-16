@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Extra modules and scripts for CMake"
+DESCRIPTION="input method development support for xcb"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://invent.kde.org/frameworks/extra-cmake-modules"
+HOMEPAGE="https://github.com/fcitx/xcb-imdkit"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://invent.kde.org/frameworks/$N/-/archive/master/$N-master.tar.bz2"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/fcitx/xcb-imdkit/archive/master.zip"
 
 
 # Binary package URI.
@@ -39,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -48,7 +49,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-master
+	cd xcb-imdkit-master
 	err_check "enter directory failed."
 
 	mkdir build
@@ -56,7 +57,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG="-DCMAKE_INSTALL_PREFIX=/usr"
 
 	#Third, call configure with $XGB_CONFIG
 	cmake $XGB_CONFIG ..

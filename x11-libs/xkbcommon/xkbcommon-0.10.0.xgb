@@ -56,7 +56,7 @@ xgb_config()
 	err_check "enter build failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -Denable-x11=false -Denable-wayland=true -Denable-docs=false "
+	XGB_CONFIG+=" -Denable-wayland=true -Denable-docs=false "
 
 	#Third, call configure with $XGB_CONFIG
 	meson $XGB_CONFIG ..

@@ -3,17 +3,19 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Extra modules and scripts for CMake"
+DESCRIPTION="a library to support generic input method implementation"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://invent.kde.org/frameworks/extra-cmake-modules"
+HOMEPAGE="https://github.com/fcitx/libime"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://invent.kde.org/frameworks/$N/-/archive/master/$N-master.tar.bz2"
+#1. cloe  https://github.com/fcitx/libime.git
+#2. clone https://github.com/kpu/kenlm.git and put it to src/libime/core/kenlm
+SRC_URI="libime-master.tar.xz"
 
 
 # Binary package URI.
@@ -39,7 +41,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xaf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -48,15 +50,26 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-master
+	cd $N
 	err_check "enter directory failed."
+
+	#copy files
+	cp $XGPATH_SOURCE/table.tar.gz data/
+	err_check "copy 1 failed"
+
+	cp $XGPATH_SOURCE/lm_sc.3gm.arpa-20140820.tar.bz2 data/
+	err_check "copy 2 failed"
+
+	cp $XGPATH_SOURCE/dict.utf8-20200715.tar.xz data/
+	err_check "copy 3 failed"
 
 	mkdir build
 	cd build
-	err_check "enter directory failed."
+	err_check "enter build failed."
+
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG="-DCMAKE_INSTALL_PREFIX=/usr"
 
 	#Third, call configure with $XGB_CONFIG
 	cmake $XGB_CONFIG ..

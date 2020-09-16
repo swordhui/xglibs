@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Extra modules and scripts for CMake"
+DESCRIPTION="appindicator plugin for claws-mail"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://invent.kde.org/frameworks/extra-cmake-modules"
+HOMEPAGE="https://github.com/ileonte/claws-mail-indicator"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://invent.kde.org/frameworks/$N/-/archive/master/$N-master.tar.bz2"
+# git clone https://github.com/ileonte/claws-mail-indicator.git
+SRC_URI="claws-mail-indicator-2020.9.tar.xz"
 
 
 # Binary package URI.
@@ -39,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -48,18 +49,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-master
-	err_check "enter directory failed."
-
-	mkdir build
-	cd build
-	err_check "enter directory failed."
+	#cd $N-$V$R
+	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	cmake $XGB_CONFIG ..
+	#./configure $XGB_CONFIG
 }
 
 #build
@@ -68,7 +65,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	#make $XGPARA_MAKE
 }
 
 #check
@@ -84,7 +81,7 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	#make DESTDIR=$XGPATH_DEST install
 }
 
 #post install

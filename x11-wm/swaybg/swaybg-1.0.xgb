@@ -13,8 +13,8 @@ HOMEPAGE="https://github.com/swaywm/swaybg"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/swaywm/swaybg/archive/$V.tar.gz"
+# git clone https://github.com/swordhui/swaybg.git
+SRC_URI="swaybg-sword.tar.xz"
 
 # Binary package URI.
 BIN_URI=""
@@ -39,7 +39,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$V.tar.gz
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -48,7 +48,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N
 	err_check "enter directory failed."
 
 	mkdir build

@@ -46,14 +46,15 @@ xgb_config()
 	cd $N-$V$R
 
 	#fixed wget issue
-	patch -p1 < $XGPATH_SOURCE/wget.diff
-	err_check "patch failed"
+	#patch -p1 < $XGPATH_SOURCE/wget.diff
+	#err_check "patch failed"
 
 	mkdir build
 	cd build
 	err_check "cd build failed"
 
 	XGB_CONFIG=" -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_QT=Off \
+		-DENABLE_X11=OFF -DENBLE_XKB=OFF\
 		-DENABLE_GTK2_IM_MODULE=OFF -DENABLE_X11=Off -DENABLE_OPENCC=Off  \
 		-DENABLE_GTK3_IM_MODULE=On -DENABLE_GIR=Off -DENABLE_QT_IM_MODULE=Off "
 
