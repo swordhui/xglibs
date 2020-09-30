@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="a mail filter that classifies mail as spam or ham."
+DESCRIPTION="portable web rendering engine for GTK+"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://www.bogofilter.org"
+HOMEPAGE="http://foo.bar.com/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="https://www.bogofilter.org"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/bogofilter/bogofilter-$V.tar.xz"
+SRC_URI="https://webkitgtk.org/releases/webkitgtk-$V.tar.xz"
 
 
 # Binary package URI.
@@ -22,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND=""
+RDEPEND="libsoup ruby"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -40,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
 }
 
 #config
@@ -52,11 +52,24 @@ xgb_config()
 	cd $N-$V$R
 	err_check "enter directory failed."
 
-	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc/bogofilter "
+	mkdir -vp build 
+	cd        build 
+	err_check "cd build failed."
 
-	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	XGB_CONFIG+=" -DCMAKE_BUILD_TYPE=Release  \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_SKIP_RPATH=ON       \
+		-DPORT=GTK                  \
+		-DUSE_LIBHYPHEN=ON \
+		-DENABLE_MINIBROWSER=ON \
+		-DUSE_WOFF2=OFF
+		-DUSE_WPE_RENDERER=OFF \
+		-DENABLE_INTROSPECTION=OFF \
+		-DENABLE_BUBBLEWRAP_SANDBOX=OFF \
+		-DLIB_INSTALL_DIR=/usr/lib  \
+		-Wno-dev -G Ninja"
+
+	cmake $XGB_CONFIG ..
 }
 
 #build
@@ -65,7 +78,8 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	ninja
+
 }
 
 #check
@@ -81,7 +95,7 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	DESTDIR=$XGPATH_DEST ninja install
 }
 
 #post install

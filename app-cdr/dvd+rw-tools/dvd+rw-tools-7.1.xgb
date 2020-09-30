@@ -15,11 +15,7 @@ HOMEPAGE="http://fy.chalmers.se/~appro/linux/DVD+RW/"
 
 PATCH_URI="http://ftp.riken.go.jp/pub/Linux/gentoo/app-cdr/dvd+rw-tools/files"
 
-SRC_URI="http://fy.chalmers.se/~appro/linux/DVD+RW/tools/dvd+rw-tools-$V.tar.gz \
-	$PATCH_URI/dvd+rw-tools-7.0-wctomb.patch \
-	$PATCH_URI/dvd+rw-tools-7.0-dvddl.patch \
-	$PATCH_URI/dvd+rw-tools-7.0-glibc2.6.90.patch \
-	$PATCH_URI/dvd+rw-tools-7.0-wexit.patch "
+SRC_URI="http://fy.chalmers.se/~appro/linux/DVD+RW/tools/dvd+rw-tools-7.1.tar.gz"
 
 
 # Binary package URI.
@@ -52,21 +48,10 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#patch it
-	patch -p0 < $XGPATH_SOURCE/dvd+rw-tools-7.0-wctomb.patch 
+	sed -i '/stat.h/a #include <sys/sysmacros.h>' growisofs.c 
 	err_check "patch 1 failed"
-
-	patch -p1 < $XGPATH_SOURCE/dvd+rw-tools-7.0-glibc2.6.90.patch
-	err_check "patch 2 failed"
-
-	patch -p1 < $XGPATH_SOURCE/dvd+rw-tools-7.0-dvddl.patch
-	err_check "patch 3 failed"
-
-	patch -p1 < $XGPATH_SOURCE/dvd+rw-tools-7.0-wexit.patch
-	err_check "patch 4 failed"
-
 	sed -i '/stdlib/a #include <limits.h>' transport.hxx
-	sed -i 's#mkisofs"#xorrisofs"#' growisofs.c
-	sed -i 's#mkisofs#xorrisofs#;s#MKISOFS#XORRISOFS#' growisofs.1 
+	err_check "patch 2 failed"
 
 
 	#second, add package specified config params to XGB_CONFIG
@@ -82,7 +67,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make SHELL=/bin/bash CC="${CC}"
+	SHELL=/bin/bash CC="${CC}" make all rpl8
 }
 
 #check
@@ -110,7 +95,7 @@ xgb_install()
 xgb_postinst()
 {
 	echo "running after package installed..."
-	ulimit -l unlimited
+	#ulimit -l unlimited
 	echo "done"
 }
 

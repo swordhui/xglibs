@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="a mail filter that classifies mail as spam or ham."
+DESCRIPTION="fcitx5 configuation tool"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://www.bogofilter.org"
+HOMEPAGE="https://github.com/fcitx/fcitx5-configtool"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="https://www.bogofilter.org"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/bogofilter/bogofilter-$V.tar.xz"
+SRC_URI="https://github.com/fcitx/fcitx5-configtool/archive/master.zip"
 
 
 # Binary package URI.
@@ -40,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -49,14 +49,19 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N-master
 	err_check "enter directory failed."
 
+	mkdir build
+	err_check "make build failed."
+	cd build
+	err_check "enter build failed."
+
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc/bogofilter "
+	XGB_CONFIG="-DCMAKE_INSTALL_PREFIX=/usr -DENABLE_KCM=Off"
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cmake $XGB_CONFIG ..
 }
 
 #build

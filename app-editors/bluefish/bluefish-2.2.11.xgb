@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="a mail filter that classifies mail as spam or ham."
+DESCRIPTION="GTK+ text editor targeted towards programmers and web designers"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://www.bogofilter.org"
+HOMEPAGE="http://bluefish.openoffice.nl/index.html"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="https://www.bogofilter.org"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/bogofilter/bogofilter-$V.tar.xz"
+SRC_URI="http://www.bennewitz.com/bluefish/stable/source/bluefish-2.2.11.tar.bz2"
 
 
 # Binary package URI.
@@ -40,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.gz
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -53,7 +53,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc/bogofilter "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -82,6 +82,22 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed"
+
+	#remove conflict files
+	rm $XGPATH_DEST/usr/share/mime/version
+	rm $XGPATH_DEST/usr/share/mime/mime.cache
+	rm $XGPATH_DEST/usr/share/mime/treemagic
+	rm $XGPATH_DEST/usr/share/mime/icons
+	rm $XGPATH_DEST/usr/share/mime/generic-icons
+	rm $XGPATH_DEST/usr/share/mime/types
+	rm $XGPATH_DEST/usr/share/mime/aliases
+	rm $XGPATH_DEST/usr/share/mime/subclasses
+	rm $XGPATH_DEST/usr/share/mime/XMLnamespaces
+	rm $XGPATH_DEST/usr/share/mime/magic
+	rm $XGPATH_DEST/usr/share/mime/globs2
+	rm $XGPATH_DEST/usr/share/mime/globs
+	rm $XGPATH_DEST/usr/share/applications/mimeinfo.cache
 }
 
 #post install

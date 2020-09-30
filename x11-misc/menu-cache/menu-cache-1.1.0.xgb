@@ -14,7 +14,8 @@ HOMEPAGE="http://foo.bar.com/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://downloads.sourceforge.net/lxde/menu-cache-$V.tar.xz"
+SRC_URI="https://downloads.sourceforge.net/lxde/menu-cache-$V.tar.xz \
+	http://www.linuxfromscratch.org/patches/blfs/svn/menu-cache-1.1.0-consolidated_fixes-1.patch"
 
 
 # Binary package URI.
@@ -51,6 +52,10 @@ xgb_config()
 	#fist, cd build directory
 	cd $N-$V$R
 	err_check "enter directory failed."
+
+	#patch it 
+	patch -Np1 -i $XGPATH_SOURCE/menu-cache-1.1.0-consolidated_fixes-1.patch
+	err_check "patch failed"
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --disable-static "

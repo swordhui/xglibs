@@ -47,7 +47,7 @@ xgb_config()
 	cd build
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -Dintrospection=false "
+	#XGB_CONFIG+=" -Dintrospection=false "
 
 	#Third, call configure with $XGB_CONFIG
 	meson $XGB_CONFIG ..

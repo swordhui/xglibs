@@ -52,6 +52,10 @@ xgb_config()
 	cd $N-$V$R
 	err_check "enter directory failed."
 
+	#for libdevmapper
+	export DEVMAPPER_CFLAGS="-I/usr/include"
+	export DEVMAPPER_LIBS="-ldevmapper"
+
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --with-python3 --without-gtk-doc --without-nvdimm --without-dm "
 

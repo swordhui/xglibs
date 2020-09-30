@@ -83,6 +83,14 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST RAISE_SETFCAP=no install
+	err_check "install failed"
+
+	#move pc files to /usr/lib/pkgconfig
+	mkdir -p $XGPATH_DEST/usr/lib/pkgconfig
+	err_check "create pkgconfig failed"
+
+	cp -l $XGPATH_DEST/lib64/pkgconfig/* $XGPATH_DEST/usr/lib/pkgconfig
+
 }
 
 #post install
