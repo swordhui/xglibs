@@ -1,0 +1,88 @@
+diff --git a/gtkgreet/gtkgreet.c b/gtkgreet/gtkgreet.c
+index 1c97767..033bacd 100644
+--- a/gtkgreet/gtkgreet.c
++++ b/gtkgreet/gtkgreet.c
+@@ -72,11 +72,18 @@ void gtkgreet_setup_question(struct GtkGreet *gtkgreet, enum QuestionType type,
+ 
+ void gtkgreet_update_clocks(struct GtkGreet *gtkgreet) {
+     time_t now = time(&now);
++#if 0
+     struct tm *now_tm = localtime(&now);
+     if (now_tm == NULL) {
+         return;
+     }
+-    snprintf(gtkgreet->time, 8, "%02d:%02d", now_tm->tm_hour, now_tm->tm_min);
++    snprintf(gtkgreet->time, 64, "%02d:%02d %04d-%02d-%02d", now_tm->tm_hour, now_tm->tm_min,
++			tm_year+1900, tm_);
++#endif
++
++	//show full time
++	snprintf(gtkgreet->time, 64, ctime(&now));
++
+     for (guint idx = 0; idx < gtkgreet->windows->len; idx++) {
+         struct Window *ctx = g_array_index(gtkgreet->windows, struct Window*, idx);
+         window_update_clock(ctx);
+@@ -98,7 +105,7 @@ struct GtkGreet* create_gtkgreet() {
+ }
+ 
+ void gtkgreet_activate(struct GtkGreet *gtkgreet) {
+-    gtkgreet->draw_clock_source = g_timeout_add_seconds(5, gtkgreet_update_clocks_handler, gtkgreet);
++    gtkgreet->draw_clock_source = g_timeout_add_seconds(1, gtkgreet_update_clocks_handler, gtkgreet);
+     gtkgreet_setup_question(gtkgreet, QuestionTypeInitial, INITIAL_QUESTION, NULL);
+     gtkgreet_update_clocks(gtkgreet);
+ }
+@@ -121,4 +128,4 @@ void gtkgreet_destroy(struct GtkGreet *gtkgreet) {
+         gtkgreet->draw_clock_source = 0;
+     }
+     free(gtkgreet);
+-}
+\ No newline at end of file
++}
+diff --git a/gtkgreet/window.c b/gtkgreet/window.c
+index 6889b6a..3ca3982 100644
+--- a/gtkgreet/window.c
++++ b/gtkgreet/window.c
+@@ -54,12 +54,12 @@ static void window_set_focus(struct Window *win, struct Window *old);
+ #endif
+ 
+ void window_update_clock(struct Window *ctx) {
+-    char time[48];
++    char time[128];
+     int size = 96000;
+     if (gtkgreet->focused_window == NULL || ctx == gtkgreet->focused_window) {
+         size = 32000;
+     }
+-    g_snprintf(time, 48, "<span size='%d'>%s</span>", size, gtkgreet->time);
++    g_snprintf(time, 128, "<span size='%d' foreground=\"white\">%s</span>", size, gtkgreet->time);
+     gtk_label_set_markup((GtkLabel*)ctx->clock_label, time);
+ }
+ 
+@@ -83,11 +83,16 @@ void window_setup_question(struct Window *ctx, enum QuestionType type, char* que
+     ctx->input_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+     GtkWidget *question_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+     gtk_widget_set_halign(question_box, GTK_ALIGN_END);
++
++    char qfmt[128];
+     switch (type) {
+         case QuestionTypeInitial:
+         case QuestionTypeVisible:
+         case QuestionTypeSecret: {
+-            GtkWidget *label = gtk_label_new(question);
++            GtkWidget *label = gtk_label_new(NULL);
++        	snprintf(qfmt, 128, "<span color=\"white\">%s</span>", question);
++        	gtk_label_set_markup((GtkLabel*)label, qfmt);
++
+             gtk_widget_set_halign(label, GTK_ALIGN_END);
+             gtk_container_add(GTK_CONTAINER(question_box), label);
+ 
+@@ -104,7 +109,9 @@ void window_setup_question(struct Window *ctx, enum QuestionType type, char* que
+         }
+         case QuestionTypeInfo:
+         case QuestionTypeError: {
+-            GtkWidget *label = gtk_label_new(question);
++            GtkWidget *label = gtk_label_new(NULL);
++        	snprintf(qfmt, 128, "<span color=\"white\">%s</span>", question);
++        	gtk_label_set_markup((GtkLabel*)label, qfmt);
+             gtk_widget_set_halign(label, GTK_ALIGN_END);
+             gtk_container_add(GTK_CONTAINER(question_box), label);
+             break;

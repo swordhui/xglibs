@@ -52,6 +52,10 @@ xgb_config()
 	cd $N
 	err_check "enter directory failed."
 
+	#patch
+	patch -p1 < $XGPATH_SCRIPT/color.patch
+	err_check "patch failed"
+
 	mkdir build
 	cd build
 	err_check "enter build failed."

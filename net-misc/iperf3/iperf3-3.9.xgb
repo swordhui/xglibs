@@ -3,19 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="code-copletion engine for vim"
+DESCRIPTION="A TCP, UDP, and SCTP network bandwidth measurement tool"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://github.com/ycm-core/YouCompleteMe"
+HOMEPAGE="https://github.com/esnet/iperf"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#create by git clone https://github.com/ycm-core/YouCompleteMe.git
-#git submodule update --init --recursive
-SRC_URI="ycm-master.tar.xz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/esnet/iperf/archive/master.zip"
 
 
 # Binary package URI.
@@ -23,10 +22,30 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="boost watchdog vundle"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
+xgb_remove_c_flag()
+{
+	#$1 is flag to remove.
+
+	newflag=$(echo $CFLAGS | sed "s/$1//g") 
+	CFLAGS=$newflag
+
+	export CFLAGS=$CFLAGS
+	export CPPFLAGS=$CFLAGS
+}
+
+xgb_remove_cxx_flag()
+{
+	#$1 is flag to remove.
+
+	newflag=$(echo $CXXFLAGS | sed "s/$1//g") 
+	CXXFLAGS=$newflag
+	export CXXFLAGS=$CXXFLAGS
+}
 
 
 
@@ -34,6 +53,12 @@ DEPEND="${RDEPEND}"
 xgb_init()
 {
 	echo "init $N-$V$R build script..."
+
+	xgb_remove_c_flag -fomit-frame-pointer
+	xgb_remove_cxx_flag -fomit-frame-pointer
+
+	echo "init: CFLAGS=$CFLAGS"
+
 }
 
 #unpack
@@ -41,7 +66,10 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xaf $XGPATH_SOURCE/$(basename $SRC_URI)
+	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
+
+
+	echo "unpack: CFLAGS=$CFLAGS"
 }
 
 #config
@@ -50,14 +78,15 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd YouCompleteMe
-	err_check "enter directory failed."
+	cd iperf-master
+	#err_check "enter directory failed."
 
+	echo "config: CFLAGS=$CFLAGS"
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG+=" --disable-static "
 
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -65,9 +94,9 @@ xgb_build()
 {
 	echo "make $N-$V$R..."
 
+	echo "make: CFLAGS=$CFLAGS"
 	#run make in current directory
-	#make $XGPARA_MAKE
-	./install.py --clangd-completer
+	make $XGPARA_MAKE
 }
 
 #check
@@ -80,13 +109,11 @@ xgb_check()
 #install
 xgb_install()
 {
+	echo "install: CFLAGS=$CFLAGS"
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
-	mkdir -p $XGPATH_DEST/opt
-
-	cp -r ../YouCompleteMe $XGPATH_DEST/opt
+	make DESTDIR=$XGPATH_DEST install
 }
 
 #post install

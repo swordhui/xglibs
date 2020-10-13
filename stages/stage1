@@ -118,3 +118,9 @@ rsync
 libical
 bluez
 calc
+gdb
+vundle
+exfat
+iperf3
+youcompleteme
+verilog.vim

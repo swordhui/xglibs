@@ -3,19 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="code-copletion engine for vim"
+DESCRIPTION="A feature-rich dictionary lookup program"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://github.com/ycm-core/YouCompleteMe"
+HOMEPAGE="https://github.com/goldendict/goldendict"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#create by git clone https://github.com/ycm-core/YouCompleteMe.git
-#git submodule update --init --recursive
-SRC_URI="ycm-master.tar.xz"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/goldendict/goldendict/archive/master.zip"
 
 
 # Binary package URI.
@@ -23,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="boost watchdog vundle"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -41,7 +40,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xaf $XGPATH_SOURCE/$(basename $SRC_URI)
+	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -50,7 +49,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd YouCompleteMe
+	cd $N-master
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
@@ -67,7 +66,6 @@ xgb_build()
 
 	#run make in current directory
 	#make $XGPARA_MAKE
-	./install.py --clangd-completer
 }
 
 #check
@@ -84,9 +82,6 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	#make DESTDIR=$XGPATH_DEST install
-	mkdir -p $XGPATH_DEST/opt
-
-	cp -r ../YouCompleteMe $XGPATH_DEST/opt
 }
 
 #post install

@@ -89,7 +89,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make PROJECT_LIBDEPS="" REQUIRED_LIBDEPS="" LOCAL_LIBDEPS="" 
+	make PROJECT_LIBDEPS="" REQUIRED_LIBDEPS="" LOCAL_LIBDEPS="" FTLIBDIR="/usr/share/festival"
 }
 
 #install

@@ -3,19 +3,17 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="code-copletion engine for vim"
+DESCRIPTION="Fast, production-quality, standard-conformant FTP server."
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="https://github.com/ycm-core/YouCompleteMe"
+HOMEPAGE="http://www.pureftpd.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-#create by git clone https://github.com/ycm-core/YouCompleteMe.git
-#git submodule update --init --recursive
-SRC_URI="ycm-master.tar.xz"
+SRC_URI="https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-$V.tar.bz2"
 
 
 # Binary package URI.
@@ -23,25 +21,19 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="boost watchdog vundle"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
-#init 
-xgb_init()
-{
-	echo "init $N-$V$R build script..."
-}
-
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xaf $XGPATH_SOURCE/$(basename $SRC_URI)
+	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
 }
 
 #config
@@ -50,14 +42,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd YouCompleteMe
-	err_check "enter directory failed."
+	cd $N-$V$R
+	#err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	#./configure $XGB_CONFIG
+	./configure $XGB_CONFIG
 }
 
 #build
@@ -66,8 +58,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	#make $XGPARA_MAKE
-	./install.py --clangd-completer
+	make $XGPARA_MAKE
 }
 
 #check
@@ -83,26 +74,41 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	#make DESTDIR=$XGPATH_DEST install
-	mkdir -p $XGPATH_DEST/opt
+	make DESTDIR=$XGPATH_DEST install
+	err_check "install failed."
 
-	cp -r ../YouCompleteMe $XGPATH_DEST/opt
+	mkdir -p $XGPATH_DEST/home/ftp
+	chown 300:300 $XGPATH_DEST/home/ftp
+
+	#service
+    mkdir -p $XGPATH_DEST/lib/systemd/system
+    cat > $XGPATH_DEST/lib/systemd/system/pure-ftpd.service << EOF
+[Unit]
+Description=Pure-FTP daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/pure-ftpd -4
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+
 }
 
 #post install
 xgb_postinst()
 {
-	echo "running after package installed..."
+    echo "running after package installed..."
+
+    groupdel ftp 2>/dev/null
+    userdel ftp 2>/dev/null
+
+    groupadd -g 300 ftp &&
+    useradd -c "ftp Server" -d /home/ftp -g ftp -s /bin/false -u 300 ftp
+
+    echo "Done"
 }
 
-#pre remove
-xgb_prerm()
-{
-	echo "running before package delete..."
-}
 
-#post remove
-xgb_postrm()
-{
-	echo "running after package delete..."
-}

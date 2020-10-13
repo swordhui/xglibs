@@ -89,6 +89,10 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	DESTDIR=$XGPATH_DEST ninja install
+	err_check "install failed"
+
+	#change config to config.sample
+	mv $XGPATH_DEST/etc/sway/config $XGPATH_DEST/etc/sway/config.sample
 }
 
 #post install

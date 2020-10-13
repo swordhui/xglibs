@@ -42,7 +42,11 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N
+	err_check "enter failed"
+
+	./autogen.sh
+	err_check "autogen failed"
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --disable-update-xdg-database "

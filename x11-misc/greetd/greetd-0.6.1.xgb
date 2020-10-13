@@ -94,7 +94,7 @@ xgb_install()
 
 	mkdir -p $XGPATH_DEST/etc/greetd
 	err_check "crete config dir failed"
-	cp config.toml $XGPATH_DEST/etc/greetd/config.toml
+	cp config.toml $XGPATH_DEST/etc/greetd/config.toml.sample
 	err_check "cp config failed"
 }
 
