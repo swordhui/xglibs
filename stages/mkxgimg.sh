@@ -27,7 +27,7 @@ xg_do_cleanup()
 imgfile="/root/xg64.img"
 finalstage="X"
 showusage=0
-disksize=8000000000
+disksize=10000000000
 version=1.0
 
 while getopts "g:s:v" name  2>/dev/null
@@ -54,8 +54,8 @@ done
 
 if [ "$showusage" == "1" ]; then
 	echo "Usage:" 
-	echo -e "\t-g\tImageSizeInGB (default: 8)"
-	echo -e "\t-s\tFinalStage, can be 0,1,2,3 (default: 3)"
+	echo -e "\t-g\tImageSizeInGB (default: 10)"
+	echo -e "\t-s\tFinalStage, can be 0,1,2 (default: 2)"
 	exit 1
 fi
 
@@ -109,7 +109,7 @@ err_check "mount old packs failed."
 
 
 showinfo "installing grub2..."
-grub-install --modules=part_msdos --root-directory=/mnt/image /dev/loop0
+grub-install --modules=part_msdos --root-directory=/mnt/image --target=i386-pc /dev/loop0
 err_check "install grub failed."
 
 export XGROOT=/mnt/image
@@ -135,7 +135,7 @@ fi
 umount /mnt/image/var/xiange/xglibs
 err_check "unmount xglibs failed."
 
-cp /var/xiange/xglibs/stages/stage-gpkg.sh /mnt/image/root
+cp /var/xiange/xglibs/stages/stage-gpkg.sh /mnt/image/root/
 err_check "cp stage-gpkg.sh failed."
 
 gpkg -chroot /mnt/image /root/stage-gpkg.sh

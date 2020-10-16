@@ -118,13 +118,13 @@ xgb_install()
 		$XGPATH_DEST/usr/share/man/man8/
 	err_check "install failed 3."
 
-	mkdir -p $DESTDIR/lib/systemd/system
-	install -v -m644 systemd/*.service $DESTDIR/lib/systemd/system/
+	mkdir -p $XGPATH_DEST/lib/systemd/system
+	install -v -m644 systemd/*.service $XGPATH_DEST/lib/systemd/system/
 	err_check "install failed 3.5"
 
 
 	install -v -m644 dbus/fi.w1.wpa_supplicant1.service \
-                 $DESTDIR/usr/share/dbus-1/system-services/
+                 $XGPATH_DEST/usr/share/dbus-1/system-services/
 	err_check "install failed 4."
 
 	install -v -d -m755 /etc/dbus-1/system.d

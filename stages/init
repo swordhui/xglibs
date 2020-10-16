@@ -131,7 +131,7 @@ err_check "load dm-snapshot failed."
 
 
 #mount squshfs
-mount "$srcfile" /mnt -o loop=/dev/loop7
+mount "$srcfile" /mnt 
 err_check "mount $1 to /mnt failed."
 
 losetup -o $((63*512)) /dev/loop6 /mnt/xg64.img
@@ -160,9 +160,9 @@ err_check "setup cow file $cowfile to /dev/loop5 failed."
 echo "0 $(blockdev --getsize /dev/loop6) snapshot /dev/loop6 /dev/loop5 p 64" | dmsetup create root_fs
 err_check "create root_fs failed."
 
-get_rootfstype
+#get_rootfstype
 
-mount $roottype /dev/mapper/root_fs "$finalmnt"
+mount  /dev/mapper/root_fs "$finalmnt"
 err_check "mount failed."
 
 showinfo "all done, booting..."

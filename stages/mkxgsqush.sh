@@ -11,7 +11,7 @@ FAILURE="\\033[1;31m" # Failures are red
 INFO="\\033[1;36m" # Information is light cyan
 BRACKET="\\033[1;34m" # Brackets are blue
 
-mntroot=/tmp/xgmnt
+mntroot=/tmp/xgmnt2
 oldroot=$mntroot/2
 newroot=$mntroot/1
 
@@ -122,8 +122,7 @@ xg_do_kernel()
 
 	local -a initnames
 	local initcnt=0
-	oldinitname=$(ls $oldroot/boot/initramfs-*.img.gz) 
-	for i in $oldinitname
+	for i in $oldroot/boot/initramfs-*.img.gz
 	do
 		initnames[$initcnt]="$i"
 		initcnt=$(($initcnt+1))
@@ -134,7 +133,9 @@ xg_do_kernel()
 
 	XGLIST="/lib/libdevmapper.so.*
 		/lib/libc.so.*
+		/lib/libm.so.*
 		/lib/libc-*.so 
+		/lib/libm-*.so 
 		/lib/libpthread.so.0 
 		/lib/libpthread-*.so 
 		/lib/ld-*.so 
@@ -142,7 +143,7 @@ xg_do_kernel()
 		/sbin/dmsetup
 		/lib/modules/$1/kernel/drivers/block/loop.ko
 		/lib/modules/$1/kernel/fs/squashfs/squashfs.ko
-		/lib/modules/$1/kernel/lib/lz4/lz4_decompress.ko
+		/lib/modules/$1/kernel/lib/lz4/lz4*.ko
 		/lib/modules/$1/kernel/drivers/md/dm-snapshot.ko
 		/lib/modules/$1/kernel/drivers/md/dm-bufio.ko
 		/lib/modules/$1/kernel/drivers/md/dm-mod.ko"
@@ -179,7 +180,7 @@ xg_do_kernel()
 
 	#check dmsetup
 	chroot $mntroot/init /sbin/dmsetup --help 
-	err_check "dempode failed."
+	err_check "run dmsetup failed."
 
 	#sleep 1
 	umount $mntroot/init/dev
@@ -291,8 +292,8 @@ xg_mount_squash()
 	err_check "setup xg64 to /dev/loop2 faled."
 
 	showinfo "mounting new root..."
-	mount /dev/loop1p1 $mntroot/1
-	err_check "mount loop1p1 failed."
+	mount $devname $mntroot/1
+	err_check "mount $devname failed."
 	
 	showinfo "mounting old root..."
 	mount -t ext4 /dev/loop2p1 $mntroot/2 -o ro
@@ -303,7 +304,7 @@ imgfile="/root/xg_sqh.img"
 
 xg_mkddimg()
 {
-	disksize=2500000000
+	disksize=3000000000
 	blocks=$(($disksize/512))
 	
 	showinfo "create image file $imgfile, size $(($disksize/1000000000)) GB.."
@@ -328,13 +329,34 @@ xg_mkddimg()
 	err_check "mount loop1p1 failed."
 	
 	showinfo "installing grub2..."
-	grub-install --modules=part_msdos --root-directory=$mntroot/1 /dev/loop1
+	grub-install --modules=part_msdos --root-directory=$mntroot/1 --target=i386-pc /dev/loop1
 	err_check "install grub failed."
 
 	showinfo "unmount $mntroot/1..."
 	umount $mntroot/1
 	err_check "unmount grub failed."
 }
+
+xg_usedisk()
+{
+
+	showinfo "use $1 directly.."
+	devname="$1"
+	devp=${devname%%[0-9]}
+	
+	showinfo "mounting..."
+	mount $devname $mntroot/1
+	err_check "mount #devname failed."
+	
+	showinfo "installing grub2..."
+	grub-install --modules=part_msdos --root-directory=$mntroot/1 --target=i386-pc $devp
+	err_check "install grub failed."
+
+	showinfo "unmount $mntroot/1..."
+	umount $mntroot/1
+	err_check "unmount grub failed."
+}
+
 
 
 xg_useoldimg()
@@ -363,7 +385,10 @@ xg_useoldimg()
 
 xg_ckddimg()
 {
-	if [ -f $imgfile ]; then
+	if [ -n "$1" ]; then
+		#$1 can be a vfat device, such as /dev/sdc1
+		xg_usedisk "$1"
+	elif [ -f $imgfile ]; then
 		showinfo "$imgfile found, use it directly."
 		xg_useoldimg
 	else
@@ -372,11 +397,13 @@ xg_ckddimg()
 }
 
 #
-# init here
+# init here, $1 can be device name
 #
 
+devname="/dev/loop1p1"
+
 xg_prepare
-xg_ckddimg
+xg_ckddimg "$1"
 xg_cksquash
 xg_mount_squash
 
@@ -387,8 +414,7 @@ mkdir -p /boot/grub
 gpkg -info > /tmp/gpkginfo
 . /tmp/gpkginfo
 
-devname="/dev/loop1p1"
-newid=$(blkid -o value $devname 2>/dev/null | head -n 1)
+newid=$(blkid -s UUID -o value $devname 2>/dev/null)
 devindex=1
 
 if [ -z "$newid" ]; then
@@ -412,6 +438,7 @@ do
 	kernelv=${i#vmlinuz-}
 	showinfo "found $i, kerver version: $kernelv"
 	xg_do_kernel $kernelv
+	err_check "do kernel failed"
 done
 
 #squshfs.img
@@ -422,16 +449,19 @@ err_check "copy /root/xiange-sqroot to $newroot failed."
 
 #cow.img 
 showinfo "calculating cow size..."
-sizeline=$(df -m /dev/loop1p1 | grep "/dev")
+sizeline=$(df -m $devname | grep "/dev")
 echo "$sizeline"
 size=$(echo $sizeline | cut -d " " -f 4)
 showinfo "Total: $size MB"
 
-if [ $size -lt 10 ]; then
+if [ $size -lt 15 ]; then
 	showFailed "size is too small: $size"
+elif [ $size -gt 600 ]; then
+	size=600
 else
 	size=$(($size-10))
 fi
+
 showinfo "creating cow image size $size MB.."
 dd if=/dev/zero of=$newroot/xiange/cow-$XGB_ARCH.out count=$((2*1024*$size))
 err_check "create $newroot/cow.out failed."
@@ -446,7 +476,6 @@ umount $oldroot
 err_check "unmount $oldroot failed."
 
 losetup -d /dev/loop1
-err_check "remove /dev/loop1 failed."
 losetup -d /dev/loop2
 err_check "remove /dev/loop2 failed."
 

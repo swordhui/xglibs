@@ -49,7 +49,9 @@ xgb_config()
 
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --bindir=/bin --libexecdir=/usr/sbin "
+	XGB_CONFIG+=" --bindir=/bin --libexecdir=/usr/sbin \
+		--with-gzip=pigz \
+		--with-bzip2=pbz2 "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
