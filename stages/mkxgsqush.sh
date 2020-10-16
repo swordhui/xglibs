@@ -92,7 +92,8 @@ xg_mkgrubcfg_item()
 	echo -e "\tinsmod gzio" >> $5
 	echo -e "\tinsmod part_msdos" >> $5
 	echo -e "\tinsmod ext2" >> $5
-	echo -e "\tset root='hd0,msdos$3'" >> $5
+	echo -e "\tinsmod search_fs_uuid" >> $5
+	echo -e "\tsearch --fs-uuid --no-floppy --set=root $4" >> $5
 	echo -e "\techo 'Loading Xiange Linux $1 $2...'" >> $5
 	echo -e "\tlinux /boot/vmlinuz-$1-$2 root=UUID=$4 $7 rw quiet" >> $5
 	if [ -n "$6" ]; then
