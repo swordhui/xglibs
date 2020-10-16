@@ -3,7 +3,7 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="GNU GRUB 2 boot loader"
+DESCRIPTION="GNU GRUB 2 boot loader for EFI system"
 
 # Homepage, not used by Portage directly but handy for developer reference
 HOMEPAGE="http://www.gnu.org/software/grub/"
@@ -27,13 +27,19 @@ RDEPEND=""
 # Build time depend
 DEPEND="${RDEPEND}"
 
+xgb_init()
+{
+    XGPATH_SOURCE=$XGPATH_SOURCE_RAW/grub-$V
+}
+
+
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.xz
+	tar xf $XGPATH_SOURCE/grub-$V$R.tar.xz
 }
 
 #config
@@ -42,11 +48,12 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd grub-$V$R
 
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --sysconfdir=/etc --sbindir=/sbin --with-platform=pc --disable-efiemu --disable-werror "
+	XGB_CONFIG+=" --sysconfdir=/etc --sbindir=/sbin --with-platform=efi --disable-efiemu --disable-werror \
+		--program-suffix=efi " 
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG

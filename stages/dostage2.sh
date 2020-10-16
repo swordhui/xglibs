@@ -13,10 +13,17 @@ scriptpath=/var/xiange/xglibs/stages
 . $scriptpath/baseio.sh
 
 
-
+showinfo "updating gtk3 im modules"
+gtk-query-immodules-3.0 > /usr/lib/gtk-3.0/3.0.0/immodules.cache
+err_check "gtk3 query module failed."
 
 showinfo "updating gtk icons.."
-gtk-update-icon-cache
+gdk-pixbuf-query-loaders --update-cache
+gtk-update-icon-cache /usr/share/icons/Adwaita
+gtk-update-icon-cache /usr/share/icons/gnome
+gtk-update-icon-cache /usr/share/icons/hicolor
+xdg-icon-resource forceupdate --theme hicolor
+xdg-icon-resource forceupdate --theme gnome
 err_check "gtk update icon cache  failed."
 
 showinfo "updating mime info..."

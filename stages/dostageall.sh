@@ -28,7 +28,7 @@ if [ "$finalstage" == "0" ]; then
 	exit 0
 fi
 
-for i in 1 2 3 
+for i in 1 2
 do
 	showinfo "install stage$i..."
 	gpkg inststage $i /mnt/oldpacks
@@ -44,13 +44,13 @@ do
 
 	if [ "$i" == "1" ]; then
 		#remove vim because 
-		gpkg -D vim
+		#gpkg -D vim
 	fi
 done
 
 #clean up
 showinfo "please check OS release information:"
-vi /etc/os-release
+cat /etc/os-release
 showinfo "Modify them in need."
 
 

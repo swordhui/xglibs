@@ -123,6 +123,7 @@ groupadd kvm
 groupadd input
 showinfo "making certs..."
 make-ca -g
+showinfo "certs done"
 
 systemctl enable update-pciids.timer
 systemctl enable update-usbids.timer

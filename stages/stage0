@@ -6,6 +6,7 @@ zlib
 undro-tcl
 expect
 bzip2
+pbzip2
 xz-utils
 lz4
 zstd
@@ -56,6 +57,7 @@ groff
 grub
 less
 gzip
+pigz
 iproute2
 kmod
 libpipeline
@@ -71,3 +73,4 @@ ninja
 meson
 vim
 gpkg
+grub-efi
