@@ -71,6 +71,7 @@ xgb_config()
 			-DLLVM_BUILD_LLVM_DYLIB=ON \
 			-DLLVM_LINK_LLVM_DYLIB=ON \
 			-DLLVM_ENABLE_RTTI=ON \
+			-DLLVM_BUILD_STATIC=OFF \
 			-Wno-dev -G Ninja "
 
 	#Third, call configure with $XGB_CONFIG

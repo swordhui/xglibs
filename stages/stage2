@@ -24,6 +24,9 @@ MarkupSafe
 Mako
 mesa
 glmark2
+vulkan-headers
+vulkan-loader
+vulkan-tools
 xkbcommon
 xkeyboard-config
 freeglut
@@ -107,6 +110,7 @@ libwacom
 libinput
 sdl2
 sdl2-image
+sdl2-mixer
 sdl2-ttf
 sdl2-test
 libass
@@ -302,4 +306,5 @@ libreoffice
 sdlmame
 slurp
 grim
+qemu
 theme-xiange

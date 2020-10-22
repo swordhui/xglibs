@@ -62,7 +62,8 @@ xgb_config()
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+="-DCMAKE_INSTALL_PREFIX=/usr -DVIDEO_WAYLAND=on \
 		-DX11_SHARED=on -DVIDEO_KMSDRM=on -DKMSDRM_SHARED=on \
-		-DSDL_STATIC=false "
+		-DPULSEAUDIO=on -DPULSEAUDIO_SHARED=on \
+		-DSDL_STATIC=false -DBUILD_SHARED_LIBS=ON "
 
 	#Third, call configure with $XGB_CONFIG
 	cmake $XGB_CONFIG ..

@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/swaywm/sway"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="https://github.com/swaywm/sway/archive/$V.zip"
+SRC_URI="https://github.com/swaywm/sway/archive/master.zip"
 
 
 # Binary package URI.
@@ -49,7 +49,7 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd $N-master
 	err_check "enter directory failed."
 
 	mkdir build
@@ -58,7 +58,7 @@ xgb_config()
 	
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -Ddefault-wallpaper=true -Dxwayland=disabled \
+	XGB_CONFIG+=" -Ddefault-wallpaper=true  \
 		-Dzsh-completions=false -Dfish-completions=false \
 		-Dtray=enabled -Dgdk-pixbuf=enabled "
 

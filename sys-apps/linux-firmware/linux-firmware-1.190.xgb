@@ -12,10 +12,7 @@ HOMEPAGE="http://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.gi
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-UBFWVER=1.190
-
-SRC_URI="https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot/linux-firmware-$V.tar.gz \
-http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/linux-firmware_$UBFWVER.tar.gz"
+SRC_URI="http://archive.ubuntu.com/ubuntu/pool/main/l/linux-firmware/linux-firmware_$V.tar.gz"
 
 
 # Binary package URI.
@@ -43,11 +40,7 @@ xgb_unpack()
 	echo "Unpacking to `pwd`"
 	mkdir unzip
 	cd unzip
-	tar xf $XGPATH_SOURCE/linux-firmware-$V.tar.gz
-	err_check "tar 1 failed"
-	tar xf $XGPATH_SOURCE/linux-firmware_$UBFWVER.tar.gz
-	err_check "tar 2 failed"
-
+	tar xf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -56,6 +49,8 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
+	cd ${N}*
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
 	#XGB_CONFIG+=" --foo --bar "
@@ -86,28 +81,10 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
+	mkdir -p $XGPATH_DEST/lib/firmware
+	err_check "install 1 failed."
 
-	mkdir -p $XGPATH_DEST/ub
-	mkdir -p $XGPATH_DEST/linux
-
-	#ubuntu
-	cd linux-firmware
-	make DESTDIR=$XGPATH_DEST/ub install
-	err_check "install 1 failed"
-
-	#stanadard
-	cd ../linux-firmware-$V
-	make DESTDIR=$XGPATH_DEST/linux install
-	err_check "install 2 failed"
-
-	cp -r $XGPATH_DEST/ub/*  $XGPATH_DEST/
-	err_check "cp 1 failed"
-	cp -r $XGPATH_DEST/linux/*  $XGPATH_DEST/
-	err_check "cp 2 failed"
-
-	rm -rf $XGPATH_DEST/ub
-	err_check "rm 1 failed"
-	rm -rf $XGPATH_DEST/linux
-	err_check "rm 2 failed"
+	mv * $XGPATH_DEST/lib/firmware/
+	err_check "install 2 failed."
 }
 

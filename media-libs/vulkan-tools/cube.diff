@@ -1,0 +1,19 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 53c7f2b..7182aff 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,11 +50,11 @@ endif()
+ 
+ if(UNIX AND NOT APPLE) # i.e. Linux
+     include(FindPkgConfig)
+-    option(BUILD_WSI_XCB_SUPPORT "Build XCB WSI support" ON)
+-    option(BUILD_WSI_XLIB_SUPPORT "Build Xlib WSI support" ON)
++	option(BUILD_WSI_XCB_SUPPORT "Build XCB WSI support" OFF)
++	option(BUILD_WSI_XLIB_SUPPORT "Build Xlib WSI support" OFF)
+     option(BUILD_WSI_WAYLAND_SUPPORT "Build Wayland WSI support" ON)
+     option(BUILD_WSI_DIRECTFB_SUPPORT "Build DirectFB WSI support" OFF)
+-    set(CUBE_WSI_SELECTION "XCB" CACHE STRING "Select WSI target for vkcube (XCB, XLIB, WAYLAND, DIRECTFB, DISPLAY)")
++	set(CUBE_WSI_SELECTION "WAYLAND" CACHE STRING "Select WSI target for vkcube (XCB, XLIB, WAYLAND, DIRECTFB, DISPLAY)")
+ 
+     if(BUILD_WSI_XCB_SUPPORT)
+         find_package(XCB REQUIRED)

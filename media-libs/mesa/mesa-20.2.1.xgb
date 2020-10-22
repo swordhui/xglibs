@@ -13,7 +13,7 @@ HOMEPAGE="http://mesa3d.sourceforge.net/"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/$V/$N-$V.tar.xz"
+SRC_URI="https://mesa.freedesktop.org/archive/mesa-$V.tar.xz"
 
 
 # Binary package URI.
@@ -21,7 +21,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="libxml2 libdrm expat elfutils libvdpau llvm wayland"
+RDEPEND="libxml2 libdrm expat elfutils libva llvm wayland Mako"
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -51,21 +51,15 @@ xgb_config()
 
 	#fist, cd build directory
 	cd $N-$V
+	err_check "enter dir failed"
 
-	./configure $XGB_CONFIG   \
-            --sysconfdir=/etc              \
-            --enable-texture-float         \
-            --enable-gles2                 \
-            --enable-osmesa                \
-            --enable-xa                    \
-            --enable-gbm                   \
-            --enable-gallium-egl           \
-            --enable-gallium-gbm           \
-            --enable-glx-tls               \
-            --with-llvm-shared-libs        \
-			--enable-shared-glapi			\
-            --with-egl-platforms="drm,wayland,x11" \
-            --with-gallium-drivers="i915,ilo,nouveau,r300,r600,radeonsi,svga,swrast" 
+	mkdir build 
+	cd build
+	err_check "enter build failed"
+
+	XGB_CONFIG+=" -Dplatforms=drm,wayland,x11 -Ddri3=true -Dosmesa=gallium "
+
+	meson $XGB_CONFIG  ..
 }
 
 #build
@@ -74,7 +68,7 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	ninja
 }
 
 #install
@@ -83,7 +77,7 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	DESTDIR=$XGPATH_DEST ninja install
 	err_check "install $N-$V failed."
 }
 

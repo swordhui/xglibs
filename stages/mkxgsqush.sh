@@ -14,6 +14,9 @@ BRACKET="\\033[1;34m" # Brackets are blue
 mntroot=/tmp/xgmnt2
 oldroot=$mntroot/2
 newroot=$mntroot/1
+squash_arch=x86_64
+declare loopd
+declare lpxg
 
 
 
@@ -66,6 +69,7 @@ err_check()
 }
 
 # $1 is output file
+# $2 is root UUID
 xg_mkgrubcfg_head()
 {
 	cat > $1 << EOF
@@ -77,6 +81,31 @@ xg_mkgrubcfg_head()
 # 2014.05.14
 
 set timeout=5
+
+search --no-floppy --fs-uuid --set=root $2
+
+# Setup video
+if [ "\$grub_platform" = "efi" ]
+then
+    insmod efi_gop
+    insmod efi_uga
+fi
+
+if [ "\$grub_platform" = "pc" ]
+then
+    insmod vbe
+fi
+
+insmod font
+loadfont (\$root)/boot/grub/themes/fallout-grub-theme/fixedsys-regular-32.pf2
+insmod gfxterm
+set gfxmode=auto
+set gfxpayload=keep
+terminal_output gfxterm
+insmod png
+set theme=(\$root)/boot/grub/themes/fallout-grub-theme/theme.txt
+export theme
+
 
 
 EOF
@@ -171,6 +200,10 @@ xg_do_kernel()
 	#init
 	cp /var/xiange/xglibs/stages/init $mntroot/init/init
 	err_check "copy init failed."
+
+	#set arch
+	sed -i "s/^xgb_arch=.*/xgb_arch=${squash_arch}/g" $mntroot/init/init
+	err_check "set new arch failed"
 
 	#make depfiles
 	mount -t proc none $mntroot/init/proc
@@ -287,17 +320,16 @@ xg_mount_squash()
 	fi
 	
 	showinfo "mount xiange root to $mntroot/0/xg64.img"
-	losetup -d /dev/loop2
-	losetup -P /dev/loop2 $mntroot/0/xg64.img
+	lpxg=$(losetup -f --show -P $mntroot/0/xg64.img)
 	echo "result=$?"
-	err_check "setup xg64 to /dev/loop2 faled."
+	err_check "setup xg64 to ${lpxg} faled."
 
 	showinfo "mounting new root..."
 	mount $devname $mntroot/1
 	err_check "mount $devname failed."
 	
 	showinfo "mounting old root..."
-	mount -t ext4 /dev/loop2p1 $mntroot/2 -o ro
+	mount -t ext4 ${lpxg}p1 $mntroot/2 -o ro
 	err_check "mount to /mnt/xgmnt/2 faled."
 }
 
@@ -305,7 +337,7 @@ imgfile="/root/xg_sqh.img"
 
 xg_mkddimg()
 {
-	disksize=3000000000
+	disksize=3500000000
 	blocks=$(($disksize/512))
 	
 	showinfo "create image file $imgfile, size $(($disksize/1000000000)) GB.."
@@ -313,29 +345,55 @@ xg_mkddimg()
 	err_check "failed."
 	
 	showinfo "mount to a image.."
-	losetup -P /dev/loop1 $imgfile
-	err_check "setup $imgfile to /dev/loop1 faled."
-	
-	showinfo "create partitions..."
-	printf "o\nn\np\n1\n63\n\na\nw\n" | fdisk -b 512 -c=dos -u=sectors -S 63 /dev/loop1
-	err_check "create partition failed."
-	
-	showinfo "formating..."
-	mkfs.ext4 -v /dev/loop1p1
-	err_check "format /dev/loop1p1 failed."
+	loopd=$(losetup -f --show -P $imgfile)
+	err_check "setup $imgfile to $loopd faled."
+
+	showinfo "create GPT partitions..."
+	printf "o\ny\nn\n\n\n+1M\nEF02\nn\n\n\n+50M\nEF00\nn\n\n\n\n0700\nw\ny\n" | gdisk $loopd 
+	showinfo "create MBR partitions..."
+	printf "r\nh\n1 2 3\nn\nEF02\nn\nEF00\nn\n0700\ny\nw\ny\n" | gdisk $loopd 
+
+	showinfo "formating vfat..."
+	mkfs.vfat -F 32 -n GRUB2EFI ${loopd}p2
+	err_check "format ${loopd}p2 failed."
+
+	mkfs.vfat -F 32 -n DATA ${loopd}p3
+	err_check "format ${loopd}p3 failed."
 	
 	
 	showinfo "mounting..."
-	mount /dev/loop1p1 $mntroot/1
-	err_check "mount loop1p1 failed."
-	
-	showinfo "installing grub2..."
-	grub-install --modules=part_msdos --root-directory=$mntroot/1 --target=i386-pc /dev/loop1
+	mount ${loopd}p2 $mntroot/1
+	err_check "mount ${loopd}p2 failed."
+
+	mount ${loopd}p3 $mntroot/2
+	err_check "mount ${loopd}p3 failed."
+
+
+	showinfo "installing grub2 GPT mode..."
+	grub-installefi --target=x86_64-efi --efi-directory=$mntroot/1 --boot-directory=$mntroot/2/boot --removable --recheck  $loopd 
+	err_check "install grub-efi failed."
+
+	showinfo "installing grub2 dos mode..."
+	grub-install --target=i386-pc --boot-directory=$mntroot/2/boot --recheck $loopd 
 	err_check "install grub failed."
 
+	showinfo "copying grub themes.."
+	cp -r /boot/grub/themes $mntroot/2/boot/grub/
+	err_check "copying themes failed"
+
+	
 	showinfo "unmount $mntroot/1..."
 	umount $mntroot/1
-	err_check "unmount grub failed."
+	err_check "unmount efi failed."
+	umount $mntroot/2
+	err_check "unmount data failed."
+
+	losetup -d $loopd
+	err_check "release $loopd failed"
+
+	loopd=$(losetup -f --show -P $imgfile)
+	err_check "re-setup image failed."
+	devname="${loopd}p3"
 }
 
 xg_usedisk()
@@ -363,25 +421,20 @@ xg_usedisk()
 xg_useoldimg()
 {
 	showinfo "mount to a image.."
-	losetup -P /dev/loop1 $imgfile
-	err_check "setup $imgfile to /dev/loop1 faled."
+	loopd=$(losetup -f --show -P $imgfile)
+	err_check "setup $imgfile to ${loopd} faled."
 
 	showinfo "mounting..."
-	mount /dev/loop1p1 $mntroot/1
-	err_check "mount loop1p1 failed."
+	mount ${loopd}p3 $mntroot/1
+	err_check "mount ${loopd}p3 failed."
 
-	#resize cowfiles
-	for i in $mntroot/1/xiange/cow-*; 
-	do
-		rm -f $i
-		err_check "remove $i failed."
-		touch $i
-		err_check "re-create $i failed."
-	done
+	#remove cowfiles
+	rm $mntroot/1/xiange/cow-*
 	
 	showinfo "unmount $mntroot/1..."
 	umount $mntroot/1
 	err_check "unmount grub failed."
+	devname="${loopd}p3"
 }
 
 xg_ckddimg()
@@ -401,12 +454,20 @@ xg_ckddimg()
 # init here, $1 can be device name
 #
 
-devname="/dev/loop1p1"
+devname="/dev/loop1p3"
 
 xg_prepare
 xg_ckddimg "$1"
 xg_cksquash
 xg_mount_squash
+
+eval squash_arch=$(cat $oldroot/etc/os-release | grep -o "VERSION=[^ ]*" | sed "s/VERSION=//g")
+
+if [ -z "$squash_arch" ]; then
+	showFailed "os-release parse failed in old root"
+fi
+
+showinfo "squasf_filename=$squash_arch"
 
 
 outputf=$newroot/boot/grub/grub.cfg
@@ -429,7 +490,7 @@ if [ -z "$XGB_ARCH" ]; then
 fi
 
 
-xg_mkgrubcfg_head $outputf
+xg_mkgrubcfg_head $outputf $newid
 
 
 showinfo "checking kernel ..."
@@ -445,7 +506,7 @@ done
 #squshfs.img
 showinfo "copy squashfs image.."
 mkdir -p $newroot/xiange
-cp -a /root/xiange-sqroot $newroot/xiange/xiange-sqroot-$XGB_ARCH
+cp -a /root/xiange-sqroot $newroot/xiange/xiange-sqroot-${squash_arch}
 err_check "copy /root/xiange-sqroot to $newroot failed."
 
 #cow.img 
@@ -457,14 +518,14 @@ showinfo "Total: $size MB"
 
 if [ $size -lt 15 ]; then
 	showFailed "size is too small: $size"
-elif [ $size -gt 600 ]; then
-	size=600
+elif [ $size -gt 1000 ]; then
+	size=1000
 else
 	size=$(($size-10))
 fi
 
 showinfo "creating cow image size $size MB.."
-dd if=/dev/zero of=$newroot/xiange/cow-$XGB_ARCH.out count=$((2*1024*$size))
+dd if=/dev/zero of=$newroot/xiange/cow-${squash_arch}.out count=$((2*1024*$size))
 err_check "create $newroot/cow.out failed."
 
 #unmount newroot
@@ -476,8 +537,8 @@ showinfo "unmounting $oldroot..."
 umount $oldroot
 err_check "unmount $oldroot failed."
 
-losetup -d /dev/loop1
-losetup -d /dev/loop2
+losetup -d ${loopd}
+losetup -d ${lpxg}
 err_check "remove /dev/loop2 failed."
 
 showinfo "unmounting $mntroot/0.."

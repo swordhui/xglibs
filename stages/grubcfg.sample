@@ -1,0 +1,19 @@
+#iso
+
+search --no-floppy --fs-uuid --set=root XXXXXXXX
+
+menuentry "Tails 2.5 i386" {
+    set isofile='/iso/others/tails/tails-i386-2.5.iso'
+    loopback loop $isofile
+    linux (loop)/live/vmlinuz2 boot=live config findiso=${isofile} live-media=removable apparmor=1 security=apparmor nopersistent noprompt timezone=Etc/UTC block.events_dfl_poll_msecs=1000 noautologin module=Tails i2p
+    initrd (loop)/live/initrd2.img
+}
+
+menuentry 'Debian 8.5.0 amd64 CD 1 XFCE' {
+        set isofile='/iso/debian/debian-8.5.0-amd64-xfce-CD-1.iso'
+        set initrdfile='/iso/debian/initrd.gz'
+        loopback loop $isofile
+        linux (loop)/install.amd/vmlinuz iso-scan/ask_second_pass=true
+        initrd $initrdfile
+}
+

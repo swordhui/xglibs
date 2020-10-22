@@ -13,7 +13,7 @@ HOMEPAGE="http://www.linux-kvm.org"
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="http://wiki.qemu-project.org/download/qemu-$V.tar.bz2"
+SRC_URI="https://download.qemu.org/qemu-$V.tar.xz"
 
 # Binary package URI.
 BIN_URI=""
@@ -33,7 +33,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/qemu-$V$R.tar.bz2
+	tar xaf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -47,14 +47,10 @@ xgb_config()
 
 	#second, add package specified config params to XGB_CONFIG
 	XGB_CONFIG+=" --sysconfdir=/etc --enable-kvm --enable-linux-aio --enable-modules \
-		--audio-drv-list=alsa --enable-lzo  --disable-attr --with-gtkabi=3.0 "
+		--audio-drv-list=pa --enable-lzo  --disable-attr --enable-gtk --disable-sdl  "
 
-	if [ $(uname -m) = i686 ]; then
-		XGB_CONFIG+=" --target-list=i386-softmmu "
-	else
-		XGB_CONFIG+=" --target-list=x86_64-softmmu "
-	fi
-
+	XGB_CONFIG+='--target-list=arm-softmmu,i386-softmmu,x86_64-softmmu,i386-linux-user,x86_64-linux-user'
+	
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG 
 }
@@ -83,35 +79,5 @@ xgb_install()
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
 	err_check "Install failed."
-
-	#regedit
-	imgconv1=""
-    imgconv2=/usr/share/pixmaps/qemu.png
-    menu_type=wine
-    menu_name=qemu
-    menu_index=C10qeum
-
-	if [ $(uname -m) = i686 ]; then
-    	menu_cmd=qemu-system-i386
-	else
-    	menu_cmd=qemu-system-x86_64
-	fi
-
-
-
-    mkdir -p ${XGPATH_DEST}$(dirname $imgconv2)
-	convert pc-bios/qemu-nsis.ico $XGPATH_DEST$imgconv2
-	err_check "install 7 failed."
-	cp $XGPATH_DEST/usr/share/pixmaps/qemu{-1,}.png
-	rm $XGPATH_DEST/usr/share/pixmaps/qemu-*
-
- 	convpara=""
-    menufile="$XGPATH_DEST/etc/xg_launch/$menu_type/$menu_index"
-
-    declare -A Name
-    Name[en]="QEMU"
-    Name[zh_CN]="虚拟机QEMU"
-	xgb_mkmenu
-
 }
 

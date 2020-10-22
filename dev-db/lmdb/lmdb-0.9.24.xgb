@@ -87,7 +87,7 @@ xgb_install()
 	sed -i 's| liblmdb.a||' Makefile
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
+	make prefix=/usr DESTDIR=$XGPATH_DEST install
 }
 
 #post install

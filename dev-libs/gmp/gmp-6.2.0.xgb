@@ -44,8 +44,14 @@ xgb_config()
 
 	export CPPFLAGS="$CPPFLAGS -fexceptions"	
 
+	#use generic asm files
+	cp -v configfsf.guess config.guess
+	err_check "cp 1 failed"
+	cp -v configfsf.sub   config.sub
+	err_check "cp 2 failed"
+
 	#run configure
-	#XGB_CONFIG+=" --enable-cxx "
+	XGB_CONFIG+=" --disable-static --enable-cxx "
 
 	if  [ "$XGB_ARCH" == "x86_64" ]; then
 		ABI=64 ./configure $XGB_CONFIG

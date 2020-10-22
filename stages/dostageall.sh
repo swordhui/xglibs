@@ -41,11 +41,6 @@ do
 	if [ "$finalstage" == "$i" ]; then
 		break
 	fi
-
-	if [ "$i" == "1" ]; then
-		#remove vim because 
-		#gpkg -D vim
-	fi
 done
 
 #clean up

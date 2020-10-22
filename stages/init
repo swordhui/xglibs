@@ -66,6 +66,15 @@ get_rootfstype()
 	fi
 }
 
+get_squash_arch()
+{
+	root_arch=$(cat /proc/cmdline | grep -o "xgsquash=[^ ]*" | sed "s/xgsquash=//g")
+
+	if [ -n "$root_arch" ]; then
+		xgb_arch="$root_arch"
+	fi
+}
+
 showinfo "Preparing Xiange system ..."
 mount -t sysfs -o nodev,noexec,nosuid sysfs /sys
 err_check "mount sys failed."
@@ -107,6 +116,8 @@ if [ "x$rootdev" == "x" ]; then
 fi
 
 xgb_arch=$(uname -m)
+get_squash_arch
+
 ddmntp=/tmp
 finalmnt=/mnt
 srcfile=$ddmntp/xiange/xiange-sqroot-$xgb_arch

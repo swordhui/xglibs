@@ -1,0 +1,313 @@
+diff --git a/cube/CMakeLists.txt b/cube/CMakeLists.txt
+index 53c7f2b..3db4d92 100644
+--- a/cube/CMakeLists.txt
++++ b/cube/CMakeLists.txt
+@@ -114,6 +116,48 @@ elseif(UNIX AND NOT APPLE) # i.e. Linux
+         set(CUBE_INCLUDE_DIRS ${WAYLAND_CLIENT_INCLUDE_DIR} ${CUBE_INCLUDE_DIRS})
+         link_libraries(${WAYLAND_CLIENT_LIBRARIES})
+         add_definitions(-DVK_USE_PLATFORM_WAYLAND_KHR)
++        set(XDG_SHELL_PROTOCOL /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml)
++        add_custom_command(COMMENT "Generating xdg-shell protocol dispatch data"
++                           OUTPUT xdg-shell-code.c
++                           COMMAND /usr/bin/wayland-scanner 
++                                   private-code
++                                   ${XDG_SHELL_PROTOCOL}
++                                   ${CMAKE_CURRENT_BINARY_DIR}/xdg-shell-code.c
++                           MAIN_DEPENDENCY ${XDG_SHELL_PROTOCOL}
++                           DEPENDS ${XDG_SHELL_PROTOCOL})
++        add_custom_command(COMMENT "Generating xdg-shell protocol header"
++                           OUTPUT xdg-shell-client-header.h
++                           COMMAND /usr/bin/wayland-scanner 
++                                   client-header
++                                   ${XDG_SHELL_PROTOCOL}
++                                   ${CMAKE_CURRENT_BINARY_DIR}/xdg-shell-client-header.h
++                           MAIN_DEPENDENCY ${XDG_SHELL_PROTOCOL}
++                           DEPENDS ${XDG_SHELL_PROTOCOL})
++
++        set(XDG_DECORATION_PROTOCOL /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml)
++        add_custom_command(COMMENT "Generating xdg-decoration protocol dispatch data"
++                           OUTPUT xdg-decoration-code.c
++                           COMMAND /usr/bin/wayland-scanner 
++                                   private-code
++                                   ${XDG_DECORATION_PROTOCOL}
++                                   ${CMAKE_CURRENT_BINARY_DIR}/xdg-decoration-code.c
++                           MAIN_DEPENDENCY ${XDG_DECORATION_PROTOCOL}
++                           DEPENDS ${XDG_DECORATION_PROTOCOL})
++        add_custom_command(COMMENT "Generating xdg-decoration protocol header"
++                           OUTPUT xdg-decoration-client-header.h
++                           COMMAND /usr/bin/wayland-scanner 
++                                   client-header
++                                   ${XDG_DECORATION_PROTOCOL}
++                                   ${CMAKE_CURRENT_BINARY_DIR}/xdg-decoration-client-header.h
++                           MAIN_DEPENDENCY ${XDG_DECORATION_PROTOCOL}
++                           DEPENDS ${XDG_DECORATION_PROTOCOL})
++
++        set(OPTIONAL_WAYLAND_DATA_FILES
++            ${CMAKE_CURRENT_BINARY_DIR}/xdg-shell-code.c
++            ${CMAKE_CURRENT_BINARY_DIR}/xdg-shell-client-header.h
++            ${CMAKE_CURRENT_BINARY_DIR}/xdg-decoration-code.c
++            ${CMAKE_CURRENT_BINARY_DIR}/xdg-decoration-client-header.h)
++        include_directories(${CMAKE_CURRENT_BINARY_DIR})
+     elseif(CUBE_WSI_SELECTION STREQUAL "DIRECTFB")
+         if(NOT BUILD_WSI_DIRECTFB_SUPPORT)
+             message(FATAL_ERROR "Selected DIRECTFB for vkcube build but not building DirectFB support")
+@@ -190,9 +234,9 @@ elseif(NOT WIN32)
+                        ${PROJECT_SOURCE_DIR}/cube/cube.vert
+                        ${PROJECT_SOURCE_DIR}/cube/cube.frag
+                        cube.vert.inc
+-                       cube.frag.inc)
++                       cube.frag.inc
++                       ${OPTIONAL_WAYLAND_DATA_FILES})
+         target_link_libraries(vkcube Vulkan::Vulkan)
+-        include(CheckLibraryExists)
+         CHECK_LIBRARY_EXISTS("rt" clock_gettime "" NEED_RT)
+         if (NEED_RT)
+             target_link_libraries(vkcube rt)
+diff --git a/cube/cube.c b/cube/cube.c
+index 975f8a8..de7e4a1 100644
+--- a/cube/cube.c
++++ b/cube/cube.c
+@@ -37,6 +37,8 @@
+ #include <X11/Xutil.h>
+ #elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
+ #include <linux/input.h>
++#include "xdg-shell-client-header.h"
++#include "xdg-decoration-client-header.h"
+ #endif
+ 
+ #ifdef _WIN32
+@@ -324,8 +326,12 @@ struct demo {
+     struct wl_registry *registry;
+     struct wl_compositor *compositor;
+     struct wl_surface *window;
+-    struct wl_shell *shell;
+-    struct wl_shell_surface *shell_surface;
++    struct xdg_wm_base *xdg_wm_base;
++    struct zxdg_decoration_manager_v1 *xdg_decoration_mgr;
++    struct zxdg_toplevel_decoration_v1 *toplevel_decoration;
++    struct xdg_surface *xdg_surface;
++    int xdg_surface_has_been_configured;
++    struct xdg_toplevel *xdg_toplevel;
+     struct wl_seat *seat;
+     struct wl_pointer *pointer;
+     struct wl_keyboard *keyboard;
+@@ -597,7 +603,6 @@ bool CanPresentEarlier(uint64_t earliest, uint64_t actual, uint64_t margin, uint
+ 
+ // Forward declarations:
+ static void demo_resize(struct demo *demo);
+-static void demo_create_surface(struct demo *demo);
+ 
+ static bool memory_type_from_properties(struct demo *demo, uint32_t typeBits, VkFlags requirements_mask, uint32_t *typeIndex) {
+     // Search memtypes to find first index with those properties
+@@ -773,17 +778,9 @@ static void demo_draw_build_cmd(struct demo *demo, VkCommandBuffer cmd_buf) {
+                             &demo->swapchain_image_resources[demo->current_buffer].descriptor_set, 0, NULL);
+     VkViewport viewport;
+     memset(&viewport, 0, sizeof(viewport));
+-    float viewport_dimension;
+-    if (demo->width < demo->height) {
+-        viewport_dimension = (float)demo->width;
+-        viewport.y = (demo->height - demo->width) / 2.0f;
+-    } else {
+-        viewport_dimension = (float)demo->height;
+-        viewport.x = (demo->width - demo->height) / 2.0f;
+-    }
+-    viewport.height = viewport_dimension;
+-    viewport.width = viewport_dimension;
+-    viewport.minDepth = (float)0.0f;
++        viewport.minDepth = (float)0.0f;
++    viewport.height = (float)demo->height;
++    viewport.width = (float)demo->width;
+     viewport.maxDepth = (float)1.0f;
+     vkCmdSetViewport(cmd_buf, 0, 1, &viewport);
+ 
+@@ -878,6 +875,9 @@ void demo_update_data_buffer(struct demo *demo) {
+     mat4x4 MVP, Model, VP;
+     int matrixSize = sizeof(MVP);
+ 
++    uint8_t *pData;
++    VkResult U_ASSERT_ONLY err;
++
+     mat4x4_mul(VP, demo->projection_matrix, demo->view_matrix);
+ 
+     // Rotate around the Y axis
+@@ -1025,10 +1032,6 @@ static void demo_draw(struct demo *demo) {
+             // demo->swapchain is not as optimal as it could be, but the platform's
+             // presentation engine will still present the image correctly.
+             break;
+-        } else if (err == VK_ERROR_SURFACE_LOST_KHR) {
+-            vkDestroySurfaceKHR(demo->inst, demo->surface, NULL);
+-            demo_create_surface(demo);
+-            demo_resize(demo);
+         } else {
+             assert(!err);
+         }
+@@ -1171,10 +1174,6 @@ static void demo_draw(struct demo *demo) {
+     } else if (err == VK_SUBOPTIMAL_KHR) {
+         // demo->swapchain is not as optimal as it could be, but the platform's
+         // presentation engine will still present the image correctly.
+-    } else if (err == VK_ERROR_SURFACE_LOST_KHR) {
+-        vkDestroySurfaceKHR(demo->inst, demo->surface, NULL);
+-        demo_create_surface(demo);
+-        demo_resize(demo);
+     } else {
+         assert(!err);
+     }
+@@ -2367,9 +2367,14 @@ static void demo_cleanup(struct demo *demo) {
+     wl_keyboard_destroy(demo->keyboard);
+     wl_pointer_destroy(demo->pointer);
+     wl_seat_destroy(demo->seat);
+-    wl_shell_surface_destroy(demo->shell_surface);
++    xdg_toplevel_destroy(demo->xdg_toplevel);
++    xdg_surface_destroy(demo->xdg_surface);
+     wl_surface_destroy(demo->window);
+-    wl_shell_destroy(demo->shell);
++    xdg_wm_base_destroy(demo->xdg_wm_base);
++    if (demo->xdg_decoration_mgr) {
++        zxdg_toplevel_decoration_v1_destroy(demo->toplevel_decoration);
++        zxdg_decoration_manager_v1_destroy(demo->xdg_decoration_mgr);
++    }
+     wl_compositor_destroy(demo->compositor);
+     wl_registry_destroy(demo->registry);
+     wl_display_disconnect(demo->display);
+@@ -2750,35 +2754,74 @@ static void demo_run(struct demo *demo) {
+     }
+ }
+ 
+-static void handle_ping(void *data UNUSED, struct wl_shell_surface *shell_surface, uint32_t serial) {
+-    wl_shell_surface_pong(shell_surface, serial);
++static void handle_surface_configure(void *data, struct xdg_surface *xdg_surface, uint32_t serial) {
++    struct demo *demo = (struct demo *)data;
++    xdg_surface_ack_configure(xdg_surface, serial);
++    if (demo->xdg_surface_has_been_configured) {
++        demo_resize(demo);
++    }
++    demo->xdg_surface_has_been_configured = 1;
++}
++
++static const struct xdg_surface_listener xdg_surface_listener = {handle_surface_configure};
++
++static void handle_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel UNUSED, int32_t width, int32_t height,
++                                      struct wl_array *states UNUSED) {
++    struct demo *demo = (struct demo *)data;
++    demo->width = width;
++    demo->height = height;
++    /* This should be followed by a surface configure */
++}
++
++static void handle_toplevel_close(void *data, struct xdg_toplevel *xdg_toplevel UNUSED) {
++    struct demo *demo = (struct demo *)data;
++    demo->quit = true;
+ }
+ 
+-static void handle_configure(void *data UNUSED, struct wl_shell_surface *shell_surface UNUSED, uint32_t edges UNUSED,
+-                             int32_t width UNUSED, int32_t height UNUSED) {}
++static const struct xdg_toplevel_listener xdg_toplevel_listener = {handle_toplevel_configure, handle_toplevel_close};
+ 
+-static void handle_popup_done(void *data UNUSED, struct wl_shell_surface *shell_surface UNUSED) {}
+ 
+-static const struct wl_shell_surface_listener shell_surface_listener = {handle_ping, handle_configure, handle_popup_done};
+ 
+ static void demo_create_window(struct demo *demo) {
+-    demo->window = wl_compositor_create_surface(demo->compositor);
+-    if (!demo->window) {
+-        printf("Can not create wayland_surface from compositor!\n");
++    if (!demo->xdg_wm_base) {
++        printf("Compositor did not provide the standard protocol xdg-wm-base\n");
+         fflush(stdout);
+         exit(1);
+     }
+ 
+-    demo->shell_surface = wl_shell_get_shell_surface(demo->shell, demo->window);
+-    if (!demo->shell_surface) {
+-        printf("Can not get shell_surface from wayland_surface!\n");
+-        fflush(stdout);
+-        exit(1);
+-    }
+-    wl_shell_surface_add_listener(demo->shell_surface, &shell_surface_listener, demo);
+-    wl_shell_surface_set_toplevel(demo->shell_surface);
+-    wl_shell_surface_set_title(demo->shell_surface, APP_SHORT_NAME);
+-}
++	demo->window = wl_compositor_create_surface(demo->compositor);
++	if (!demo->window) {
++		printf("Can not create wayland_surface from compositor!\n");
++		fflush(stdout);
++		exit(1);
++	}
++
++	demo->xdg_surface = xdg_wm_base_get_xdg_surface(demo->xdg_wm_base, demo->window);
++	if (!demo->xdg_surface) {
++		printf("Can not get xdg_surface from wayland_surface!\n");
++		fflush(stdout);
++		exit(1);
++	}
++
++    demo->xdg_toplevel = xdg_surface_get_toplevel(demo->xdg_surface);
++    if (!demo->xdg_toplevel) {
++        printf("Can not allocate xdg_toplevel for xdg_surface!\n");
++         fflush(stdout);
++         exit(1);
++     }
++
++	xdg_surface_add_listener(demo->xdg_surface, &xdg_surface_listener, demo);
++	xdg_toplevel_add_listener(demo->xdg_toplevel, &xdg_toplevel_listener, demo);
++	xdg_toplevel_set_title(demo->xdg_toplevel, APP_SHORT_NAME);
++	if (demo->xdg_decoration_mgr) {
++		// if supported, let the compositor render titlebars for us
++		demo->toplevel_decoration =
++			zxdg_decoration_manager_v1_get_toplevel_decoration(demo->xdg_decoration_mgr, demo->xdg_toplevel);
++		zxdg_toplevel_decoration_v1_set_mode(demo->toplevel_decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
++     }
++    wl_surface_commit(demo->window);
++
++ }
+ #elif defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+ static void demo_create_directfb_window(struct demo *demo) {
+     DFBResult ret;
+@@ -3671,7 +3714,7 @@ static void pointer_handle_button(void *data, struct wl_pointer *wl_pointer, uin
+                                   uint32_t state) {
+     struct demo *demo = data;
+     if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) {
+-        wl_shell_surface_move(demo->shell_surface, demo->seat, serial);
++        xdg_toplevel_move(demo->xdg_toplevel, demo->seat, serial);
+     }
+ }
+ 
+@@ -3739,21 +3782,27 @@ static const struct wl_seat_listener seat_listener = {
+     seat_handle_capabilities,
+ };
+ 
+-static void registry_handle_global(void *data, struct wl_registry *registry, uint32_t id, const char *interface, uint32_t version) {
++static void wm_base_ping(void *data UNUSED, struct xdg_wm_base *xdg_wm_base, uint32_t serial) {
++    xdg_wm_base_pong(xdg_wm_base, serial);
++}
++
++static const struct xdg_wm_base_listener wm_base_listener = {wm_base_ping};
++
++static void registry_handle_global(void *data, struct wl_registry *registry, uint32_t id, const char *interface,
++                                   uint32_t version UNUSED) {
++
+     struct demo *demo = data;
+     // pickup wayland objects when they appear
+-    if (strcmp(interface, "wl_compositor") == 0) {
+-        uint32_t minVersion = version < 4 ? version : 4;
+-        demo->compositor = wl_registry_bind(registry, id, &wl_compositor_interface, minVersion);
+-        if (demo->VK_KHR_incremental_present_enabled && minVersion < 4) {
+-            fprintf(stderr, "Wayland compositor doesn't support VK_KHR_incremental_present, disabling.\n");
+-            demo->VK_KHR_incremental_present_enabled = false;
+-        }
+-    } else if (strcmp(interface, "wl_shell") == 0) {
+-        demo->shell = wl_registry_bind(registry, id, &wl_shell_interface, 1);
+-    } else if (strcmp(interface, "wl_seat") == 0) {
++    if (strcmp(interface, wl_compositor_interface.name) == 0) {
++        demo->compositor = wl_registry_bind(registry, id, &wl_compositor_interface, 1);
++    } else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
++        demo->xdg_wm_base = wl_registry_bind(registry, id, &xdg_wm_base_interface, 1);
++        xdg_wm_base_add_listener(demo->xdg_wm_base, &wm_base_listener, NULL);
++    } else if (strcmp(interface, wl_seat_interface.name) == 0) {
+         demo->seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
+         wl_seat_add_listener(demo->seat, &seat_listener, demo);
++    } else if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0) {
++        demo->xdg_decoration_mgr = wl_registry_bind(registry, id, &zxdg_decoration_manager_v1_interface, 1);
+     }
+ }
+ 

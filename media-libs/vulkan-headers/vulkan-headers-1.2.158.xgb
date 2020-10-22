@@ -3,18 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="OpenGL-like graphic library for Linux"
+DESCRIPTION="Vulkan Header files and API registry"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://mesa3d.sourceforge.net/"
+HOMEPAGE="https://github.com/KhronosGroup/Vulkan-Headers"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/$V/MesaLib-$V.tar.bz2 \
-ftp://ftp.freedesktop.org/pub/mesa/$V/MesaGLUT-$V.tar.bz2"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/KhronosGroup/Vulkan-Headers/archive/master.zip"
 
 
 # Binary package URI.
@@ -29,20 +29,18 @@ DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/MesaLib-$V.tar.bz2
-	err_check "unpack MesaLib-$V failed."
-
-	#tar xf $XGPATH_SOURCE/MesaDemos-$V.tar.bz2
-	#err_check "unpack MesaDemos-$V failed."
-
-	tar xf $XGPATH_SOURCE/MesaGLUT-$V.tar.bz2
-	err_check "unpack MesaGLUT-$V failed."
+	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -51,13 +49,18 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd Mesa-$V
+	cd Vulkan-Headers-master
+	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -enable-xcb "
+	XGB_CONFIG=" -DCMAKE_INSTALL_PREFIX=/usr "
+
+	mkdir build
+	cd build
+	err_check "enter build failed."
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	cmake $XGB_CONFIG ..
 }
 
 #build
@@ -69,6 +72,13 @@ xgb_build()
 	make $XGPARA_MAKE
 }
 
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
+}
+
 #install
 xgb_install()
 {
@@ -76,6 +86,22 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install $N-$V failed."
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

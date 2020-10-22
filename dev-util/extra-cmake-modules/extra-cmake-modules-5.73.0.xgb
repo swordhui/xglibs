@@ -56,7 +56,7 @@ xgb_config()
 	err_check "enter directory failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	#XGB_CONFIG+=" --foo --bar "
+	XGB_CONFIG="-DCMAKE_INSTALL_PREFIX=/usr"
 
 	#Third, call configure with $XGB_CONFIG
 	cmake $XGB_CONFIG ..
