@@ -126,4 +126,6 @@ youcompleteme
 verilog.vim
 gptfdisk
 iucode-tool
+intel-ucode
 firmware-b43
+mtools

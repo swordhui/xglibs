@@ -3,10 +3,10 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="X.Org X servers"
+DESCRIPTION="a GObject wrapper around the Exiv2 photo metadata library"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://xorg.freedesktop.org/"
+HOMEPAGE="https://wiki.gnome.org/Projects/gexiv2"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
@@ -14,7 +14,7 @@ HOMEPAGE="http://xorg.freedesktop.org/"
 # $V = package version, such as 2.6.10
 
 #SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
-SRC_URI="http://www.x.org/releases/X11R7.5/src/xserver/$N-$V.tar.bz2"
+SRC_URI="https://download.gnome.org/sources/gexiv2/0.12/gexiv2-$V.tar.xz"
 
 
 # Binary package URI.
@@ -22,17 +22,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="openssl pixman x11fonts xkeyboard-config"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
+
+
+
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
 
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xf $XGPATH_SOURCE/gexiv2-$V$R.tar.xz
 }
 
 #config
@@ -41,16 +49,18 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd gexiv2-$V$R
+	err_check "enter directory failed."
+
+	mkdir build
+	cd build
+	err_check "enter build failed."
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" -with-module-dir=/usr/lib/X11/modules \
-		--sysconfdir=/etc --mandir=/usr/man --localstatedir=/var \
-		--with-xkb-output=/var/lib/xkb \
-		--enable-install-setuid "
+	#XGB_CONFIG+=" --foo --bar "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	meson  $XGB_CONFIG
 }
 
 #build
@@ -59,7 +69,14 @@ xgb_build()
 	echo "make $N-$V$R..."
 
 	#run make in current directory
-	make $XGPARA_MAKE
+	ninja
+}
+
+#check
+xgb_check()
+{
+	echo "checking $N-$V$R.."
+	#make check
 }
 
 #install
@@ -68,16 +85,23 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
-	err_check "Install $V-$N failed."
-
-	#copy resource file
-	mkdir $XGPATH_DEST/root
-	cat > $XGPATH_DEST/root/.xinitrc << "EOF"
-# Begin .xinitrc file
-xterm  -g 80x40+0+0   &
-xclock -g 100x100-0+0 &
-twm
-EOF
+	DESTDIR=$XGPATH_DEST ninja install
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

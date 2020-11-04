@@ -109,5 +109,19 @@ xgb_install()
 	err_check "rm 1 failed"
 	rm -rf $XGPATH_DEST/linux
 	err_check "rm 2 failed"
+
+	#create amd-ucode.bin
+	mkdir -p kernel/x86/microcode
+	err_check "create microcode failed"
+
+	cat $XGPATH_DEST/lib/firmware/amd-ucode/microcode_amd*.bin > kernel/x86/microcode/AuthenticAMD.bin
+	err_check "create AMD.bin failed"
+
+	mkdir $XGPATH_DEST/boot
+	err_check "create boot failed"
+
+	echo kernel/x86/microcode/AuthenticAMD.bin |
+    	bsdtar --uid 0 --gid 0 -cnf - -T - |
+    	bsdtar --null -cf - --format=newc @- > $XGPATH_DEST/boot/amd-ucode.img
 }
 

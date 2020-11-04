@@ -58,24 +58,27 @@ datasecs=$(($sectors-2048-2048-102400))
 #part4: 102400 sectors
 
 showinfo "create GPT partitions.."
-printf "o\ny\nn\n\n\n$datasecs\n0700\nn\n\n\n+1M\nEF02\nn\n\n\n\nEF00\nw\ny\n" | gdisk $1
+printf "o\ny\nn\n\n\n+1M\nEF02\nn\n\n\n+100M\nEF00\nn\n\n\n\n0700\nw\ny\n" | gdisk $1
 showinfo "create MBR partitions..."
-printf "r\nh\n1 2 3\nn\n0700\nn\nEF02\nn\nEF00\ny\nw\ny\n" | gdisk $1
+printf "r\nh\n3\nn\n0700\ny\ny\n\nw\ny\n" | gdisk $1
+
+partprobe $1
+err_check "part probe failed"
 
 showinfo "formating vfat..."
-mkfs.vfat -F 32 -n GRUB2EFI ${1}3
+mkfs.vfat -F 32 -n GRUB2EFI ${1}2
 err_check "format ${1}3 failed."
 
-mkfs.vfat -F 32 -n DATA ${1}1
+mkfs.vfat -F 32 -n DATA ${1}3
 err_check "format ${1}1 failed."
 
 mkdir -p ${mntroot}/1
 mkdir -p ${mntroot}/2
 showinfo "mounting..."
-mount ${1}3 $mntroot/1
+mount ${1}2 $mntroot/1
 err_check "mount ${loopd}p2 failed."
 
-mount ${1}1 $mntroot/2
+mount ${1}3 $mntroot/2
 err_check "mount ${loopd}p3 failed."
 
 showinfo "installing grub2 GPT mode..."
@@ -98,6 +101,6 @@ umount $mntroot/2
 err_check "unmount data failed."
 
 
-./mkxgsqush.sh "${1}1"
+./mkxgsqush.sh "${1}3"
 
 

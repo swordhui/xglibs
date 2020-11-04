@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Advanced version control system"
+DESCRIPTION="GNU Image Manipulation Program"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://subversion.apache.org/"
+HOMEPAGE="http://www.gimp.org/"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://archive.apache.org/dist/subversion/subversion-$V.tar.bz2"
+SRC_URI="https://gitlab.gnome.org/GNOME/gimp/-/archive/master/gimp-master.tar.bz2"
+
 
 
 # Binary package URI.
@@ -21,7 +22,7 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="neon apr-util swig serf"
+RDEPEND="aalib curl poppler libexif libjpeg-turbo libpng libmng lcms librsvg "
 
 # Build time depend
 DEPEND="${RDEPEND}"
@@ -33,7 +34,7 @@ xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	tar xaf $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -42,36 +43,25 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
-	err_check "enter directory failed."
+	cd $N-master
+	err_check "enter $N-master failed"
+
+	mkdir tbuild
+	cd tbuild
+	err_check "enter build failed"
 
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-swig=/usr --with-ssl --with-openssl --disable-static --with-lz4=internal \
-		--with-utf8proc=internal --with-serf=/usr --with-apr=/usr --enable-plaintext-password-storage "
+	XGB_CONFIG+=" -Dgtk-doc=false "
 
 	#Third, call configure with $XGB_CONFIG
-	./configure $XGB_CONFIG
+	meson $XGB_CONFIG ..
 }
 
-#build
 xgb_build()
 {
-	echo "make $N-$V$R..."
-
-	#run make in current directory
-	make $XGPARA_MAKE
-	err_check "make failed."
-
-	#swig binding, for git svn
-	make $XGPARA_MAKE swig-pl
-}
-
-#check
-xgb_check()
-{
-	echo "checking $N-$V$R.."
-	#make check
+	showinfo "build..."
+	ninja
 }
 
 #install
@@ -80,9 +70,7 @@ xgb_install()
 	echo "install to $XGPATH_DEST"
 
 	#install everything to $XGPATH_DEST
-	make DESTDIR=$XGPATH_DEST install
-	err_check "install faile.d"
+	DESTDIR=$XGPATH_DEST ninja install
 
-	make DESTDIR=$XGPATH_DEST install-swig-pl
 }
 

@@ -3,17 +3,18 @@
 # Xiange Linux build scripts
 
 # Short one-line description of this package.
-DESCRIPTION="Advanced version control system"
+DESCRIPTION="a library for reading RAW files obtained from digital photo cameras"
 
 # Homepage, not used by Portage directly but handy for developer reference
-HOMEPAGE="http://subversion.apache.org/"
+HOMEPAGE="https://www.libraw.org"
 
 # Point to any required sources; these will be automatically downloaded by
 # gpkg. 
 # $N = package name, such as autoconf, x-org
 # $V = package version, such as 2.6.10
 
-SRC_URI="https://archive.apache.org/dist/subversion/subversion-$V.tar.bz2"
+#SRC_URI="http://foo.bar.com/$N-$V.tar.bz2"
+SRC_URI="https://github.com/LibRaw/LibRaw/archive/master.zip"
 
 
 # Binary package URI.
@@ -21,19 +22,25 @@ BIN_URI=""
 
 
 # Runtime Depend
-RDEPEND="neon apr-util swig serf"
+RDEPEND=""
 
 # Build time depend
 DEPEND="${RDEPEND}"
 
 
 
+#init 
+xgb_init()
+{
+	echo "init $N-$V$R build script..."
+}
+
 #unpack
 xgb_unpack()
 {
 	#unpard file from $XGPATH_SOURCE to current directory.
 	echo "Unpacking to `pwd`"
-	tar xf $XGPATH_SOURCE/$N-$V$R.tar.bz2
+	unzip $XGPATH_SOURCE/$(basename $SRC_URI)
 }
 
 #config
@@ -42,13 +49,14 @@ xgb_config()
 	echo "config $N-$V$R..."
 
 	#fist, cd build directory
-	cd $N-$V$R
+	cd LibRaw-master
 	err_check "enter directory failed."
 
+	./mkdist.sh
+	err_check "make dist failed"
 
 	#second, add package specified config params to XGB_CONFIG
-	XGB_CONFIG+=" --with-swig=/usr --with-ssl --with-openssl --disable-static --with-lz4=internal \
-		--with-utf8proc=internal --with-serf=/usr --with-apr=/usr --enable-plaintext-password-storage "
+	XGB_CONFIG+=" --disable-static --enable-jpeg --enable-jasper --enable-zlib --enable-lcms "
 
 	#Third, call configure with $XGB_CONFIG
 	./configure $XGB_CONFIG
@@ -61,10 +69,6 @@ xgb_build()
 
 	#run make in current directory
 	make $XGPARA_MAKE
-	err_check "make failed."
-
-	#swig binding, for git svn
-	make $XGPARA_MAKE swig-pl
 }
 
 #check
@@ -81,8 +85,22 @@ xgb_install()
 
 	#install everything to $XGPATH_DEST
 	make DESTDIR=$XGPATH_DEST install
-	err_check "install faile.d"
-
-	make DESTDIR=$XGPATH_DEST install-swig-pl
 }
 
+#post install
+xgb_postinst()
+{
+	echo "running after package installed..."
+}
+
+#pre remove
+xgb_prerm()
+{
+	echo "running before package delete..."
+}
+
+#post remove
+xgb_postrm()
+{
+	echo "running after package delete..."
+}

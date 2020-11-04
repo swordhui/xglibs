@@ -89,6 +89,8 @@ wqy-bitmap
 wqy-zenhei
 console8x16
 fontawesome
+dejavu
+unifont
 cairo
 pango
 itstool
@@ -274,6 +276,8 @@ gnome-system-monitor
 apr
 apr-util
 swig
+scons
+serf
 subversion
 lua
 nmap
@@ -307,4 +311,10 @@ sdlmame
 slurp
 grim
 qemu
+babl
+gegl
+gexiv2
+mypaint-brushes-1.3.0
+appstream-glib
+gimp
 theme-xiange

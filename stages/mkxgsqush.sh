@@ -161,22 +161,33 @@ xg_do_kernel()
 	gunzip -c ${initnames[0]} | cpio -i 
 	err_check "unzip initramfs ${initnames[0]} failed."
 
-	XGLIST="/lib/libdevmapper.so.*
-		/lib/libc.so.*
-		/lib/libm.so.*
-		/lib/libc-*.so 
-		/lib/libm-*.so 
-		/lib/libpthread.so.0 
-		/lib/libpthread-*.so 
-		/lib/ld-*.so 
-		/lib/ld-linux-x86-64.so.2 
-		/sbin/dmsetup
-		/lib/modules/$1/kernel/drivers/block/loop.ko
-		/lib/modules/$1/kernel/fs/squashfs/squashfs.ko
-		/lib/modules/$1/kernel/lib/lz4/lz4*.ko
-		/lib/modules/$1/kernel/drivers/md/dm-snapshot.ko
-		/lib/modules/$1/kernel/drivers/md/dm-bufio.ko
-		/lib/modules/$1/kernel/drivers/md/dm-mod.ko"
+	#get amd-ucode
+	bsdtar xf $oldroot/boot/amd-ucode.img
+	err_check "copy amd-ucode failed"
+
+	#get intel-ucode
+	bsdtar xf $oldroot/boot/intel-ucode.img
+	err_check "copy intel-ucode failed"
+
+
+	kver="$1"
+
+	XGLIST="$oldroot/lib/libdevmapper.so.*
+		$oldroot/lib/libc.so.*
+		$oldroot/lib/libm.so.*
+		$oldroot/lib/libc-*.so 
+		$oldroot/lib/libm-*.so 
+		$oldroot/lib/libpthread.so.0 
+		$oldroot/lib/libpthread-*.so 
+		$oldroot/lib/ld-*.so 
+		$oldroot/lib/ld-linux-x86-64.so.* 
+		$oldroot/sbin/dmsetup
+		$oldroot/lib/modules/$kver/kernel/drivers/block/loop.ko
+		$oldroot/lib/modules/$kver/kernel/fs/squashfs/squashfs.ko
+		$oldroot/lib/modules/$kver/kernel/lib/lz4/lz4*.ko
+		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-snapshot.ko
+		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-bufio.ko
+		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-mod.ko"
 		
 	if [ "$XGB_ARCH" == "x86_64" ]; then
 		ln -sv lib $mntroot/init/lib64
@@ -190,9 +201,10 @@ xg_do_kernel()
 	for i in $XGLIST;
 	do
 		basen=$(dirname $i)
+		basen=${basen/$oldroot}
 		mkdir -p $mntroot/init$basen
 		showinfo "copying $oldroot$i..."
-		cp -a $oldroot$i $mntroot/init$basen/
+		cp -a $i $mntroot/init$basen/
 		err_check "cp $oldroot$i failed."
 	done
 
@@ -408,8 +420,8 @@ xg_usedisk()
 	err_check "mount #devname failed."
 	
 	showinfo "installing grub2..."
-	grub-install --modules=part_msdos --root-directory=$mntroot/1 --target=i386-pc $devp
-	err_check "install grub failed."
+	#grub-install --modules=part_msdos --root-directory=$mntroot/1 --target=i386-pc $devp
+	#err_check "install grub failed."
 
 	showinfo "unmount $mntroot/1..."
 	umount $mntroot/1
