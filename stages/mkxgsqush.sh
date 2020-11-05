@@ -16,7 +16,6 @@ oldroot=$mntroot/2
 newroot=$mntroot/1
 squash_arch=x86_64
 declare loopd
-declare lpxg
 
 
 
@@ -32,8 +31,6 @@ xg_cleanup()
 	losetup -d /dev/loop1
 	losetup -d /dev/loop2
 
-	showinfo "unmounting $mntroot/0.."
-	umount $mntroot/0
 
 	rm -rf $mntroot
 }
@@ -184,7 +181,10 @@ xg_do_kernel()
 		$oldroot/sbin/dmsetup
 		$oldroot/lib/modules/$kver/kernel/drivers/block/loop.ko
 		$oldroot/lib/modules/$kver/kernel/fs/squashfs/squashfs.ko
+		$oldroot/lib/modules/$kver/kernel/fs/overlayfs/overlay.ko
 		$oldroot/lib/modules/$kver/kernel/lib/lz4/lz4*.ko
+		$oldroot/lib/modules/$kver/kernel/drivers/cdrom/*.ko
+		$oldroot/lib/modules/$kver/kernel/drivers/scsi/sr_mod.ko
 		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-snapshot.ko
 		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-bufio.ko
 		$oldroot/lib/modules/$kver/kernel/drivers/md/dm-mod.ko"
@@ -210,7 +210,7 @@ xg_do_kernel()
 
 	
 	#init
-	cp /var/xiange/xglibs/stages/init $mntroot/init/init
+	cp /var/xiange/xglibs/stages/init_iso $mntroot/init/init
 	err_check "copy init failed."
 
 	#set arch
@@ -257,14 +257,41 @@ xg_do_kernel()
 
 }
 
+#xg_mksquash()
+#{
+#	
+#	showinfo "copying ..."
+#	rm -rf /root/squashroot
+#	mkdir -p /root/squashroot
+#	ln /root/xg64.img /root/squashroot/
+#	err_check "copy failed."
+#	
+#	showinfo "making squash fs.."
+#	
+#	cd /root
+#	rm -f xiange-sqroot.tmp 2>/dev/null
+#	mksquashfs squashroot xiange-sqroot.tmp
+#	err_check "make squash fs failed."
+#	
+#	rm -rf squashroot
+#	err_check "rm temperory file failed."
+#	mv xiange-sqroot.tmp xiange-sqroot
+#	err_check "rename xiange-sqroot.tmp failed."
+#}
+
 xg_mksquash()
 {
 	
 	showinfo "copying ..."
+	lpold=$(losetup -f --show -P /root/xg64.img)
+	err_check "losetup for xg64.img failed"
+
+
 	rm -rf /root/squashroot
 	mkdir -p /root/squashroot
-	ln /root/xg64.img /root/squashroot/
-	err_check "copy failed."
+
+	mount ${lpold}p1 /root/squashroot -o ro
+	err_check "mount xg64.img failed."
 	
 	showinfo "making squash fs.."
 	
@@ -272,7 +299,13 @@ xg_mksquash()
 	rm -f xiange-sqroot.tmp 2>/dev/null
 	mksquashfs squashroot xiange-sqroot.tmp
 	err_check "make squash fs failed."
-	
+
+	umount /root/squashroot
+	err_check "umount /root/squashroot failed"
+
+	losetup -d $lpold
+	err_check "losetup -d $lpold failed"
+
 	rm -rf squashroot
 	err_check "rm temperory file failed."
 	mv xiange-sqroot.tmp xiange-sqroot
@@ -307,7 +340,6 @@ xg_cksquash()
 
 xg_prepare()
 {
-	mkdir -p $mntroot/0
 	mkdir -p $mntroot/1
 	mkdir -p $mntroot/2
 	
@@ -320,29 +352,21 @@ xg_prepare()
 
 xg_mount_squash()
 {
-	showinfo "mount sqroot to $mntroot/0.."
-	mount /root/xiange-sqroot $mntroot/0 -o loop 
-	err_check "mount xiange-sqroot to $mntroot/0 failed."
+	showinfo "mount sqroot to $mntroot/2.."
+	mount /root/xiange-sqroot $mntroot/2 -o loop 
+	err_check "mount xiange-sqroot to $mntroot/2 failed."
 
-	if [ -f $mntroot/0/xg64.img ]; then
-		showinfo "xg64.img found."
-		ls -lh $mntroot/0/xg64.img
+	if [ -f $mntroot/2/etc/os-release ]; then
+		showinfo "squashfs found."
+		cat $mntroot/2/etc/os-release
 	else
-		showFailed "xg64.img found."
+		showFailed "rootfs is not valid"
 	fi
 	
-	showinfo "mount xiange root to $mntroot/0/xg64.img"
-	lpxg=$(losetup -f --show -P $mntroot/0/xg64.img)
-	echo "result=$?"
-	err_check "setup xg64 to ${lpxg} faled."
-
 	showinfo "mounting new root..."
 	mount $devname $mntroot/1
 	err_check "mount $devname failed."
 	
-	showinfo "mounting old root..."
-	mount -t ext4 ${lpxg}p1 $mntroot/2 -o ro
-	err_check "mount to /mnt/xgmnt/2 faled."
 }
 
 imgfile="/root/xg_sqh.img"
@@ -550,12 +574,8 @@ umount $oldroot
 err_check "unmount $oldroot failed."
 
 losetup -d ${loopd}
-losetup -d ${lpxg}
 err_check "remove /dev/loop2 failed."
 
-showinfo "unmounting $mntroot/0.."
-umount $mntroot/0
-err_check "unmount $mntroot/0 failed."
 
 rm -rf $mntroot
 

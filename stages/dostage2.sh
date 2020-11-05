@@ -37,7 +37,7 @@ err_check "enable greetd failed."
 
 
 showinfo "creating user xiang..."
-useradd -m -G audio,video,tty,usb,cdrom,disk,camera,gpkg,wheel,net,dialout,systemd-journal,dhcpcd,systemd-resolve xiange
+useradd -m -G audio,video,tty,usb,cdrom,disk,camera,kvm,gpkg,wheel,net,dialout,systemd-journal,dhcpcd,systemd-resolve xiange
 err_check "add user xiange failed."
 
 showinfo "setting password for xiange..."
